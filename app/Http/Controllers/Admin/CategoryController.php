@@ -75,7 +75,7 @@ class CategoryController extends Controller
             'image.max' => 'Image size should not exceed 2MB.',
             'discount.numeric' => 'Discount must be a numeric value.',
             'discount.min' => 'Discount cannot be negative.',
-            'url.url' => 'The URL must be a valid format.',
+            'url.url' => 'Please enter a valid URL, e.g., https://xyz.com',
             'meta_title.max' => 'Meta title cannot exceed 255 characters.',
             'meta_description.max' => 'Meta description cannot exceed 500 characters.',
             'meta_keywords.max' => 'Meta keywords cannot exceed 255 characters.',
@@ -91,7 +91,7 @@ class CategoryController extends Controller
                 'description' => 'nullable|max:500',
                 'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
                 'discount' => 'nullable|numeric|min:0',
-                'url' => 'nullable|url',
+                'url' => 'nullable|string|url',
                 'meta_title' => 'nullable|max:255',
                 'meta_description' => 'nullable|max:500',
                 'meta_keywords' => 'nullable|max:255',
@@ -146,7 +146,7 @@ class CategoryController extends Controller
             'image.max' => 'Image size should not exceed 2MB.',
             'discount.numeric' => 'Discount must be a numeric value.',
             'discount.min' => 'Discount cannot be negative.',
-            'url.url' => 'The URL must be a valid format.',
+            'url.url' => "Please enter a valid URL, e.g., https://xyz.com",
             'meta_title.max' => 'Meta title cannot exceed 255 characters.',
             'meta_description.max' => 'Meta description cannot exceed 500 characters.',
             'meta_keywords.max' => 'Meta keywords cannot exceed 255 characters.',
@@ -168,7 +168,7 @@ class CategoryController extends Controller
                 'meta_keywords' => 'nullable|max:255',
                 'status' => 'required|boolean',
             ],
-            $messages
+            $messages,
         );
 
         // Handle image upload
@@ -189,14 +189,17 @@ class CategoryController extends Controller
         // Update category
         $category->update($validatedData);
 
-        return redirect()->back()->with([
-            'message' => 'Category updated successfully',
-            'status' => true,
-            'code' => 200,
-        ]);
+        return redirect()
+            ->back()
+            ->with([
+                'message' => 'Category updated successfully',
+                'status' => true,
+                'code' => 200,
+            ]);
     }
 
-    public function deleteCategory($id){
+    public function deleteCategory($id)
+    {
         // Check if the logged-in user is superadmin or admin
         $admin = Auth::guard('admin')->user();
         if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
@@ -209,10 +212,10 @@ class CategoryController extends Controller
         }
         $category->delete();
 
-        if($category){
+        if ($category) {
             $data = ['message' => 'Category deleted successfully', 'status' => true, 'code' => 200];
             return redirect()->back()->with($data);
-        }else{
+        } else {
             $data = ['message' => 'Failed to delete category', 'status' => false, 'code' => 400];
             return redirect()->back()->with($data);
         }
