@@ -1,0 +1,22 @@
+<script setup>
+import SideBar from '../Includes/SideBar.vue';
+import Navbar from '../Includes/Navbar.vue';
+</script>
+
+<template>
+    <div class="position-relative bg-white d-flex p-0">
+
+        <SideBar />
+        <!-- Content Start -->
+        <div class="content">
+            <Navbar />
+            <slot>
+
+            </slot>
+        </div>
+        <!-- Back to Top -->
+        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+    </div>
+</template>
+
+<style scoped></style>
