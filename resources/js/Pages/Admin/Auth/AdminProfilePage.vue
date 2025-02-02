@@ -195,8 +195,8 @@ function UpdatePassword() {
 
                             <!-- Image Field -->
                             <div class="mb-3">
-                                <label for="productImage" class="form-label">Profile Image</label>
-                                <input type="file" class="form-control" id="productImage" @input="handleImageInput" />
+                                <label for="profileImage" class="form-label">Profile Image</label>
+                                <input type="file" class="form-control" id="profileImage" @input="handleImageInput" />
                             </div>
 
                             <button type="submit" class="btn btn-primary w-100">Save</button>

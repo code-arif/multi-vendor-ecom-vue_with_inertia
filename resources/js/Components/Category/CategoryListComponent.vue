@@ -7,19 +7,20 @@ const list = usePage();
 const sections = list.props.sections || [];
 
 const Header = [
-    { text: "No", value: "no" },
-    { text: "Name", value: "name", sortable: true },
-    { text: "Parent Category", value: "p_category", sortable: true },
-    { text: "Section", value: "section", sortable: true },
-    { text: "URL", value: "url", },
-    { text: "Status", value: "status" },
-    { text: "Action", value: "number" },
+    { text: "No", value: "no", width: 8 },
+    { text: "Image", value: "image", width: 20 },
+    { text: "Name", value: "name", sortable: true, width: 30 },
+    { text: "Parent Category", value: "p_category", sortable: true, width: 70 },
+    { text: "Section", value: "section", sortable: true, width: 50 },
+    { text: "Status", value: "status", width: 30 },
+    { text: "Action", value: "number", width: 10 },
 ];
 
 // Transform data for table
 const Item = computed(() => {
     return list.props.categories?.map((category, index) => ({
         no: index + 1,
+        image: category.image,
         name: category.name,
         p_category: category.parent?.name || "N/A",  // Optional chaining used
         section: category.section?.sec_name || "N/A",
@@ -27,7 +28,12 @@ const Item = computed(() => {
         status: category.status == 1 ? "Active" : "Inactive",
         id: category.id,
         section_id: category.section_id,
-        parent_id: category.parent_id
+        parent_id: category.parent_id,
+        description: category.description,
+        discount: category.discount,
+        meta_title: category.meta_title,
+        meta_description: category.meta_description,
+        meta_keyword: category.meta_keyword,
     }));
 });
 
@@ -85,21 +91,117 @@ const setEditCategory = (category) => {
     form.status = category.status === "Active" ? "1" : "0";
 };
 
-// Reactive property for dynamic image preview
-const imagePreview = ref(
-    'https://skala.or.id/wp-content/uploads/2024/01/dummy-post-square-1-1.jpg'
-);
-// Update image preview dynamically
-function handleImageInput(event) {
-    const file = event.target.files[0];
-    if (file) {
-        form.image = file;
-        const reader = new FileReader();
-        reader.onload = (e) => {
-            imagePreview.value = e.target.result;
-        };
-        reader.readAsDataURL(file);
+//===================Function to Add or Update Section============================//
+const ChangeCategory = () => {
+    if (form.id) {
+        // Update Section
+        form.post(route("update.category", { id: form.id }), {
+            onSuccess: () => {
+                if (list.props.flash.status === true) {
+                    successToast(list.props.flash.message);
+                    form.reset();
+                } else {
+                    errorToast(list.props.flash.message);
+                }
+            },
+            onError: (errors) => {
+                if (errors.parent_id) {
+                    errorToast(errors.parent_id);
+                } else if (errors.section_id) {
+                    errorToast(errors.section_id);
+                } else if (errors.name) {
+                    errorToast(errors.name);
+                } else if (errors.url) {
+                    errorToast(errors.url);
+                } else if (errors.discount) {
+                    errorToast(errors.discount);
+                } else if (errors.description) {
+                    errorToast(errors.description);
+                } else if (errors.meta_title) {
+                    errorToast(errors.meta_title);
+                } else if (errors.meta_description) {
+                    errorToast(errors.meta_description);
+                } else if (errors.meta_keywords) {
+                    errorToast(errors.meta_keywords);
+                } else if (errors.status) {
+                    errorToast(errors.status);
+                } else if (errors.image) {
+                    errorToast(errors.image);
+                } else {
+                    errorToast(list.props.flash.message);
+                }
+            }
+        });
+    } else {
+        // Add New Section
+        form.post(route("add.category"), {
+            onSuccess: () => {
+                if (list.props.flash.status === true) {
+                    successToast(list.props.flash.message);
+                    form.reset();
+                } else {
+                    errorToast(list.props.flash.message);
+                }
+            },
+            onError: (errors) => {
+                // console.log(errors); // Log errors for debugging
+                if (errors.parent_id) {
+                    errorToast(errors.parent_id);
+                } else if (errors.section_id) {
+                    errorToast(errors.section_id);
+                } else if (errors.name) {
+                    errorToast(errors.name);
+                } else if (errors.url) {
+                    errorToast(errors.url);
+                } else if (errors.discount) {
+                    errorToast(errors.discount);
+                } else if (errors.description) {
+                    errorToast(errors.description);
+                } else if (errors.meta_title) {
+                    errorToast(errors.meta_title);
+                } else if (errors.meta_description) {
+                    errorToast(errors.meta_description);
+                } else if (errors.meta_keywords) {
+                    errorToast(errors.meta_keywords);
+                } else if (errors.status) {
+                    errorToast(errors.status);
+                } else if (errors.image) {
+                    errorToast(errors.image);
+                } else {
+                    errorToast(list.props.flash.message);
+                }
+            }
+        });
     }
+};
+
+//=========================section delete========================//
+const selectedCatId = ref(null);
+
+//brand delete functionality
+function showDeleteModal(id) {
+    selectedCatId.value = id;
+    $('#catDltModal').modal('show');
+}
+
+function deleteCategory() {
+    if (!selectedCatId.value) return;
+
+    router.delete(`/category/delete/${selectedCatId.value}`, {
+        onSuccess: () => {
+            if (list.props.flash.status === true) {
+                successToast(list.props.flash.message);
+            } else {
+                errorToast(list.props.flash.message);
+            }
+            $('#list').click();
+            $('#catDltModal').modal('hide');
+            selectedCatId.value = null;
+        },
+        onError: () => {
+            errorToast("Failed to delete the category. Please try again.");
+        },
+    });
 }
 </script>
 
@@ -124,6 +226,11 @@ function handleImageInput(event) {
                         <EasyDataTable buttons-pagination alternating :headers="Header" :items="Item" border-cell
                             theme-color="#1d90ff" :rows-per-page="15" :search-field="searchField"
                             :search-value="searchValue">
+                            <template #item-image="{ image }">
+                                <img :src="image ? `/storage/${image}` : 'https://skala.or.id/wp-content/uploads/2024/01/dummy-post-square-1-1.jpg'"
+                                    alt="Category image" style="width: 50px; height: 50px; object-fit: cover;"
+                                    class="p-1">
+                            </template>
                             <template #item-status="{ status, id }">
                                 <button @click="toggleStatus(id, status)"
                                     :class="status === 'Active' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline-danger'"
@@ -132,14 +239,16 @@ function handleImageInput(event) {
                                 </button>
                             </template>
                             <template
-                                #item-number="{ id, name, status, parent_id, section_id, discount, image, url, description, meta_title, meta_description, meta_keywords }">
-                                <button class="btn btn-sm btn-outline-primary me-2"
-                                    @click="setEditCategory({ id, name, status, parent_id, section_id , discount, image, url, description, meta_title, meta_description, meta_keywords })">
-                                    <i class="fa fa-edit"></i>
-                                </button>
-                                <button class="btn btn-sm btn-outline-danger" @click="showDeleteModal(id)">
-                                    <i class="fa fa-trash"></i>
-                                </button>
+                                #item-number="{ id, name, status, parent_id, section_id, discount, url, description, meta_title, meta_description, meta_keywords }">
+                                <div class="d-flex align-items-center">
+                                    <button class="btn btn-sm btn-outline-primary me-2"
+                                        @click="setEditCategory({ id, name, status, parent_id, section_id, discount, url, description, meta_title, meta_description, meta_keywords })">
+                                        <i class="fa fa-edit"></i>
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-danger" @click="showDeleteModal(id)">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </div>
                             </template>
                         </EasyDataTable>
                     </div>
@@ -149,7 +258,6 @@ function handleImageInput(event) {
             <!-- category add/edit form manage -->
             <div class="col-sm-12 col-xl-4">
                 <div class="bg-light rounded p-4">
-                    {{ form }}
                     <h6 class="mb-1">{{ form.id ? "Edit Category" : "Add Category" }}</h6>
                     <hr>
                     <form @submit.prevent="ChangeCategory">
@@ -206,7 +314,8 @@ function handleImageInput(event) {
                         <!-- category description -->
                         <div class="form-floating mb-3">
                             <textarea v-model="form.description" class="form-control" placeholder="Description"
-                                id="floatingDes" style="height: 100px; resize: none;" :class="{ 'is-invalid': form.errors.description }"></textarea>
+                                id="floatingDes" style="height: 100px; resize: none;"
+                                :class="{ 'is-invalid': form.errors.description }"></textarea>
                             <label for="floatingDes"> Description </label>
                             <div v-if="form.errors.description" class="invalid-feedback">
                                 {{ form.errors.description }}
@@ -245,8 +354,9 @@ function handleImageInput(event) {
 
                         <!-- meta description -->
                         <div class="form-floating mb-3">
-                            <textarea v-model="form.meta_description" class="form-control" placeholder="Meta Description"
-                                id="floatingMDes" style="height: 100px; resize: none;" :class="{ 'is-invalid': form.errors.meta_description }"></textarea>
+                            <textarea v-model="form.meta_description" class="form-control"
+                                placeholder="Meta Description" id="floatingMDes" style="height: 100px; resize: none;"
+                                :class="{ 'is-invalid': form.errors.meta_description }"></textarea>
                             <label for="floatingMDes">Meta Description </label>
                             <div v-if="form.errors.meta_description" class="invalid-feedback">
                                 {{ form.errors.meta_description }}
@@ -264,21 +374,42 @@ function handleImageInput(event) {
                         </div>
 
                         <!-- Category Image Field -->
-                        <div class="mb-2"
-                            style="width: 100px; height: 100px; overflow: hidden; display: flex; justify-content: center; align-items: center; background: #f8f9fa;">
-                            <img :src="imagePreview" alt="Image Preview" class="img-fluid"
-                                style="width: 100%; height: 100%; object-fit: 50%;">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="productImage" class="form-label">Category Image Image</label>
-                            <input type="file" class="form-control" id="productImage" @input="handleImageInput" />
+                        <div class="mb-3"> <input type="file" class="form-control" id="productImage"
+                                @input="form.image = $event.target.files[0]">
+                            <progress v-if="form.progress" :value="form.progress.percentage" max="100">
+                                {{ form.progress.percentage }}%
+                            </progress>
                         </div>
 
                         <button type="submit" class="btn btn-primary w-100">
                             {{ form.id ? "Update Category" : "Save Category" }}
                         </button>
                     </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <!-- delete modal -->
+        <div class="modal animated zoomIn" id="catDltModal" tabindex="-1" role="dialog" aria-bs-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+            <div class="modal-content" style="padding: 10px">
+                <div class="modal-header justify-content-center">
+                    <h4 class="text-warning d-flex align-items-center justify-content-center" id="catDltModalLabel"
+                        style="width: 50px; height: 50px; border: 2px solid #ffc107; border-radius: 50%; font-size: 24px;">
+                        <i class="fa fa-exclamation" aria-hidden="true"></i>
+                    </h4>
+                </div>
+
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this category? </p>
+
+                    <div class="d-flex align-item-right justify-content-end">
+                        <div> <button type="button" class="btn btn-outline-primary btn-sm me-2" data-bs-dismiss="modal" id="close"
+                                aria-label="Close">NO</button></div>
+                        <div><button type="button" @click.prevent="deleteCategory()"
+                                class="btn btn-danger btn-sm">YES</button></div>
+                    </div>
                 </div>
             </div>
         </div>

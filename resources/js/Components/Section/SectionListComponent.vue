@@ -121,7 +121,7 @@ function showDeleteModal(id) {
 function deleteSection() {
     if (!selectedSecId.value) return;
 
-    router.delete(`/admin/section/delete/${selectedSecId.value}`, {
+    router.delete(`/section/delete/${selectedSecId.value}`, {
         onSuccess: () => {
             if (list.props.flash.status === true) {
                 successToast(list.props.flash.message);
