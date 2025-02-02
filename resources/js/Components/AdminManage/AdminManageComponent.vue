@@ -34,6 +34,16 @@ const Item = computed(() => {
     }));
 });
 
+const typeStyle = (type) => {
+    const styles = {
+        superadmin: "background-color: red; color: white; padding: 3px 6px; border-radius: 5px;",
+        admin: "background-color: blue; color: white; padding: 3px 6px; border-radius: 5px;",
+        subadmin: "background-color: yellow; color: black; padding: 3px 6px; border-radius: 5px;",
+        vendor: "background-color: green; color: white; padding: 3px 6px; border-radius: 5px;",
+    };
+    return styles[type.toLowerCase()] || "background-color: gray; color: white; padding: 3px 6px; border-radius: 5px;";
+};
+
 // Search functionality
 const searchValue = ref("");
 const searchField = ref(["name", "mobile", "address", "zip"]);
@@ -76,9 +86,9 @@ const toggleStatus = (id, currentStatus) => {
                             theme-color="#1d90ff" :rows-per-page="10" :search-field="searchField"
                             :search-value="searchValue">
                             <template #item-type="{ type }">
-                                <span class="text-primary"
-                                    style="border: 1px solid #009CFF; padding: 3px; border-radius: 3px;">{{ type
-                                    }}</span>
+                                <span :style="typeStyle(type)">
+                                    {{ type }}
+                                </span>
                             </template>
                             <template #item-status="{ status, id }">
                                 <button @click="toggleStatus(id, status)"

@@ -21,12 +21,14 @@ class CategoryController extends Controller
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
         $categories = Category::with('section:id,sec_name', 'parent:id,name')->orderBy('id', 'desc')->get();
+        $parent_category = Category::where('parent_id', null)->get();
         $sections = Section::get();
 
         // return [$categories, $sections];
 
         return Inertia::render('Admin/Category/CategoryPage', [
             'categories' => $categories,
+            'parent_category' => $parent_category,
             'sections' => $sections,
         ]);
     }

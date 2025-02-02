@@ -5,6 +5,7 @@ import { Link, usePage, useForm, router } from "@inertiajs/vue3";
 // ===================== Section List ===================== //
 const list = usePage();
 const sections = list.props.sections || [];
+const parent_category = list.props.parent_category || [];
 
 const Header = [
     { text: "No", value: "no", width: 8 },
@@ -289,7 +290,10 @@ function deleteCategory() {
                         <div class="form-floating mb-3">
                             <select v-model="form.parent_id" class="form-select" id="floatingP_id"
                                 :class="{ 'is-invalid': form.errors.parent_id }">
-                                <option value="Null">Main Category</option>
+                                <!-- <option>Select Parent Category</option> -->
+                                <option v-for="(p_cateogy, index) in parent_category" :value="p_cateogy.id" :key="index">
+                                    {{ p_cateogy?.name }}
+                                </option>
                             </select>
                             <label for="floatingP_id">Select Parent Category</label>
                             <div v-if="form.errors.parent_id" class="invalid-feedback">
