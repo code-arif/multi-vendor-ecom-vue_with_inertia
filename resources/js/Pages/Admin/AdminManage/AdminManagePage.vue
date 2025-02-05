@@ -1,6 +1,6 @@
 <script setup>
 import AdminLayout from '../../../Layouts/AdminLayout.vue';
-import AdminManageComponent from '../../../Components/AdminManage/AdminManageComponent.vue';
+import AdminManageComponent from '../../../Components/Admin/AdminManage/AdminManageComponent.vue';
 import { Head } from '@inertiajs/vue3';
 </script>
 

@@ -1,7 +1,7 @@
 <script setup>
 import AdminLayout from '../../../Layouts/AdminLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import CategoryListComponent from '../../../Components/Category/CategoryListComponent.vue';
+import CategoryListComponent from '../../../Components/Admin/Category/CategoryListComponent.vue';
 </script>
 
 <template>

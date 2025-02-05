@@ -1,13 +1,14 @@
 <script setup>
+import ProductSaveComponent from '../../../Components/Admin/Product/ProductSaveComponent.vue';
 import AdminLayout from '../../../Layouts/AdminLayout.vue';
 import { Head } from '@inertiajs/vue3';
-import SectionListComponent from '../../../Components/Admin/Section/SectionListComponent.vue';
+
 </script>
 
 <template>
 
     <Head>
-        <title>Mini Shop || Sections</title>
+        <title>Mini Shop || Products Save</title>
     </Head>
 
     <AdminLayout>
@@ -16,14 +17,14 @@ import SectionListComponent from '../../../Components/Admin/Section/SectionListC
             <div class="bg-light rounded-top p-4">
                 <div class="row">
                     <div class="col-12 col-sm-6 text-center text-sm-start">
-                        <h4 class="mb-0 p-0"><span class="text-primary">Sections</span> Management </h4>
+                        <h4 class="mb-0 p-0"><span class="text-primary">Product</span> Add/Edit </h4>
                     </div>
                 </div>
             </div>
         </div>
         <!-- bradecrum end -->
 
-        <SectionListComponent />
+        <ProductSaveComponent />
 
     </AdminLayout>
 </template>

@@ -1,15 +1,18 @@
 <?php
 
 use Inertia\Inertia;
+use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\AdminAuthMiddleware;
+use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\SectionController;
 use App\Http\Controllers\User\UserAuthController;
+use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\VendorAuthController;
 use App\Http\Controllers\Admin\AdminManageController;
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\SectionController;
 
 //=================================ADMIN ROUTES=================================//
 Route::group(['middleware' => AdminAuthMiddleware::class], function () {
@@ -26,6 +29,14 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
     Route::get('/vendor-details/{id}', [AdminManageController::class, 'getVendorDetails'])->name('show.vendor.details');
     Route::post('/change-status/{id}', [AdminManageController::class, 'changeStatus'])->name('change.status');
 
+    //=========================vendor============================//
+    Route::group(['prefix' => 'vendor'], function () {
+        Route::get('/profile', [VendorAuthController::class, 'showVendorProfile'])->name('show.vendor.profile');
+        Route::post('/profile/update', [VendorAuthController::class, 'updateVendorProfile'])->name('update.vendor.profile');
+        Route::post('/business/update', [VendorAuthController::class, 'updateVendorBusiness'])->name('update.vendor.business');
+        Route::post('/bank/update', [VendorAuthController::class, 'updateVendorBank'])->name('update.vendor.bank');
+    });
+
     //=======================section manage ==========================//
     Route::group(['prefix' => 'section'], function () {
         Route::get('/list', [SectionController::class, 'showSections'])->name('show.section');
@@ -35,21 +46,33 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
         Route::post('/change-status/{id}', [SectionController::class, 'changeSectionStatus'])->name('change.section.status');
     });
 
-    //=======================section manage ==========================//
+    //=======================Category manage ==========================//
     Route::group(['prefix' => 'category'], function () {
         Route::get('/list', [CategoryController::class, 'showCategory'])->name('show.category');
+        Route::get('/save', [CategoryController::class, 'showSaveCategory'])->name('show.save.category');
         Route::post('/add', [CategoryController::class, 'addCategory'])->name('add.category');
         Route::post('/update/{id}', [CategoryController::class, 'updateCategory'])->name('update.category');
         Route::delete('/delete/{id}', [CategoryController::class, 'deleteCategory'])->name('delete.category');
         Route::post('/change-status/{id}', [CategoryController::class, 'changeCategoryStatus'])->name('change.category.status');
     });
 
-    //=========================vendor============================//
-    Route::group(['prefix' => 'vendor'], function () {
-        Route::get('/profile', [VendorAuthController::class, 'showVendorProfile'])->name('show.vendor.profile');
-        Route::post('/profile/update', [VendorAuthController::class, 'updateVendorProfile'])->name('update.vendor.profile');
-        Route::post('/business/update', [VendorAuthController::class, 'updateVendorBusiness'])->name('update.vendor.business');
-        Route::post('/bank/update', [VendorAuthController::class, 'updateVendorBank'])->name('update.vendor.bank');
+    //=======================Brand manage ==========================//
+    Route::group(['prefix' => 'brand'], function () {
+        Route::get('/list', [BrandController::class, 'showBrand'])->name('show.brand');
+        Route::post('/add', [BrandController::class, 'addBrand'])->name('add.brand');
+        Route::post('/update/{id}', [BrandController::class, 'updateBrand'])->name('update.brand');
+        Route::delete('/delete/{id}', [BrandController::class, 'deleteBrand'])->name('delete.brand');
+        Route::post('/change-status/{id}', [BrandController::class, 'changeBrandStatus'])->name('change.brand.status');
+    });
+
+    //======================product manage======================//
+    Route::group(['prefix' => 'product'], function () {
+        Route::get('/list', [ProductController::class, 'showProduct'])->name('show.product');
+        Route::get('/save', [ProductController::class, 'showSaveProduct'])->name('show.save.product');
+        Route::post('/add', [ProductController::class, 'addProduct'])->name('add.product');
+        Route::post('/update/{id}', [ProductController::class, 'updateProduct'])->name('update.product');
+        Route::delete('/delete/{id}', [ProductController::class, 'deleteProduct'])->name('delete.product');
+        Route::post('/change-status/{id}', [ProductController::class, 'changeProductStatus'])->name('change.product.status');
     });
 });
 

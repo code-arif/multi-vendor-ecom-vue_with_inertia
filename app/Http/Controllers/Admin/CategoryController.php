@@ -21,15 +21,9 @@ class CategoryController extends Controller
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
         $categories = Category::with('section:id,sec_name', 'parent:id,name')->orderBy('id', 'desc')->get();
-        $parent_category = Category::where('parent_id', null)->get();
-        $sections = Section::get();
-
-        // return [$categories, $sections];
 
         return Inertia::render('Admin/Category/CategoryPage', [
             'categories' => $categories,
-            'parent_category' => $parent_category,
-            'sections' => $sections,
         ]);
     }
 
@@ -55,6 +49,26 @@ class CategoryController extends Controller
         return redirect()->back()->with($data);
     }
 
+    //======================show add/edit category page=====================//
+    public function showSaveCategory(Request $request)
+    {
+        // Check if the logged-in user is superadmin or admin
+        $admin = Auth::guard('admin')->user();
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+            return response()->json(['error' => 'Unauthorized access'], 403);
+        }
+
+        $id = $request->query('id');
+        $category = Category::with('section:id,sec_name', 'parent:id,name')->where('id', $id)->first();
+        $parent_category = Category::where('parent_id', null)->get();
+        $sections = Section::get();
+        return Inertia::render('Admin/Category/CategorySavePage', [
+            'parent_category' => $parent_category,
+            'sections' => $sections,
+            'category' => $category,
+        ]);
+    }
+
     //=========================add new category=========================//
     public function addCategory(Request $request)
     {
@@ -72,8 +86,8 @@ class CategoryController extends Controller
             'section_id.exists' => 'Selected section does not exist.',
             'parent_id.exists' => 'Selected parent category does not exist.',
             'description.max' => 'Description cannot exceed 500 characters.',
-            'image.image' => 'The image must be a valid image file.',
-            'image.mimes' => 'The image format must be jpeg, png, jpg, or webp.',
+            // 'image.image' => 'The image must be a valid image file.',
+            // 'image.mimes' => 'The image format must be jpeg, png, jpg, or webp.',
             'image.max' => 'Image size should not exceed 2MB.',
             'discount.numeric' => 'Discount must be a numeric value.',
             'discount.min' => 'Discount cannot be negative.',
@@ -91,7 +105,7 @@ class CategoryController extends Controller
                 'section_id' => 'required|exists:sections,id',
                 'parent_id' => 'nullable|exists:categories,id',
                 'description' => 'nullable|max:500',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+                'image' => 'nullable|max:2048',
                 'discount' => 'nullable|numeric|min:0',
                 'url' => 'nullable|string|url',
                 'meta_title' => 'nullable|max:255',
@@ -117,7 +131,7 @@ class CategoryController extends Controller
 
         if ($category) {
             $data = ['message' => 'Category created successfully', 'status' => true, 'code' => 200];
-            return redirect()->back()->with($data);
+            return redirect()->route('show.category')->with($data);
         } else {
             $data = ['message' => 'Failed to create category', 'status' => false, 'code' => 500];
             return redirect()->back()->with($data);
@@ -143,12 +157,12 @@ class CategoryController extends Controller
             'section_id.exists' => 'Selected section does not exist.',
             'parent_id.exists' => 'Selected parent category does not exist.',
             'description.max' => 'Description cannot exceed 500 characters.',
-            'image.image' => 'The image must be a valid image file.',
-            'image.mimes' => 'The image format must be jpeg, png, jpg, or webp.',
+            // 'image.image' => 'The image must be a valid image file.',
+            // 'image.mimes' => 'The image format must be jpeg, png, jpg, or webp.',
             'image.max' => 'Image size should not exceed 2MB.',
             'discount.numeric' => 'Discount must be a numeric value.',
             'discount.min' => 'Discount cannot be negative.',
-            'url.url' => "Please enter a valid URL, e.g., https://xyz.com",
+            'url.url' => 'Please enter a valid URL, e.g., https://xyz.com',
             'meta_title.max' => 'Meta title cannot exceed 255 characters.',
             'meta_description.max' => 'Meta description cannot exceed 500 characters.',
             'meta_keywords.max' => 'Meta keywords cannot exceed 255 characters.',
@@ -162,7 +176,7 @@ class CategoryController extends Controller
                 'section_id' => 'required|exists:sections,id',
                 'parent_id' => 'nullable|exists:categories,id',
                 'description' => 'nullable|max:500',
-                'image' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+                'image' => 'nullable|max:2048',
                 'discount' => 'nullable|numeric|min:0',
                 'url' => 'nullable|url',
                 'meta_title' => 'nullable|max:255',
@@ -191,15 +205,17 @@ class CategoryController extends Controller
         // Update category
         $category->update($validatedData);
 
-        return redirect()
-            ->back()
-            ->with([
-                'message' => 'Category updated successfully',
-                'status' => true,
-                'code' => 200,
-            ]);
+        if ($category) {
+            $data = ['message' => 'Category updated successfully', 'status' => true, 'code' => 200];
+            return to_route('show.category')->with($data);
+        } else {
+            $data = ['message' => 'Failed to update category', 'status' => false, 'code' => 500];
+            return redirect()->back()->with($data);
+        }
     }
 
+
+    //========================delete category========================//
     public function deleteCategory($id)
     {
         // Check if the logged-in user is superadmin or admin

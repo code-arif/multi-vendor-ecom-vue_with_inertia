@@ -63,9 +63,9 @@ const imagePreview = ref(
 
                 <!-- section manage -->
                 <div class="nav-item dropdown"
-                    v-if="authUser && (authUser.type === 'superadmin' || authUser.type === 'admin')">
+                    v-if="authUser && (authUser.type === 'superadmin' || authUser.type === 'admin' || authUser.type === 'vendor')">
 
-                    <a href="" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" :class="{ 'active': ['/section/list', '/category/list'].includes($page.url) }">
+                    <a href="" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" :class="{ 'active': ['/section/list', '/category/list' ,'/brand/list', '/product/list', '/product/save',].includes($page.url) }">
                         <i class="fa fa-bars" aria-hidden="true"></i> Catalogue Manage
                     </a>
 
@@ -76,7 +76,10 @@ const imagePreview = ref(
                         <Link :href="route('show.category')" class="dropdown-item" :class="{'active': $page.url === '/category/list'}">
                         <i class="fa fa-chevron-circle-right me-2"></i> Category
                         </Link>
-                        <Link :href="route('admin.manage')" class="dropdown-item" :class="{'active': $page.url === '/admins/vendor'}">
+                        <Link :href="route('show.brand')" class="dropdown-item" :class="{'active': $page.url === '/brand/list'}">
+                        <i class="fa fa-chevron-circle-right me-2"></i> Brand
+                        </Link>
+                        <Link :href="route('show.product')" class="dropdown-item" :class="{'active': $page.url === '/product/list'}">
                         <i class="fa fa-chevron-circle-right me-2"></i> Products
                         </Link>
                     </div>
