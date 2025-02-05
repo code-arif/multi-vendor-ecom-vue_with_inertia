@@ -61,7 +61,7 @@ const imagePreview = ref(
                     </div>
                 </div>
 
-                <!-- section manage -->
+                <!-- catalogue manage -->
                 <div class="nav-item dropdown"
                     v-if="authUser && (authUser.type === 'superadmin' || authUser.type === 'admin' || authUser.type === 'vendor')">
 

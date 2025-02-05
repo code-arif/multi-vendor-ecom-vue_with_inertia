@@ -1,26 +1,26 @@
 <script setup>
 import { ref, computed } from "vue";
 import { Link, usePage, router } from "@inertiajs/vue3";
+import moment from "moment";
 
 // ===================== Section List ===================== //
 const list = usePage();
 
 const Header = [
-    { text: "No", value: "no", fixed: true, width:40},
-    { text: "Image", value: "image"},
-    { text: "Name", value: "name", sortable: true, width: 100},
-    { text: "Price", value: "price"},
-    { text: "Quantity", value: "quantity", width: 70},
-    { text: "Status", value: "status", sortable: true},
-    { text: "Remark", value: "remark", sortable: true},
-    // { text: "Section", value: "section", sortable: true, width: 100},
-    { text: "Category", value: "category", sortable: true},
-    { text: "Brand", value: "brand", sortable: true},
-    { text: "Added By", value: "added_by"},
-    { text: "Type", value: "type"},
-    { text: "Added Date", value: "added_date", width: 50},
-    { text: "Updated Date", value: "updated_date", width: 50},
-    { text: "Action", value: "number", width: 170},
+    { text: "No", value: "no", width: 40 },
+    { text: "Image", value: "image" },
+    { text: "Name", value: "name", sortable: true, width: 100 },
+    { text: "Price", value: "price" },
+    { text: "Quantity", value: "quantity", width: 70 },
+    { text: "Status", value: "status", sortable: true },
+    { text: "Remark", value: "remark", sortable: true },
+    { text: "Category", value: "category", sortable: true },
+    { text: "Brand", value: "brand", sortable: true },
+    { text: "Added By", value: "added_by" },
+    { text: "Type", value: "type" },
+    { text: "Added Date", value: "added_date", width: 100 },
+    { text: "Updated Date", value: "updated_date", width: 100 },
+    { text: "Action", value: "number", width: 170 },
 ];
 
 // Transform data for table
@@ -35,12 +35,12 @@ const Item = computed(() => {
         remark: product.remark,
         category: product.category.name || "N/A",
         // section: product.section.sec_name || "N/A",
-        brand: product.brand.name || "N/A",
-        added_by: product.vendor?.name || "N/A",
+        brand: product.brand?.name || "N/A",
+        added_by: product.admin?.name || "N/A",
         type: product.admin?.type || "N/A",
         added_date: product.created_at,
         updated_date: product.updated_at,
-        id:product.id
+        id: product.id
     }));
 });
 
@@ -126,6 +126,12 @@ function deleteProduct() {
                         <EasyDataTable buttons-pagination alternating :headers="Header" :items="Item" border-cell
                             theme-color="#1d90ff" :rows-per-page="15" :search-field="searchField"
                             :search-value="searchValue">
+                            <template #item-added_date="{ added_date }">
+                                {{ moment(added_date).format("MMMM Do YYYY, h:mm A") }}
+                            </template>
+                            <template #item-updated_date="{ updated_date }">
+                                {{ moment(updated_date).format("MMMM Do YYYY, h:mm A") }}
+                            </template>
                             <template #item-type="{ type }">
                                 <span :style="typeStyle(type)">
                                     {{ type }}
@@ -143,8 +149,7 @@ function deleteProduct() {
                                     {{ status }}
                                 </button>
                             </template>
-                            <template
-                                #item-number="{ id }">
+                            <template #item-number="{ id }">
                                 <div class="d-flex align-items-center">
                                     <Link class="btn btn-sm btn-outline-success me-2">
                                     <i class="fa fa-eye"></i>
@@ -152,7 +157,8 @@ function deleteProduct() {
                                     <Link class="btn btn-sm btn-outline-info me-2">
                                     <i class="fa fa-plus"></i>
                                     </Link>
-                                    <Link class="btn btn-sm btn-outline-primary me-2" :href="route('show.save.category', {id: id})">
+                                    <Link class="btn btn-sm btn-outline-primary me-2"
+                                        :href="route('show.save.product', { id: id })">
                                     <i class="fa fa-edit"></i>
                                     </Link>
                                     <button class="btn btn-sm btn-outline-danger" @click="showDeleteModal(id)">
