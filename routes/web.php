@@ -73,6 +73,8 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
         Route::post('/update/{id}', [ProductController::class, 'updateProduct'])->name('update.product');
         Route::delete('/delete/{id}', [ProductController::class, 'deleteProduct'])->name('delete.product');
         Route::post('/change-status/{id}', [ProductController::class, 'changeProductStatus'])->name('change.product.status');
+        Route::get('/details', [ProductController::class, 'showSaveProductDetails'])->name('show.save.product.details');
+        Route::post('/details/{id?}', [ProductController::class, 'saveProductDetails'])->name('save.product.details');
     });
 });
 

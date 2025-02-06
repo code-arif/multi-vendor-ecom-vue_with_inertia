@@ -21,10 +21,10 @@ const form = useForm({
     stock_quantity: products.stock_quantity || "",
     stock_status: products.stock_status || "in_stock",
     remark: products.remark || "top",
-    has_discount: products.has_discount || false,
+    has_discount: products.has_discount || 0,
     discount_price: products.discount_price || "",
-    status: products.status || "", // Default status to true for admins/subadmins
-    is_featured: products.is_featured || false,
+    status: products.status || 0, // Default status to true for admins/subadmins
+    is_featured: products.is_featured || 0,
     short_description: products.short_description || "",
     image: products.image || null,
     meta_title: products.meta_title || "",
@@ -32,8 +32,6 @@ const form = useForm({
     meta_keywords: products.meta_keywords || "",
 });
 
-// Computed property to check user type
-const isAdminOrSubadmin = computed(() => ['admin', 'subadmin', 'superadmin'].includes(authUser.type));
 
 function saveProduct() {
     const routeName = form.id ? "update.product" : "add.product";
@@ -246,8 +244,8 @@ function handleImageInput(event) {
                                 <label class="mb-2">Status</label>
                                 <select v-model="form.status" class="form-select"
                                     :class="{ 'is-invalid': form.errors.status }">
-                                    <option :value="true">Active</option>
-                                    <option :value="false">Inactive</option>
+                                    <option :value=1>Active</option>
+                                    <option :value=0>Inactive</option>
                                 </select>
                                 <div v-if="form.errors.status" class="invalid-feedback">
                                     {{ form.errors.status }}
@@ -257,8 +255,8 @@ function handleImageInput(event) {
                                 <label class="mb-2">Is Featured?</label>
                                 <select v-model="form.is_featured" class="form-select"
                                     :class="{ 'is-invalid': form.errors.is_featured }">
-                                    <option :value="true">Yes</option>
-                                    <option :value="false">No</option>
+                                    <option :value=1>Yes</option>
+                                    <option :value=0>No</option>
                                 </select>
                                 <div v-if="form.errors.is_featured" class="invalid-feedback">
                                     {{ form.errors.is_featured }}
@@ -268,8 +266,8 @@ function handleImageInput(event) {
                                 <label class="mb-2">Has Discount?</label>
                                 <select v-model="form.has_discount" class="form-select"
                                     :class="{ 'is-invalid': form.errors.has_discount }">
-                                    <option :value="true">Yes</option>
-                                    <option :value="false">No</option>
+                                    <option :value=1>Yes</option>
+                                    <option :value=0>No</option>
                                 </select>
                                 <div v-if="form.errors.has_discount" class="invalid-feedback">
                                     {{ form.errors.has_discount }}
@@ -289,7 +287,7 @@ function handleImageInput(event) {
                         <div class="mb-3">
                             <label class="mb-2" for="shortDescription">Short Description</label>
                             <textarea v-model="form.short_description" class="form-control" id="shortDescription"
-                                rows="3" :class="{ 'is-invalid': form.errors.short_description }"></textarea>
+                                rows="4" :class="{ 'is-invalid': form.errors.short_description }"></textarea>
                             <div v-if="form.errors.short_description" class="invalid-feedback">
                                 {{ form.errors.short_description }}
                             </div>
@@ -318,9 +316,9 @@ function handleImageInput(event) {
 
                         <!-- Meta Description -->
                         <div class="mb-3">
-                            <label class="mb-2" for="meta_description">Short Description</label>
+                            <label class="mb-2" for="meta_description">Meta Description</label>
                             <textarea v-model="form.meta_description" class="form-control" id="meta_description"
-                                rows="3" :class="{ 'is-invalid': form.errors.meta_description }"></textarea>
+                                rows="4" :class="{ 'is-invalid': form.errors.meta_description }"></textarea>
                             <div v-if="form.errors.meta_description" class="invalid-feedback">
                                 {{ form.errors.meta_description }}
                             </div>

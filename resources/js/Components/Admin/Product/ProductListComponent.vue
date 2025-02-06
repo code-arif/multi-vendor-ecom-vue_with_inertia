@@ -40,7 +40,8 @@ const Item = computed(() => {
         type: product.admin?.type || "N/A",
         added_date: product.created_at,
         updated_date: product.updated_at,
-        id: product.id
+        id: product.id,
+        isVendor: product.admin?.type == "vendor"
     }));
 });
 
@@ -126,22 +127,40 @@ function deleteProduct() {
                         <EasyDataTable buttons-pagination alternating :headers="Header" :items="Item" border-cell
                             theme-color="#1d90ff" :rows-per-page="15" :search-field="searchField"
                             :search-value="searchValue">
+
+                            <template #item-added_by="{ id, isVendor, added_by }">
+                                <template v-if="isVendor">
+                                    <Link class="btn btn-sm btn-outline-primary"
+                                        :href="route('show.vendor.details', { id: id })">
+                                    {{ added_by }}
+                                    </Link>
+                                </template>
+                                <template v-else>
+                                    {{ added_by }}
+                                </template>
+                            </template>
+
+
                             <template #item-added_date="{ added_date }">
-                                {{ moment(added_date).format("MMMM Do YYYY, h:mm A") }}
+                                {{ moment(added_date).format("MMM Do YYYY, h:mm A") }}
                             </template>
+
                             <template #item-updated_date="{ updated_date }">
-                                {{ moment(updated_date).format("MMMM Do YYYY, h:mm A") }}
+                                {{ moment(updated_date).format("MMM Do YYYY, h:mm A") }}
                             </template>
+
                             <template #item-type="{ type }">
                                 <span :style="typeStyle(type)">
                                     {{ type }}
                                 </span>
                             </template>
+
                             <template #item-image="{ image }">
                                 <img :src="image ? `/storage/${image}` : 'https://skala.or.id/wp-content/uploads/2024/01/dummy-post-square-1-1.jpg'"
                                     alt="Product image" style="width: 50px; height: 50px; object-fit: cover;"
                                     class="p-1">
                             </template>
+
                             <template #item-status="{ status, id }">
                                 <button @click="toggleStatus(id, status)"
                                     :class="status === 'Active' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline-danger'"
@@ -149,12 +168,13 @@ function deleteProduct() {
                                     {{ status }}
                                 </button>
                             </template>
+
                             <template #item-number="{ id }">
                                 <div class="d-flex align-items-center">
-                                    <Link class="btn btn-sm btn-outline-success me-2">
+                                    <Link class="btn btn-sm btn-outline-success me-2" :href="route('show.save.product.details')">
                                     <i class="fa fa-eye"></i>
                                     </Link>
-                                    <Link class="btn btn-sm btn-outline-info me-2">
+                                    <Link class="btn btn-sm btn-outline-info me-2" :href="route('show.save.product.details', {id: id})">
                                     <i class="fa fa-plus"></i>
                                     </Link>
                                     <Link class="btn btn-sm btn-outline-primary me-2"
@@ -166,6 +186,7 @@ function deleteProduct() {
                                     </button>
                                 </div>
                             </template>
+
                         </EasyDataTable>
                     </div>
                 </div>
@@ -199,10 +220,4 @@ function deleteProduct() {
     </div>
 </template>
 
-<style scoped>
-.invalid-feedback {
-    color: red;
-    font-size: 0.9rem;
-    margin-top: 0.25rem;
-}
-</style>
+<style scoped></style>

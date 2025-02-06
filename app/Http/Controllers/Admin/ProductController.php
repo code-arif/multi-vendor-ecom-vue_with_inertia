@@ -9,6 +9,7 @@ use App\Models\Section;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\ProductDetails;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -235,26 +236,29 @@ class ProductController extends Controller
             'status.boolean' => 'Invalid status.',
         ];
 
-        $validatedData = $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'brand_id' => 'nullable|exists:brands,id',
-            'product_name' => 'required|string|max:255|min:3',
-            'slug' => 'nullable|string',
-            'sku' => "required|string|unique:products,sku,{$id}",
-            'price' => 'required|numeric|min:0',
-            'image' => 'nullable|max:3048',
-            'stock_quantity' => 'required|integer|min:0',
-            'stock_status' => 'required|in:in_stock,out_of_stock,pre_order',
-            'remark' => 'nullable|in:popular,new,top,special,trending,regular',
-            'short_description' => 'nullable|string',
-            'meta_title' => 'nullable|string|max:255',
-            'meta_description' => 'nullable|string|max:500',
-            'meta_keywords' => 'nullable|string|max:500',
-            'has_discount' => 'required|boolean',
-            'discount_price' => 'nullable|numeric|min:0',
-            'is_featured' => 'nullable|boolean',
-            'status' => 'required|boolean',
-        ], $message);
+        $validatedData = $request->validate(
+            [
+                'category_id' => 'required|exists:categories,id',
+                'brand_id' => 'nullable|exists:brands,id',
+                'product_name' => 'required|string|max:255|min:3',
+                'slug' => 'nullable|string',
+                'sku' => "required|string|unique:products,sku,{$id}",
+                'price' => 'required|numeric|min:0',
+                'image' => 'nullable|max:3048',
+                'stock_quantity' => 'required|integer|min:0',
+                'stock_status' => 'required|in:in_stock,out_of_stock,pre_order',
+                'remark' => 'nullable|in:popular,new,top,special,trending,regular',
+                'short_description' => 'nullable|string',
+                'meta_title' => 'nullable|string|max:255',
+                'meta_description' => 'nullable|string|max:500',
+                'meta_keywords' => 'nullable|string|max:500',
+                'has_discount' => 'required|boolean',
+                'discount_price' => 'nullable|numeric|min:0',
+                'is_featured' => 'nullable|boolean',
+                'status' => 'required|boolean',
+            ],
+            $message,
+        );
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -277,13 +281,14 @@ class ProductController extends Controller
         // Update product
         $product->update($validatedData);
 
-        return redirect()->route('show.product')->with([
-            'message' => 'Product updated successfully.',
-            'status' => true,
-            'code' => 200
-        ]);
+        return redirect()
+            ->route('show.product')
+            ->with([
+                'message' => 'Product updated successfully.',
+                'status' => true,
+                'code' => 200,
+            ]);
     }
-
 
     //===================product delete==================//
     public function deleteProduct($id)
@@ -307,5 +312,299 @@ class ProductController extends Controller
             $data = ['message' => 'Failed to delete product', 'status' => false, 'code' => 400];
             return redirect()->back()->with($data);
         }
+    }
+
+    //===================add product details==================//
+    public function showSaveProductDetails(Request $request, $id = null)
+    {
+        $id = $request->query('id');
+        $productDetails = null;
+
+        if ($id) {
+            $productDetails = ProductDetails::where('product_id', $id)->first();
+
+            if (!$productDetails) {
+                $productDetails = new ProductDetails(['product_id' => $id]);
+            } else {
+                // Decode the policies JSON when retrieving
+                $productDetails->policies = json_decode($productDetails->policies, true) ?? []; // Handle potential null or invalid JSON
+                if ($productDetails->extra_images) {
+                    $productDetails->extra_images = json_decode($productDetails->extra_images, true) ?? [];
+                }
+            }
+        }
+
+        return Inertia::render('Admin/Product/SaveProductDetailsPage', [
+            'productDetails' => $productDetails,
+        ]);
+    }
+
+    //======================store product details=====================//
+    // Save or update product details
+    // public function saveProductDetails(Request $request)
+    // {
+    //     $request->validate(
+    //         [
+    //             'product_id' => 'required|exists:products,id',
+    //             'long_description' => 'nullable|string',
+    //             'extra_images.*' => 'image|max:2048',
+    //             'videos.*' => 'file|mimes:mp4,mov,avi,mp3,webm|max:10240',
+    //             'policies' => 'nullable|array',
+    //             'policies.*.key' => 'required_with:policies.*.value|string',
+    //             'policies.*.value' => 'required_with:policies.*.key|string',
+    //         ],
+    //         [
+    //             'product_id.required' => 'Product is required',
+    //             'product_id.exists' => 'Product does not exist',
+    //             'long_description.string' => 'Long description must be a string',
+    //             'extra_images.image' => 'Extra images must be an image',
+    //             'extra_images.max' => 'Extra images size must be less than 2MB',
+    //             'videos.file' => 'Videos must be a file',
+    //             'videos.mimes' => 'Videos must be in mp4, mov, avi, mp 3, webm format',
+    //         ],
+    //     );
+
+    //     $details = ProductDetails::where('product_id', $request->product_id)->first();
+
+    //     if (!$details) {
+    //         $details = new ProductDetails();
+    //         $details->product_id = $request->product_id;
+    //     }
+
+    //     $details->long_description = $request->long_description;
+    //     $details->policies = $request->has('policies') ? json_encode($request->policies, JSON_UNESCAPED_SLASHES) : null;
+
+    //     // Handle extra images
+    //     if ($request->hasFile('extra_images')) {
+    //         $extraImages = [];
+    //         foreach ($request->file('extra_images') as $image) {
+    //             $imageNameToStore = uniqid() . '.' . $image->getClientOriginalExtension();
+    //             $image_url = $image->storeAs('product_extra_images', $imageNameToStore, 'public');
+    //             $extraImages[] = $image_url;
+    //         }
+    //         $details->extra_images = json_encode(array_values($extraImages), JSON_UNESCAPED_SLASHES);
+    //     }
+
+    //     // Handle videos
+    //     $videos = [];
+    //     if ($request->hasFile('videos')) {
+    //         foreach ($request->file('videos') as $video) {
+    //             $videoNameToStore = uniqid() . '.' . $video->getClientOriginalExtension();
+    //             $video_url = $video->storeAs('product_videos', $videoNameToStore, 'public');
+    //             $videos[] = $video_url;
+    //         }
+    //     }
+
+    //     // Handle external video links
+    //     if ($request->has('video_links')) {
+    //         foreach ($request->video_links as $link) {
+    //             if (!empty($link)) {
+    //                 $videos[] = $link;
+    //             }
+    //         }
+    //     }
+
+    //     $details->videos = !empty($videos) ? json_encode(array_values($videos), JSON_UNESCAPED_SLASHES) : null;
+
+    //     $details->save();
+
+    //     $data = ['message' => 'Product details updated successfully', 'status' => true];
+
+    //     return redirect()->route('show.product')->with($data);
+    // }
+
+    // public function saveProductDetails(Request $request)
+    // {
+    //     $request->validate(
+    //         [
+    //             'product_id' => 'required|exists:products,id',
+    //             'long_description' => 'nullable|string',
+    //             'extra_images.*' => 'image|max:2048',
+    //             'videos.*' => 'file|mimes:mp4,mov,avi,mp3,webm|max:10240',
+    //             'policies' => 'nullable|array',
+    //             'policies.*.key' => 'required_with:policies.*.value|string',
+    //             'policies.*.value' => 'required_with:policies.*.key|string',
+    //         ],
+    //         [
+    //             'product_id.required' => 'Product is required',
+    //             'product_id.exists' => 'Product does not exist',
+    //             'long_description.string' => 'Long description must be a string',
+    //             'extra_images.image' => 'Extra images must be an image',
+    //             'extra_images.max' => 'Extra images size must be less than 2MB',
+    //             'videos.file' => 'Videos must be a file',
+    //             'videos.mimes' => 'Videos must be in mp4, mov, avi, mp 3, webm format',
+    //         ],
+    //     );
+
+    //     $details = ProductDetails::where('product_id', $request->product_id)->first();
+
+    //     if (!$details) {
+    //         $details = new ProductDetails();
+    //         $details->product_id = $request->product_id;
+    //     }
+
+    //     $details->long_description = $request->long_description;
+    //     $details->policies = $request->has('policies') ? json_encode($request->policies, JSON_UNESCAPED_SLASHES) : null;
+
+    //     // Handle extra images (with deletion of old images)
+    //     if ($request->hasFile('extra_images')) {
+    //         $newExtraImages = [];
+
+    //         // Delete old images
+    //         if ($details->extra_images) {
+    //             $oldExtraImages = json_decode($details->extra_images);
+    //             foreach ($oldExtraImages as $imagePath) {
+    //                 Storage::disk('public')->delete($imagePath); // Delete from storage
+    //             }
+    //         }
+
+    //         foreach ($request->file('extra_images') as $image) {
+    //             $imageNameToStore = uniqid() . '.' . $image->getClientOriginalExtension();
+    //             $imagePath = $image->storeAs('product_extra_images', $imageNameToStore, 'public');
+    //             $newExtraImages[] = $imagePath;
+    //         }
+    //         $details->extra_images = json_encode($newExtraImages, JSON_UNESCAPED_SLASHES);
+    //     } elseif ($request->input('extra_images_removed')) {
+    //         // Handle image removal without new uploads
+    //         $imagesToRemove = json_decode($request->input('extra_images_removed'));
+    //         $currentImages = json_decode($details->extra_images, true) ?? [];
+    //         $remainingImages = array_diff($currentImages, $imagesToRemove);
+
+    //         foreach ($imagesToRemove as $imagePath) {
+    //             Storage::disk('public')->delete($imagePath);
+    //         }
+    //         $details->extra_images = json_encode(array_values($remainingImages), JSON_UNESCAPED_SLASHES);
+    //     }
+
+    //     // Handle videos (with deletion of old videos)
+    //     $videos = [];
+    //     if ($request->hasFile('videos')) {
+    //         if ($details->videos) {
+    //             $oldVideos = json_decode($details->videos);
+    //             foreach ($oldVideos as $videoPath) {
+    //                 if (!filter_var($videoPath, FILTER_VALIDATE_URL)) {
+    //                     Storage::disk('public')->delete($videoPath); // Delete from storage only if it is not a link
+    //                 }
+    //             }
+    //         }
+
+    //         foreach ($request->file('videos') as $video) {
+    //             $videoNameToStore = uniqid() . '.' . $video->getClientOriginalExtension();
+    //             $videoPath = $video->storeAs('product_videos', $videoNameToStore, 'public');
+    //             $videos[] = $videoPath;
+    //         }
+    //     } elseif ($request->input('videos_removed')) {
+    //         $videosToRemove = json_decode($request->input('videos_removed'));
+    //         $currentVideos = json_decode($details->videos, true) ?? [];
+    //         $remainingVideos = array_diff($currentVideos, $videosToRemove);
+
+    //         foreach ($videosToRemove as $videoPath) {
+    //             if (!filter_var($videoPath, FILTER_VALIDATE_URL)) {
+    //                 Storage::disk('public')->delete($videoPath);
+    //             }
+    //         }
+    //         $details->videos = json_encode(array_values($remainingVideos), JSON_UNESCAPED_SLASHES);
+    //     }
+
+    //     // Handle external video links (no deletion needed as they are URLs)
+    //     if ($request->has('video_links')) {
+    //         foreach ($request->video_links as $link) {
+    //             if (!empty($link)) {
+    //                 $videos[] = $link;
+    //             }
+    //         }
+    //     }
+
+    //     $details->videos = !empty($videos) ? json_encode(array_values($videos), JSON_UNESCAPED_SLASHES) : null;
+
+    //     $details->save();
+
+    //     // ... (your existing redirect)
+    // }
+
+    public function saveProductDetails(Request $request)
+    {
+        $request->validate(
+            [
+                'product_id' => 'required|exists:products,id',
+                'long_description' => 'nullable|string',
+                'extra_images.*' => 'image|max:2048',
+                'videos.*' => 'file|mimes:mp4,mov,avi,mp3,webm|max:10240',
+                'policies' => 'nullable|array',
+                'policies.*.key' => 'required_with:policies.*.value|string',
+                'policies.*.value' => 'required_with:policies.*.key|string',
+            ],
+            [
+                'product_id.required' => 'Product is required',
+                'product_id.exists' => 'Product does not exist',
+                'long_description.string' => 'Long description must be a string',
+                'extra_images.image' => 'Extra images must be an image',
+                'extra_images.max' => 'Extra images size must be less than 2MB',
+                'videos.file' => 'Videos must be a file',
+                'videos.mimes' => 'Videos must be in mp4, mov, avi, mp3, webm format',
+            ],
+        );
+
+        $details = ProductDetails::firstOrNew(['product_id' => $request->product_id]);
+        $details->long_description = $request->long_description;
+        $details->policies = $request->has('policies') ? json_encode($request->policies, JSON_UNESCAPED_SLASHES) : null;
+
+        // Handle extra images
+        if ($request->hasFile('extra_images')) {
+            // Delete old images if they exist
+            if ($details->extra_images) {
+                $oldImages = json_decode($details->extra_images, true);
+                foreach ($oldImages as $oldImage) {
+                    if (file_exists(public_path('storage/' . $oldImage))) {
+                        unlink(public_path('storage/' . $oldImage));
+                    }
+                }
+            }
+
+            $extraImages = [];
+            foreach ($request->file('extra_images') as $image) {
+                $imageNameToStore = uniqid() . '.' . $image->getClientOriginalExtension();
+                $image_url = $image->storeAs('product_extra_images', $imageNameToStore, 'public');
+                $extraImages[] = $image_url;
+            }
+            $details->extra_images = json_encode(array_values($extraImages), JSON_UNESCAPED_SLASHES);
+        }
+
+        // Handle videos
+        $videos = [];
+        if ($request->hasFile('videos')) {
+            // Delete old videos if they exist
+            if ($details->videos) {
+                $oldVideos = json_decode($details->videos, true);
+                foreach ($oldVideos as $oldVideo) {
+                    if (file_exists(public_path('storage/' . $oldVideo))) {
+                        unlink(public_path('storage/' . $oldVideo));
+                    }
+                }
+            }
+
+            foreach ($request->file('videos') as $video) {
+                $videoNameToStore = uniqid() . '.' . $video->getClientOriginalExtension();
+                $video_url = $video->storeAs('product_videos', $videoNameToStore, 'public');
+                $videos[] = $video_url;
+            }
+        }
+
+        // Handle external video links
+        if ($request->has('video_links')) {
+            foreach ($request->video_links as $link) {
+                if (!empty($link)) {
+                    $videos[] = $link;
+                }
+            }
+        }
+
+        $details->videos = !empty($videos) ? json_encode(array_values($videos), JSON_UNESCAPED_SLASHES) : null;
+
+        $details->save();
+
+        $data = ['message' => 'Product details updated successfully', 'status' => true];
+
+        return redirect()->route('show.product')->with($data);
     }
 }

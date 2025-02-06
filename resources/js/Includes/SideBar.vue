@@ -65,7 +65,7 @@ const imagePreview = ref(
                 <div class="nav-item dropdown"
                     v-if="authUser && (authUser.type === 'superadmin' || authUser.type === 'admin' || authUser.type === 'vendor')">
 
-                    <a href="" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" :class="{ 'active': ['/section/list', '/category/list' ,'/brand/list', '/product/list', '/product/save',].includes($page.url) }">
+                    <a href="" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" :class="{ 'active': ['/section/list', '/category/list' ,'/brand/list', '/product/list', '/product/save'].includes($page.url) }">
                         <i class="fa fa-bars" aria-hidden="true"></i> Catalogue Manage
                     </a>
 
