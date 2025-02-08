@@ -85,13 +85,14 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
 Route::get('/admin/login', [AdminAuthController::class, 'ShowAdminLogin'])->name('show.admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'AdminLogin'])->name('admin.login');
 
-Route::get('/login', [UserAuthController::class, 'showLogin']);
-Route::get('/register', [UserAuthController::class, 'showRegister']);
-
 
 /*================================
 User Route
 ================================*/
+Route::get('/login', [UserAuthController::class, 'showLogin']);
+Route::get('/register', [UserAuthController::class, 'showRegister']);
+
+
 Route::get('/',[HomeController::class,'home'])->name('show.home.page');
 
 

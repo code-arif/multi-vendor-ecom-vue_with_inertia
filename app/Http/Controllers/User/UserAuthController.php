@@ -9,6 +9,6 @@ use Inertia\Inertia;
 class UserAuthController extends Controller
 {
     public function showLogin(){
-        return Inertia::render('User/Auth/LoginPage');
+        return Inertia::render('User/Auth/UserLoginPage');
     }
 }

@@ -2004,7 +2004,7 @@ progress {
     margin-bottom: 1rem;
     color: #757575;
     vertical-align: top;
-    border-color: #dee2e6
+    /* border-color: #dee2e6 */
 }
 
 .table>:not(caption)>*>* {
@@ -2039,7 +2039,7 @@ progress {
 }
 
 .table-bordered>:not(caption)>*>* {
-    border-width: 0 1px
+    /* border-width: 0 1px */
 }
 
 .table-borderless>:not(caption)>*>* {
@@ -2239,7 +2239,7 @@ progress {
     background-clip: padding-box;
     border: 1px solid #ced4da;
     appearance: none;
-    border-radius: 5px;
+    /* border-radius: 5px; */
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out
 }
 
@@ -3786,7 +3786,7 @@ fieldset:disabled .btn {
 .btn-group-sm>.btn {
     padding: .25rem .5rem;
     font-size: .875rem;
-    border-radius: .2rem
+    border-radius: 0rem
 }
 
 .fade {
