@@ -4,9 +4,12 @@ use Inertia\Inertia;
 use App\Models\Category;
 use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\AdminAuthMiddleware;
+use App\Http\Controllers\User\CartController;
+use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SectionController;
+use App\Http\Controllers\User\CheckOutController;
 use App\Http\Controllers\User\UserAuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AdminAuthController;
@@ -84,3 +87,20 @@ Route::post('/admin/login', [AdminAuthController::class, 'AdminLogin'])->name('a
 
 Route::get('/login', [UserAuthController::class, 'showLogin']);
 Route::get('/register', [UserAuthController::class, 'showRegister']);
+
+
+/*================================
+User Route
+================================*/
+Route::get('/',[HomeController::class,'home'])->name('show.home.page');
+
+
+// ======================Product page=======================//
+Route::get('/products', [ProductController::class, 'showProductPage'])->name('show.products.page');
+Route::get('/product/id', [ProductController::class, 'showProductDetailsPage'])->name('show.product.details.page');
+
+//=======================Checkout=========================//
+Route::get('/checkout', [CheckOutController::class, 'showCheckoutPage'])->name('show.checkout.page');
+
+//=======================Cart page =========================//
+Route::get('/cart', [CartController::class, 'showCartPage'])->name('show.cart.page');

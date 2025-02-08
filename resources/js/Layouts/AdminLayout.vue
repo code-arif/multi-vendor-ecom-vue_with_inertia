@@ -15,7 +15,7 @@ import Navbar from '../Includes/Navbar.vue';
             </slot>
         </div>
         <!-- Back to Top -->
-        <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="bi bi-arrow-up"></i></a>
+        <a href="#" class="btn btn-primary back-to-top"><i class="fa fa-angle-double-up"></i></a>
     </div>
 </template>
 

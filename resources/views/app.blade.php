@@ -15,6 +15,12 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
+    {{-- links for user --}}
+    {{-- <link rel="stylesheet" href="{{ asset('users/css/styles.css') }}"> --}}
+    <!-- Libraries Stylesheet -->
+    <link href="{{ asset('users/lib/animate/animate.min.css') }}" rel="stylesheet">
+    <link href="{{ asset('users/lib/owlcarousel/assets/owl.carousel.min.css') }}" rel="stylesheet">
+
     <!-- Scripts -->
     @routes
     @vite(['resources/js/app.js', 'resources/css/app.css'])
@@ -30,6 +36,12 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+    <script src="{{ asset('users/lib/easing/easing.min.js') }}"></script>
+    <script src="{{ asset('users/lib/owlcarousel/owl.carousel.min.js') }}"></script>
+
+    {{-- custom js for user --}}
+    {{-- <script src="{{ asset('users/js/main.js') }}"></script> --}}
 </body>
 
 </html>

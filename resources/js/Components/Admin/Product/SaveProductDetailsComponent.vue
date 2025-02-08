@@ -69,12 +69,21 @@ function saveProductDetails() {
         },
     });
 }
+
+//==================product sepcification====================//
+function addSpecification() {
+    form.policies.push({ key: "", value: "" });
+}
+
+function romoveSpecification(index) {
+    form.policies.splice(index, 1);
+}
 </script>
 
 <template>
     <div class="container-fluid pt-4 px-4">
         <div class="row g-4 mb-3">
-            <div class="col-sm-12 col-xl-12">
+            <div class="col-sm-12 col-xl-8">
                 <div class="bg-light rounded p-4">
                     <div class="d-flex align-items-center justify-content-between">
                         <h6 class="mb-1">Product Details</h6>
@@ -86,7 +95,7 @@ function saveProductDetails() {
                         <div class="mb-3">
                             <label for="long_description" class="mb-2">Product Description</label>
                             <textarea v-model="form.long_description" class="form-control" id="long_description"
-                                rows="10"></textarea>
+                                rows="10" style="resize: none;"></textarea>
                             <div v-if="form.errors.long_description" class="invalid-feedback">{{
                                 form.errors.long_description }}</div>
                         </div>
@@ -102,7 +111,7 @@ function saveProductDetails() {
                                 <div class="d-flex flex-wrap mt-2">
                                     <div v-for="(preview, index) in extraImagePreviews" :key="index"
                                         class="position-relative me-2">
-                                        <img :src="preview" alt="Image Preview" class="rounded border"
+                                        <img :src="preview" alt="Image Preview" class="rounded border mb-2"
                                             style="width: 80px; height: 80px; object-fit: cover;">
                                         <button type="button"
                                             class="btn btn-sm text-danger position-absolute top-0 end-0"
@@ -142,7 +151,37 @@ function saveProductDetails() {
 
                         <!-- Submit Button -->
                         <button type="submit" class="btn btn-primary w-100">{{ form.product_id ? 'Update Details' :
-                            'AddDetails' }}</button>
+                            'Add Details' }}</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="col-sm-12 col-xl-4">
+                <div class="bg-light rounded p-4">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <h6 class="mb-1">Product Specification</h6>
+                        <Link class="btn btn-sm btn-primary" :href="route('show.product')">Back to list</Link>
+                    </div>
+                    <hr>
+                    <form @submit.prevent="saveProductDetails">
+                        <!-- Policies -->
+                        <div class="mb-3">
+                            <label>Product Policies</label>
+                            <div class="d-flex gap-2 mb-2">
+                                <input class="form-control w-50" placeholder="Policy Key"
+                                    required />
+                                <input  class="form-control w-50" placeholder="Policy Value"
+                                    required />
+                                <button type="button" class="btn btn-outline-danger btn-sm"
+                                    @click="romoveSpecification(index)">×</button>
+                            </div>
+                            <button type="button" class="btn btn-sm btn-primary" @click="addSpecification">+ Add
+                                Specification</button>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <button type="submit" class="btn btn-primary w-100">{{ form.product_id ? 'Update Specification' :
+                            'Add Specification' }}</button>
                     </form>
                 </div>
             </div>

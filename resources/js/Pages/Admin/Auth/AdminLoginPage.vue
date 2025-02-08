@@ -40,41 +40,47 @@ function adminLogin() {
     <Head>
         <title>Mini Shop || Login</title>
     </Head>
+    <div class="position-relative bg-white d-flex p-0">
+        <div class="container-fluid">
+            <div class="row h-100 align-items-center justify-content-center" style="min-height: 100vh;">
+                <div class="col-12 col-sm-8 col-md-6 col-lg-5 col-xl-4">
+                    <div class="bg-light rounded p-4 p-sm-5 my-4 mx-3">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <a href="" class="">
+                                <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>Mini Shop</h3>
+                            </a>
+                            <h3>Admin</h3>
+                        </div>
+                        <form @submit.prevent="adminLogin()">
+                            <!-- Email Field -->
+                            <div class="form-floating mb-3">
+                                <input v-model="form.email" type="email" class="form-control" id="floatingInput"
+                                    placeholder="name@example.com" :class="{ 'is-invalid': form.errors.email }">
+                                <label for="floatingInput">Email address</label>
+                                <div v-if="form.errors.email" class="invalid-feedback">
+                                    {{ form.errors.email }}
+                                </div>
+                            </div>
 
-    <GuestLayout>
-        <div class="bg-light rounded p-4 p-sm-5 my-4 mx-3">
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <a href="" class="">
-                    <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>Mini Shop</h3>
-                </a>
-                <h3>Admin</h3>
+                            <!-- Password Field -->
+                            <div class="form-floating mb-4">
+                                <input v-model="form.password" type="password" class="form-control"
+                                    id="floatingPassword" placeholder="Password"
+                                    :class="{ 'is-invalid': form.errors.password }">
+                                <label for="floatingPassword">Password</label>
+                                <div v-if="form.errors.password" class="invalid-feedback">
+                                    {{ form.errors.password }}
+                                </div>
+                            </div>
+
+                            <!-- Submit Button -->
+                            <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Sign In</button>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <form @submit.prevent="adminLogin()">
-                <!-- Email Field -->
-                <div class="form-floating mb-3">
-                    <input v-model="form.email" type="email" class="form-control" id="floatingInput"
-                        placeholder="name@example.com" :class="{ 'is-invalid': form.errors.email }">
-                    <label for="floatingInput">Email address</label>
-                    <div v-if="form.errors.email" class="invalid-feedback">
-                        {{ form.errors.email }}
-                    </div>
-                </div>
-
-                <!-- Password Field -->
-                <div class="form-floating mb-4">
-                    <input v-model="form.password" type="password" class="form-control" id="floatingPassword"
-                        placeholder="Password" :class="{ 'is-invalid': form.errors.password }">
-                    <label for="floatingPassword">Password</label>
-                    <div v-if="form.errors.password" class="invalid-feedback">
-                        {{ form.errors.password }}
-                    </div>
-                </div>
-
-                <!-- Submit Button -->
-                <button type="submit" class="btn btn-primary py-3 w-100 mb-4">Sign In</button>
-            </form>
         </div>
-    </GuestLayout>
+    </div>
 </template>
 
 <style scoped>

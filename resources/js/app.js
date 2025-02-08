@@ -15,6 +15,9 @@ import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
 
+//asset for user
+// import './Assets/User/css/style.css';
+
 createInertiaApp({
     resolve: (name) =>
         resolvePageComponent(
