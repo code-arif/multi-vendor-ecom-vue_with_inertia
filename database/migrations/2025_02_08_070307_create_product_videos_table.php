@@ -11,15 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('product_specifications', function (Blueprint $table) {
+        Schema::create('product_videos', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
-            $table->string('attribute'); // e.g., "Color", "Size", "Material"
-            $table->string('value'); // e.g., "Red", "L", "Cotton"
-            $table->decimal('additional_price', 10, 2)->nullable(); // Extra price for variations (optional)
+            $table->string('video_url');
             $table->timestamps();
         });
-
     }
 
     /**
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('product_specifications');
+        Schema::dropIfExists('product_videos');
     }
 };

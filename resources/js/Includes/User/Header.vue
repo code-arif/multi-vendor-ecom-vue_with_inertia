@@ -1,5 +1,20 @@
 <script setup>
+import { ref, onMounted } from "vue";
+import axios from "axios";
 
+const sections = ref([]);
+
+const fetchSections = async () => {
+    try {
+        const response = await axios.get("/get-header-section");
+        console.log(response.data); // Check if data is received
+        sections.value = response.data;
+    } catch (error) {
+        console.error("Error fetching sections:", error);
+    }
+};
+
+onMounted(fetchSections);
 </script>
 
 <template>
@@ -15,191 +30,20 @@
                 <nav class="collapse position-absolute navbar navbar-vertical navbar-light align-items-start p-0 bg-light"
                     id="navbar-vertical" style="width: 21.5%; z-index: 999;">
                     <div class="navbar-nav w-100">
-                        <div class="nav-item dropdown dropright">
-                            <a href="#" class="nav-link dropdown-item" data-bs-toggle="dropdown">Dresses <i
-                                    class="fa fa-angle-right float-right mt-1"></i></a>
+                        <div class="nav-item dropdown dropright" v-for="section in sections" :key="section.id">
+                            <a href="#" class="nav-link dropdown-item" data-bs-toggle="dropdown">
+                                {{ section.sec_name }}
+                                <i class="fa fa-angle-right float-right mt-1"></i>
+                            </a>
                             <div class="dropdown-menu position-absolute rounded-0 border-0 m-0 p-3"
                                 style="width: 600px; left: 100%; top: 0;">
                                 <div class="row">
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Men's Dresses</h6>
-                                        <a href="" class="dropdown-item">T-Shirt</a>
-                                        <a href="" class="dropdown-item">Shirt</a>
-                                        <a href="" class="dropdown-item">Polo</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Women's Dresses</h6>
-                                        <a href="" class="dropdown-item">Tops</a>
-                                        <a href="" class="dropdown-item">Jeans</a>
-                                        <a href="" class="dropdown-item">Bra</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Something</h6>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="nav-item dropdown dropright">
-                            <a href="#" class="nav-link dropdown-item" data-bs-toggle="dropdown">Dresses <i
-                                    class="fa fa-angle-right float-right mt-1"></i></a>
-                            <div class="dropdown-menu position-absolute rounded-0 border-0 m-0 p-3"
-                                style="width: 600px; left: 100%; top: 0;">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Men's Dresses</h6>
-                                        <a href="" class="dropdown-item">T-Shirt</a>
-                                        <a href="" class="dropdown-item">Shirt</a>
-                                        <a href="" class="dropdown-item">Polo</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Women's Dresses</h6>
-                                        <a href="" class="dropdown-item">Tops</a>
-                                        <a href="" class="dropdown-item">Jeans</a>
-                                        <a href="" class="dropdown-item">Bra</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Something</h6>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="nav-item dropdown dropright">
-                            <a href="#" class="nav-link dropdown-item" data-bs-toggle="dropdown">Dresses <i
-                                    class="fa fa-angle-right float-right mt-1"></i></a>
-                            <div class="dropdown-menu position-absolute rounded-0 border-0 m-0 p-3"
-                                style="width: 600px; left: 100%; top: 0;">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Men's Dresses</h6>
-                                        <a href="" class="dropdown-item">T-Shirt</a>
-                                        <a href="" class="dropdown-item">Shirt</a>
-                                        <a href="" class="dropdown-item">Polo</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Women's Dresses</h6>
-                                        <a href="" class="dropdown-item">Tops</a>
-                                        <a href="" class="dropdown-item">Jeans</a>
-                                        <a href="" class="dropdown-item">Bra</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Something</h6>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="nav-item dropdown dropright">
-                            <a href="#" class="nav-link dropdown-item" data-bs-toggle="dropdown">Dresses <i
-                                    class="fa fa-angle-right float-right mt-1"></i></a>
-                            <div class="dropdown-menu position-absolute rounded-0 border-0 m-0 p-3"
-                                style="width: 600px; left: 100%; top: 0;">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Men's Dresses</h6>
-                                        <a href="" class="dropdown-item">T-Shirt</a>
-                                        <a href="" class="dropdown-item">Shirt</a>
-                                        <a href="" class="dropdown-item">Polo</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Women's Dresses</h6>
-                                        <a href="" class="dropdown-item">Tops</a>
-                                        <a href="" class="dropdown-item">Jeans</a>
-                                        <a href="" class="dropdown-item">Bra</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Something</h6>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="nav-item dropdown dropright">
-                            <a href="#" class="nav-link dropdown-item" data-bs-toggle="dropdown">Dresses <i
-                                    class="fa fa-angle-right float-right mt-1"></i></a>
-                            <div class="dropdown-menu position-absolute rounded-0 border-0 m-0 p-3"
-                                style="width: 600px; left: 100%; top: 0;">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Men's Dresses</h6>
-                                        <a href="" class="dropdown-item">T-Shirt</a>
-                                        <a href="" class="dropdown-item">Shirt</a>
-                                        <a href="" class="dropdown-item">Polo</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Women's Dresses</h6>
-                                        <a href="" class="dropdown-item">Tops</a>
-                                        <a href="" class="dropdown-item">Jeans</a>
-                                        <a href="" class="dropdown-item">Bra</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Something</h6>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="nav-item dropdown dropright">
-                            <a href="#" class="nav-link dropdown-item" data-bs-toggle="dropdown">Dresses <i
-                                    class="fa fa-angle-right float-right mt-1"></i></a>
-                            <div class="dropdown-menu position-absolute rounded-0 border-0 m-0 p-3"
-                                style="width: 600px; left: 100%; top: 0;">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Men's Dresses</h6>
-                                        <a href="" class="dropdown-item">T-Shirt</a>
-                                        <a href="" class="dropdown-item">Shirt</a>
-                                        <a href="" class="dropdown-item">Polo</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Women's Dresses</h6>
-                                        <a href="" class="dropdown-item">Tops</a>
-                                        <a href="" class="dropdown-item">Jeans</a>
-                                        <a href="" class="dropdown-item">Bra</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Something</h6>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="nav-item dropdown dropright">
-                            <a href="#" class="nav-link dropdown-item" data-bs-toggle="dropdown">Dresses <i
-                                    class="fa fa-angle-right float-right mt-1"></i></a>
-                            <div class="dropdown-menu position-absolute rounded-0 border-0 m-0 p-3"
-                                style="width: 600px; left: 100%; top: 0;">
-                                <div class="row">
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Men's Dresses</h6>
-                                        <a href="" class="dropdown-item">T-Shirt</a>
-                                        <a href="" class="dropdown-item">Shirt</a>
-                                        <a href="" class="dropdown-item">Polo</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Women's Dresses</h6>
-                                        <a href="" class="dropdown-item">Tops</a>
-                                        <a href="" class="dropdown-item">Jeans</a>
-                                        <a href="" class="dropdown-item">Bra</a>
-                                    </div>
-                                    <div class="col-md-4">
-                                        <h6 class="text-info">Something</h6>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
-                                        <a href="" class="dropdown-item">Something</a>
+                                    <div class="col-md-4" v-for="category in section.categories" :key="category.id">
+                                        <h6 class="text-info">{{ category.name }}</h6>
+                                        <a href="" class="dropdown-item" v-for="subcategory in category.subcategories"
+                                            :key="subcategory.id">
+                                            {{ subcategory.name }}
+                                        </a>
                                     </div>
                                 </div>
                             </div>

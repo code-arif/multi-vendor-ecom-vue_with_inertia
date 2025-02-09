@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\VendorAuthController;
 use App\Http\Controllers\Admin\AdminManageController;
+use App\Http\Controllers\Admin\ProductSpecificationController;
 
 //=================================ADMIN ROUTES=================================//
 Route::group(['middleware' => AdminAuthMiddleware::class], function () {
@@ -78,6 +79,13 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
         Route::post('/change-status/{id}', [ProductController::class, 'changeProductStatus'])->name('change.product.status');
         Route::get('/details', [ProductController::class, 'showSaveProductDetails'])->name('show.save.product.details');
         Route::post('/details/{id?}', [ProductController::class, 'saveProductDetails'])->name('save.product.details');
+        Route::post('/image', [ProductSpecificationController::class, 'saveProductImage'])->name('save.product.image');
+        Route::post('/video', [ProductSpecificationController::class, 'saveProductVideo'])->name('save.product.video');
+        Route::get('/specification', [ProductSpecificationController::class, 'showProductSpecification'])->name('show.product.specification');
+        Route::post('/specification', [ProductSpecificationController::class, 'saveProductSpecification'])->name('save.product.specification');
+
+        Route::get('/product-details',[ProductController::class,'showProductDetails'])->name('show.product.details');
+        Route::get('/product-details/{id}',[ProductController::class,'show']);
     });
 });
 
@@ -105,3 +113,6 @@ Route::get('/checkout', [CheckOutController::class, 'showCheckoutPage'])->name('
 
 //=======================Cart page =========================//
 Route::get('/cart', [CartController::class, 'showCartPage'])->name('show.cart.page');
+
+//==========================get section for header =====================//
+Route::get('/get-header-section', [HomeController::class, 'getHeaderSection'])->name('get.header.section');

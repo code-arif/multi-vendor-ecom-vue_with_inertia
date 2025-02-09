@@ -16,7 +16,7 @@ use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
-      /**
+    /**
      * =====================================
      *  Admin Product Controller
      * =====================================
@@ -321,9 +321,15 @@ class ProductController extends Controller
         }
     }
 
-    //===================add product details==================//
+    //===================show save product details==================//
     public function showSaveProductDetails(Request $request, $id = null)
     {
+        // Check if the logged-in user is superadmin or admin
+        $admin = Auth::guard('admin')->user();
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+            return response()->json(['error' => 'Unauthorized access'], 403);
+        }
+
         $id = $request->query('id');
         $productDetails = null;
 
@@ -349,12 +355,16 @@ class ProductController extends Controller
     // ===================save product details==================//
     public function saveProductDetails(Request $request)
     {
+        // Check if the logged-in user is superadmin or admin
+        $admin = Auth::guard('admin')->user();
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+            return response()->json(['error' => 'Unauthorized access'], 403);
+        }
+
         $request->validate(
             [
                 'product_id' => 'required|exists:products,id',
                 'long_description' => 'nullable|string',
-                'extra_images.*' => 'image|max:2048',
-                'videos.*' => 'file|mimes:mp4,mov,avi,mp3,webm|max:10240',
                 'policies' => 'nullable|array',
                 'policies.*.key' => 'required_with:policies.*.value|string',
                 'policies.*.value' => 'required_with:policies.*.key|string',
@@ -363,10 +373,6 @@ class ProductController extends Controller
                 'product_id.required' => 'Product is required',
                 'product_id.exists' => 'Product does not exist',
                 'long_description.string' => 'Long description must be a string',
-                'extra_images.image' => 'Extra images must be an image',
-                'extra_images.max' => 'Extra images size must be less than 2MB',
-                'videos.file' => 'Videos must be a file',
-                'videos.mimes' => 'Videos must be in mp4, mov, avi, mp3, webm format',
             ],
         );
 
@@ -374,63 +380,47 @@ class ProductController extends Controller
         $details->long_description = $request->long_description;
         $details->policies = $request->has('policies') ? json_encode($request->policies, JSON_UNESCAPED_SLASHES) : null;
 
-        // Handle extra images
-        if ($request->hasFile('extra_images')) {
-            // Delete old images if they exist
-            if ($details->extra_images) {
-                $oldImages = json_decode($details->extra_images, true);
-                foreach ($oldImages as $oldImage) {
-                    if (file_exists(public_path('storage/' . $oldImage))) {
-                        unlink(public_path('storage/' . $oldImage));
-                    }
-                }
-            }
-
-            $extraImages = [];
-            foreach ($request->file('extra_images') as $image) {
-                $imageNameToStore = uniqid() . '.' . $image->getClientOriginalExtension();
-                $image_url = $image->storeAs('product_extra_images', $imageNameToStore, 'public');
-                $extraImages[] = $image_url;
-            }
-            $details->extra_images = json_encode(array_values($extraImages), JSON_UNESCAPED_SLASHES);
-        }
-
-        // Handle videos
-        $videos = [];
-        if ($request->hasFile('videos')) {
-            // Delete old videos if they exist
-            if ($details->videos) {
-                $oldVideos = json_decode($details->videos, true);
-                foreach ($oldVideos as $oldVideo) {
-                    if (file_exists(public_path('storage/' . $oldVideo))) {
-                        unlink(public_path('storage/' . $oldVideo));
-                    }
-                }
-            }
-
-            foreach ($request->file('videos') as $video) {
-                $videoNameToStore = uniqid() . '.' . $video->getClientOriginalExtension();
-                $video_url = $video->storeAs('product_videos', $videoNameToStore, 'public');
-                $videos[] = $video_url;
-            }
-        }
-
-        // Handle external video links
-        if ($request->has('video_links')) {
-            foreach ($request->video_links as $link) {
-                if (!empty($link)) {
-                    $videos[] = $link;
-                }
-            }
-        }
-
-        $details->videos = !empty($videos) ? json_encode(array_values($videos), JSON_UNESCAPED_SLASHES) : null;
-
         $details->save();
 
         $data = ['message' => 'Product details updated successfully', 'status' => true];
 
         return redirect()->route('show.product')->with($data);
+    }
+
+    //==========================show product details==========================//
+    public function showProductDetails(Request $request, $id = null)
+    {
+        // Check if the logged-in user is superadmin or admin
+        $admin = Auth::guard('admin')->user();
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+            return response()->json(['error' => 'Unauthorized access'], 403);
+        }
+
+        // Ensure we get the correct product ID
+        $id = $id ?? $request->query('id');
+
+        if (!$id) {
+            return response()->json(['error' => 'Product ID is required'], 400);
+        }
+
+        // Fetch product details along with relationships
+        $productDetails = Product::with(['vendor:id,name', 'admin:id,type,name', 'productDetails', 'specifications', 'productImages', 'category:id,name', 'brand:id,name'])
+        ->find($id);
+
+        // Check if the product exists
+        if (!$productDetails) {
+            return response()->json(['error' => 'Product not found'], 404);
+        }
+
+        return Inertia::render('Admin/Product/ProductDetailsPage',[
+            'productDetails' => $productDetails,
+        ]);
+    }
+
+    public function show($id){
+        $productDetails = Product::with(['vendor:id,name', 'admin:id,type,name', 'productDetails', 'specifications', 'productImages', 'category:id,name', 'brand:id,name'])
+        ->find($id);
+        return response()->json([$productDetails]);
     }
 
     /**
@@ -440,13 +430,15 @@ class ProductController extends Controller
      *  Handles user-related product operations.
      */
 
-     //========================show product page========================//
-     public function showProductPage(){
+    //========================show product page========================//
+    public function showProductPage()
+    {
         return Inertia::render('User/Product/ProductsPage');
-     }
+    }
 
-     //======================show product details page ======================//
-     public function showProductDetailsPage(){
+    //======================show product details page ======================//
+    public function showProductDetailsPage()
+    {
         return Inertia::render('User/Product/ProductDetailsPage');
-     }
+    }
 }

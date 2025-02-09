@@ -171,11 +171,14 @@ function deleteProduct() {
 
                             <template #item-number="{ id }">
                                 <div class="d-flex align-items-center">
-                                    <Link class="btn btn-sm btn-outline-success me-2" :href="route('show.save.product.details')">
+                                    <Link class="btn btn-sm btn-outline-success me-2" :href="route('show.product.details', { id: id })">
                                     <i class="fa fa-eye"></i>
                                     </Link>
                                     <Link class="btn btn-sm btn-outline-info me-2" :href="route('show.save.product.details', {id: id})">
                                     <i class="fa fa-plus"></i>
+                                    </Link>
+                                    <Link class="btn btn-sm btn-outline-info me-2" :href="route('show.product.specification', {id: id})">
+                                        <i class="fa fa-plus-square" aria-hidden="true"></i>
                                     </Link>
                                     <Link class="btn btn-sm btn-outline-primary me-2"
                                         :href="route('show.save.product', { id: id })">

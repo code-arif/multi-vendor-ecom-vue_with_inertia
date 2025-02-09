@@ -44,7 +44,7 @@ class Product extends Model
     }
 
     // Product has one Product Detail
-    public function productDetail()
+    public function productDetails()
     {
         return $this->hasOne(ProductDetails::class);
     }
@@ -53,5 +53,10 @@ class Product extends Model
     public function specifications()
     {
         return $this->hasMany(ProductSpecification::class);
+    }
+
+    //relation with product images
+    public function productImages(){
+        return $this->hasMany(ProductImages::class);
     }
 }

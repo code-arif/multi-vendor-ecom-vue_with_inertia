@@ -14,6 +14,7 @@ import { createApp, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
 import Vue3EasyDataTable from 'vue3-easy-data-table';
 import 'vue3-easy-data-table/dist/style.css';
+import axios from 'axios';
 
 //asset for user
 // import './Assets/User/css/style.css';
