@@ -37,39 +37,137 @@ class ProductSpecificationController extends Controller
     //=======================save product specification=====================//
     public function saveProductSpecification(Request $request)
     {
+        // Check if logged-in user is admin or superadmin
+        $admin = Auth::guard('admin')->user();
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+            return response()->json(['error' => 'Unauthorized access'], 403);
+        }
+
         // Validate the input data
         $request->validate(
             [
                 'product_id' => 'required|exists:products,id',
+                'color' => 'nullable|string',
+                'size' => 'nullable|string',
+                'material' => 'nullable|string',
+                'weight' => 'nullable|numeric',
+                'length' => 'nullable|numeric',
+                'width' => 'nullable|numeric',
+                'height' => 'nullable|numeric',
+                'volume' => 'nullable|numeric',
                 'additional_price' => 'nullable|numeric',
-                'specifications' => 'required|array',
-                'specifications.*.attribute' => 'required|string',
-                'specifications.*.value' => 'required|string',
             ],
             [
-                'product_id.required' => 'Product is required',
-                'product_id.exists' => 'Product does not exist',
-                'additional_price.numeric' => 'Additional price must be a number',
-                'specifications.required' => 'At least one specification is required',
-                'specifications.*.attribute.required' => 'Attribute is required',
-                'specifications.*.value.required' => 'Value is required',
+                'product_id.required' => 'Product is required.',
+                'product_id.exists' => 'Product does not exist.',
+                'color.string' => 'Color must be a string.',
+                'size.string' => 'Size must be a string.',
+                'material.string' => 'Material must be a string.',
+                'weight.numeric' => 'Weight must be a number.',
+                'length.numeric' => 'Length must be a number.',
+                'width.numeric' => 'Width must be a number.',
+                'height.numeric' => 'Height must be a number.',
+                'volume.numeric' => 'Volume must be a number.',
+                'additional_price.numeric' => 'Additional price must be a number.',
             ],
         );
 
-        // Delete old specifications if they exist (to handle update cases)
-        ProductSpecification::where('product_id', $request->product_id)->delete();
+        // Prepare data for insertion into the product_specifications table
+        $specificationData = [
+            'product_id' => $request->product_id,
+            'color' => $request->color,
+            'size' => $request->size,
+            'material' => $request->material,
+            'weight' => $request->weight ?? null,
+            'length' => $request->length ?? null,
+            'width' => $request->width ?? null,
+            'height' => $request->height ?? null,
+            'volume' => $request->volume ?? null,
+            'additional_price' => $request->additional_price ?? null,
+            'weight_unit' => 'kg',
+            'length_unit' => 'cm',
+            'width_unit' => 'cm',
+            'height_unit' => 'cm',
+            'volume_unit' => 'cm3',
+        ];
 
-        // Insert new specifications
-        foreach ($request->specifications as $spec) {
-            ProductSpecification::create([
-                'product_id' => $request->product_id,
-                'attribute' => $spec['attribute'],
-                'value' => $spec['value'],
-                'additional_price' => $request->additional_price ?? null,
-            ]);
+        // Save the new specification data to the product_specifications table
+        ProductSpecification::create($specificationData);
+
+        // Return success message and redirect back to the product list
+        $data = ['message' => 'Product specification saved successfully', 'status' => true];
+        return redirect()->route('show.product')->with($data);
+    }
+
+    //==========================update product specification==========================//
+    public function updateProductSpecification(Request $request)
+    {
+        // Check if logged-in user is admin or superadmin
+        $admin = Auth::guard('admin')->user();
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+            return response()->json(['error' => 'Unauthorized access'], 403);
         }
 
-        $data = ['message' => 'Product specification saved successfully', 'status' => true];
+        // Validate the input data
+        $request->validate(
+            [
+                'product_id' => 'required|exists:products,id',
+                'color' => 'nullable|string',
+                'size' => 'nullable|string',
+                'material' => 'nullable|string',
+                'weight' => 'nullable|numeric',
+                'length' => 'nullable|numeric',
+                'width' => 'nullable|numeric',
+                'height' => 'nullable|numeric',
+                'volume' => 'nullable|numeric',
+                'additional_price' => 'nullable|numeric',
+            ],
+            [
+                'product_id.required' => 'Product is required.',
+                'product_id.exists' => 'Product does not exist.',
+                'color.string' => 'Color must be a string.',
+                'size.string' => 'Size must be a string.',
+                'material.string' => 'Material must be a string.',
+                'weight.numeric' => 'Weight must be a number.',
+                'length.numeric' => 'Length must be a number.',
+                'width.numeric' => 'Width must be a number.',
+                'height.numeric' => 'Height must be a number.',
+                'volume.numeric' => 'Volume must be a number.',
+                'additional_price.numeric' => 'Additional price must be a number.',
+            ],
+        );
+
+        // Find the existing product specification
+        $productSpecification = ProductSpecification::where('product_id', $request->product_id)->first();
+
+        // If the specification does not exist, return an error
+        if (!$productSpecification) {
+            return response()->json(['error' => 'Product specification not found'], 404);
+        }
+
+        // Prepare data for updating the product_specifications table
+        $specificationData = [
+            'color' => $request->color ?? $productSpecification->color,
+            'size' => $request->size ?? $productSpecification->size,
+            'material' => $request->material ?? $productSpecification->material,
+            'weight' => $request->weight ?? $productSpecification->weight,
+            'length' => $request->length ?? $productSpecification->length,
+            'width' => $request->width ?? $productSpecification->width,
+            'height' => $request->height ?? $productSpecification->height,
+            'volume' => $request->volume ?? $productSpecification->volume,
+            'additional_price' => $request->additional_price ?? $productSpecification->additional_price,
+            'weight_unit' => $productSpecification->weight_unit, // Keep existing unit values
+            'length_unit' => $productSpecification->length_unit,
+            'width_unit' => $productSpecification->width_unit,
+            'height_unit' => $productSpecification->height_unit,
+            'volume_unit' => $productSpecification->volume_unit,
+        ];
+
+        // Update the existing product specification
+        $productSpecification->update($specificationData);
+
+        // Return success message and redirect back to the product list
+        $data = ['message' => 'Product specification updated successfully', 'status' => true];
         return redirect()->route('show.product')->with($data);
     }
 

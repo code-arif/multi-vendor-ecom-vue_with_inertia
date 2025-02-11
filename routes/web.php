@@ -16,9 +16,18 @@ use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\VendorAuthController;
 use App\Http\Controllers\Admin\AdminManageController;
+use App\Http\Controllers\Admin\ProductDetailsController;
+use App\Http\Controllers\Admin\ProductSliderController;
 use App\Http\Controllers\Admin\ProductSpecificationController;
+use App\Http\Controllers\User\ProductUserController;
+use App\Http\Controllers\Vendor\VendorController;
 
 //=================================ADMIN ROUTES=================================//
+//admin login
+Route::get('/admin/login', [AdminAuthController::class, 'ShowAdminLogin'])->name('show.admin.login');
+Route::post('/admin/login', [AdminAuthController::class, 'AdminLogin'])->name('admin.login');
+
+
 Route::group(['middleware' => AdminAuthMiddleware::class], function () {
     Route::group(['prefix' => 'admin'], function () {
         Route::get('/dashboard', [DashboardController::class, 'showDashboard'])->name('show.admin.dashboard');
@@ -77,36 +86,51 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
         Route::post('/update/{id}', [ProductController::class, 'updateProduct'])->name('update.product');
         Route::delete('/delete/{id}', [ProductController::class, 'deleteProduct'])->name('delete.product');
         Route::post('/change-status/{id}', [ProductController::class, 'changeProductStatus'])->name('change.product.status');
-        Route::get('/details', [ProductController::class, 'showSaveProductDetails'])->name('show.save.product.details');
-        Route::post('/details/{id?}', [ProductController::class, 'saveProductDetails'])->name('save.product.details');
+
+        //product details controller, table, page manage
+        Route::get('/details', [ProductDetailsController::class, 'showSaveProductDetails'])->name('show.save.product.details');
+        Route::post('/details', [ProductDetailsController::class, 'saveProductDetails'])->name('save.product.details');
+        Route::post('/update-details', [ProductDetailsController::class, 'updateProductDetails'])->name('update.product.details');
+         //product all details
+         Route::get('/product-details',[ProductDetailsController::class,'showProductDetails'])->name('show.product.details');
+
+        // product sepcification controller,table, page manage
         Route::post('/image', [ProductSpecificationController::class, 'saveProductImage'])->name('save.product.image');
         Route::post('/video', [ProductSpecificationController::class, 'saveProductVideo'])->name('save.product.video');
         Route::get('/specification', [ProductSpecificationController::class, 'showProductSpecification'])->name('show.product.specification');
         Route::post('/specification', [ProductSpecificationController::class, 'saveProductSpecification'])->name('save.product.specification');
+        Route::post('/update-specification', [ProductSpecificationController::class, 'updateProductSpecification'])->name('update.product.specification');
 
-        Route::get('/product-details',[ProductController::class,'showProductDetails'])->name('show.product.details');
-        Route::get('/product-details/{id}',[ProductController::class,'show']);
+        //product slider manage
+        Route::get('/slider-list', [ProductSliderController::class, 'showProductSlider'])->name('show.product.slider');
+        Route::post('/slider', [ProductSliderController::class, 'saveProductSlider'])->name('save.product.slider');
+        Route::post('/slider/update/{id}', [ProductSliderController::class, 'updateProductSlider'])->name('update.product.slider');
+        Route::delete('/slider/delete/{id}', [ProductSliderController::class, 'deleteProductSlider'])->name('delete.product.slider');
+        Route::post('/change-status/slider/{id}', [ProductSliderController::class, 'changeProductSliderStatus'])->name('change.product.slider.status');
     });
 });
 
-//admin login
-Route::get('/admin/login', [AdminAuthController::class, 'ShowAdminLogin'])->name('show.admin.login');
-Route::post('/admin/login', [AdminAuthController::class, 'AdminLogin'])->name('admin.login');
+/*================================
+Vendor Route
+================================*/
+Route::get('/vendor-account',[VendorController::class,'showVendorAccountCreatePage'])->name('show.vendor.account.create.page');
+Route::post('/vendor-account',[VendorController::class,'createVendorAccount'])->name('create.vendor.account');
 
 
 /*================================
 User Route
 ================================*/
-Route::get('/login', [UserAuthController::class, 'showLogin']);
-Route::get('/register', [UserAuthController::class, 'showRegister']);
-
-
+//========================index page =========================//
 Route::get('/',[HomeController::class,'home'])->name('show.home.page');
 
+//====================user login registration, forget password=====================//
+Route::get('/login', [UserAuthController::class, 'showLogin'])->name('show.user.login');
+Route::get('/register', [UserAuthController::class, 'showRegister'])->name('show.user.register');
 
 // ======================Product page=======================//
-Route::get('/products', [ProductController::class, 'showProductPage'])->name('show.products.page');
-Route::get('/product/id', [ProductController::class, 'showProductDetailsPage'])->name('show.product.details.page');
+Route::get('/products', [ProductUserController::class, 'showProductPage'])->name('show.products.page');
+Route::get('/product', [ProductUserController::class, 'showProductDetailsPage'])->name('show.product.details.page');
+Route::get('/product/by-category', [ProductUserController::class, 'productByCategory'])->name('show.product.by.category');
 
 //=======================Checkout=========================//
 Route::get('/checkout', [CheckOutController::class, 'showCheckoutPage'])->name('show.checkout.page');
@@ -116,3 +140,4 @@ Route::get('/cart', [CartController::class, 'showCartPage'])->name('show.cart.pa
 
 //==========================get section for header =====================//
 Route::get('/get-header-section', [HomeController::class, 'getHeaderSection'])->name('get.header.section');
+

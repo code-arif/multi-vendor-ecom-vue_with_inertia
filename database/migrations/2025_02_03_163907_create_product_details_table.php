@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('product_id')->constrained('products')->onDelete('cascade');
             $table->text('long_description')->nullable();
-            $table->json('policies')->nullable(); // {"warranty": "1 year", "return": "7 days"}
             $table->timestamps();
         });
     }

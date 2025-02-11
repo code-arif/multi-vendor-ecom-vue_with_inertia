@@ -7,12 +7,12 @@ use App\Models\Brand;
 use App\Models\Product;
 use App\Models\Section;
 use App\Models\Category;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Models\ProductDetails;
+use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class ProductController extends Controller
 {
@@ -32,7 +32,10 @@ class ProductController extends Controller
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
 
-        $products = Product::with(['vendor:id,name', 'section:id,sec_name', 'category:id,name', 'brand:id,name', 'admin:id,type,name'])->get();
+        $products = Product::with(['vendor:id,name', 'section:id,sec_name', 'category:id,name', 'brand:id,name', 'admin:id,type,name'])
+            ->orderByDesc('created_at')
+            ->get();
+
         // return $products;
         return Inertia::render('Admin/Product/ProductPage', ['products' => $products]);
     }
@@ -154,8 +157,8 @@ class ProductController extends Controller
                 'remark' => 'nullable|in:popular,new,top,special,trending,regular',
                 'short_description' => 'nullable|string',
                 'meta_title' => 'nullable|string|max:255',
-                'meta_description' => 'nullable|string|max:500',
-                'meta_keywords' => 'nullable|string|max:500',
+                'meta_description' => 'nullable|string|max:250',
+                'meta_keywords' => 'nullable|string|max:250',
                 'has_discount' => 'required|boolean',
                 'discount_price' => 'nullable|numeric|min:0',
                 'is_featured' => 'nullable|boolean',
@@ -232,8 +235,8 @@ class ProductController extends Controller
             'remark.in' => 'Invalid remark selection.',
             'short_description.string' => 'Short description must be a valid text.',
             'meta_title.max' => 'Meta title cannot exceed 255 characters.',
-            'meta_description.max' => 'Meta description cannot exceed 500 characters.',
-            'meta_keywords.max' => 'Meta keywords cannot exceed 500 characters.',
+            'meta_description.max' => 'Meta description cannot exceed 250 characters.',
+            'meta_keywords.max' => 'Meta keywords cannot exceed 250 characters.',
             'has_discount.required' => 'Discount status must be selected.',
             'has_discount.boolean' => 'Discount status must be a boolean value.',
             'discount_price.numeric' => 'Discount price must be a valid number.',
@@ -257,8 +260,8 @@ class ProductController extends Controller
                 'remark' => 'nullable|in:popular,new,top,special,trending,regular',
                 'short_description' => 'nullable|string',
                 'meta_title' => 'nullable|string|max:255',
-                'meta_description' => 'nullable|string|max:500',
-                'meta_keywords' => 'nullable|string|max:500',
+                'meta_description' => 'nullable|string|max:250',
+                'meta_keywords' => 'nullable|string|max:250',
                 'has_discount' => 'required|boolean',
                 'discount_price' => 'nullable|numeric|min:0',
                 'is_featured' => 'nullable|boolean',
@@ -319,126 +322,5 @@ class ProductController extends Controller
             $data = ['message' => 'Failed to delete product', 'status' => false, 'code' => 400];
             return redirect()->back()->with($data);
         }
-    }
-
-    //===================show save product details==================//
-    public function showSaveProductDetails(Request $request, $id = null)
-    {
-        // Check if the logged-in user is superadmin or admin
-        $admin = Auth::guard('admin')->user();
-        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
-            return response()->json(['error' => 'Unauthorized access'], 403);
-        }
-
-        $id = $request->query('id');
-        $productDetails = null;
-
-        if ($id) {
-            $productDetails = ProductDetails::where('product_id', $id)->first();
-
-            if (!$productDetails) {
-                $productDetails = new ProductDetails(['product_id' => $id]);
-            } else {
-                // Decode the policies JSON when retrieving
-                $productDetails->policies = json_decode($productDetails->policies, true) ?? []; // Handle potential null or invalid JSON
-                if ($productDetails->extra_images) {
-                    $productDetails->extra_images = json_decode($productDetails->extra_images, true) ?? [];
-                }
-            }
-        }
-
-        return Inertia::render('Admin/Product/SaveProductDetailsPage', [
-            'productDetails' => $productDetails,
-        ]);
-    }
-
-    // ===================save product details==================//
-    public function saveProductDetails(Request $request)
-    {
-        // Check if the logged-in user is superadmin or admin
-        $admin = Auth::guard('admin')->user();
-        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
-            return response()->json(['error' => 'Unauthorized access'], 403);
-        }
-
-        $request->validate(
-            [
-                'product_id' => 'required|exists:products,id',
-                'long_description' => 'nullable|string',
-                'policies' => 'nullable|array',
-                'policies.*.key' => 'required_with:policies.*.value|string',
-                'policies.*.value' => 'required_with:policies.*.key|string',
-            ],
-            [
-                'product_id.required' => 'Product is required',
-                'product_id.exists' => 'Product does not exist',
-                'long_description.string' => 'Long description must be a string',
-            ],
-        );
-
-        $details = ProductDetails::firstOrNew(['product_id' => $request->product_id]);
-        $details->long_description = $request->long_description;
-        $details->policies = $request->has('policies') ? json_encode($request->policies, JSON_UNESCAPED_SLASHES) : null;
-
-        $details->save();
-
-        $data = ['message' => 'Product details updated successfully', 'status' => true];
-
-        return redirect()->route('show.product')->with($data);
-    }
-
-    //==========================show product details==========================//
-    public function showProductDetails(Request $request, $id = null)
-    {
-        // Check if the logged-in user is superadmin or admin
-        $admin = Auth::guard('admin')->user();
-        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
-            return response()->json(['error' => 'Unauthorized access'], 403);
-        }
-
-        // Ensure we get the correct product ID
-        $id = $id ?? $request->query('id');
-
-        if (!$id) {
-            return response()->json(['error' => 'Product ID is required'], 400);
-        }
-
-        // Fetch product details along with relationships
-        $productDetails = Product::with(['vendor:id,name', 'admin:id,type,name', 'productDetails', 'specifications', 'productImages', 'category:id,name', 'brand:id,name'])
-        ->find($id);
-
-        // Check if the product exists
-        if (!$productDetails) {
-            return response()->json(['error' => 'Product not found'], 404);
-        }
-
-        return Inertia::render('Admin/Product/ProductDetailsPage',[
-            'productDetails' => $productDetails,
-        ]);
-    }
-
-    public function show($id){
-        $productDetails = Product::with(['vendor:id,name', 'admin:id,type,name', 'productDetails', 'specifications', 'productImages', 'category:id,name', 'brand:id,name'])
-        ->find($id);
-        return response()->json([$productDetails]);
-    }
-
-    /**
-     * =====================================
-     *  User Product Controller
-     * =====================================
-     *  Handles user-related product operations.
-     */
-
-    //========================show product page========================//
-    public function showProductPage()
-    {
-        return Inertia::render('User/Product/ProductsPage');
-    }
-
-    //======================show product details page ======================//
-    public function showProductDetailsPage()
-    {
-        return Inertia::render('User/Product/ProductDetailsPage');
     }
 }

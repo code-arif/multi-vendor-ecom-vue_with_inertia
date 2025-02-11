@@ -1,7 +1,7 @@
 <script setup>
-import { Link, usePage } from '@inertiajs/vue3';
+import { usePage } from '@inertiajs/vue3';
 const list = usePage();
-const products = list.props.products || [];
+const productsByCategory = list.props.productsByCategory || [];
 </script>
 
 <template>
@@ -12,7 +12,9 @@ const products = list.props.products || [];
                 <nav class="breadcrumb bg-light mb-30 p-3">
                     <a class="breadcrumb-item text-dark" href="#">Home</a>
                     <a class="breadcrumb-item text-dark" href="#">Shop</a>
-                    <span class="breadcrumb-item active"> All Products</span>
+                    <span class="breadcrumb-item active">
+                        {{ productsByCategory.length > 0 ? productsByCategory[0].name : 'No Category' }}
+                    </span>
                 </nav>
             </div>
         </div>
@@ -72,8 +74,7 @@ const products = list.props.products || [];
                 <!-- Color Start -->
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-light"
                         style="padding:3px 10px">Filter
-                        by color</span>
-                </h5>
+                        by color</span></h5>
                 <div class="bg-light p-4 mb-30">
                     <form>
                         <div
@@ -166,7 +167,7 @@ const products = list.props.products || [];
             <!-- Shop Product Start -->
             <div class="col-lg-9 col-md-8">
                 <div class="row pb-3">
-                    <!-- filter and sroting start -->
+                    <!-- filter by remark and sorting start -->
                     <div class="col-12 pb-1">
                         <div class="d-flex align-items-center justify-content-between mb-4">
                             <div>
@@ -196,29 +197,32 @@ const products = list.props.products || [];
                             </div>
                         </div>
                     </div>
-                    <!-- filter and sroting end -->
+                    <!-- filter by remark and sorting end -->
 
                     <!-- product cart start -->
-                    <div class="col-lg-4 col-md-6 col-sm-6 pb-1" v-for="(product, index, id) in products" :key="id">
+                    <div class="col-lg-4 col-md-6 col-sm-6 pb-1"
+                        v-for="(product, index) in (productsByCategory.length > 0 ? productsByCategory[0].products : [])"
+                        :key="index">
+
                         <div class="product-item bg-light mb-4" style="border: 1px solid #ddd;">
                             <div class="product-img position-relative overflow-hidden">
-                                <img class="img-fluid w-100" :src="`/storage/${product.image}`" alt="Product Image">
+                                <img class="img-fluid w-100" :src="`/storage/${product.image}`" alt="product image">
                                 <div class="product-action">
                                     <a class="btn btn-outline-dark btn-square" href=""><i
                                             class="fa fa-shopping-cart"></i></a>
                                     <a class="btn btn-outline-dark btn-square" href=""><i class="far fa-heart"></i></a>
                                     <a class="btn btn-outline-dark btn-square" href=""><i
                                             class="fa fa-sync-alt"></i></a>
-                                    <Link class="btn btn-outline-dark btn-square"
+                                    <a class="btn btn-outline-dark btn-square"
                                         :href="route('show.product.details.page', { id: product.id })">
-                                    <i class="fa fa-eye"></i>
-                                    </Link>
+                                        <i class="fa fa-eye"></i>
+                                    </a>
                                 </div>
                             </div>
                             <div class="text-center py-4">
                                 <a class="h6 text-decoration-none text-truncate" href="">{{ product.product_name }}</a>
                                 <div class="d-flex align-items-center justify-content-center mt-2">
-                                    <h5>{{ product.price }}</h5>
+                                    <h5>${{ product.price }}</h5>
                                     <h6 v-if="product.has_discount" class="text-muted" style="margin-left: 10px;">
                                         <del>${{ product.discount_price }}</del>
                                     </h6>
@@ -236,7 +240,7 @@ const products = list.props.products || [];
                     </div>
                     <!-- product cart end -->
 
-                    <!-- pagination start -->
+
                     <div class="col-12">
                         <nav>
                             <ul class="pagination justify-content-center">
@@ -248,7 +252,6 @@ const products = list.props.products || [];
                             </ul>
                         </nav>
                     </div>
-                    <!-- pagination end -->
                 </div>
             </div>
             <!-- Shop Product End -->

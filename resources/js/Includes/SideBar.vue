@@ -41,21 +41,26 @@ const imagePreview = ref(
                 <div class="nav-item dropdown"
                     v-if="authUser && (authUser.type === 'superadmin' || authUser.type === 'admin')">
 
-                    <a href="" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" :class="{ 'active': ['/admins/admin', '/admins/subadmin', '/admins/vendor', '/admins'].includes($page.url) }">
+                    <a href="" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                        :class="{ 'active': ['/admins/admin', '/admins/subadmin', '/admins/vendor', '/admins'].includes($page.url) }">
                         <i class="fa fa-unlock me-1"></i> Admin Manage
                     </a>
 
                     <div class="dropdown-menu bg-transparent border-0">
-                        <Link :href="route('admin.manage', { type: 'admin' })" class="dropdown-item" :class="{'active': $page.url === '/admins/admin'}">
+                        <Link :href="route('admin.manage', { type: 'admin' })" class="dropdown-item"
+                            :class="{ 'active': $page.url === '/admins/admin' }">
                         <i class="fa fa-chevron-circle-right me-2"></i> Admin
                         </Link>
-                        <Link :href="route('admin.manage', { type: 'subadmin' })" class="dropdown-item" :class="{'active': $page.url === '/admins/subadmin'}">
+                        <Link :href="route('admin.manage', { type: 'subadmin' })" class="dropdown-item"
+                            :class="{ 'active': $page.url === '/admins/subadmin' }">
                         <i class="fa fa-chevron-circle-right me-2"></i> Subadmin
                         </Link>
-                        <Link :href="route('admin.manage', { type: 'vendor' })" class="dropdown-item" :class="{'active': $page.url === '/admins/vendor'}">
+                        <Link :href="route('admin.manage', { type: 'vendor' })" class="dropdown-item"
+                            :class="{ 'active': $page.url === '/admins/vendor' }">
                         <i class="fa fa-chevron-circle-right me-2"></i> Vendor
                         </Link>
-                        <Link :href="route('admin.manage')" class="dropdown-item" :class="{'active': $page.url === '/admins'}">
+                        <Link :href="route('admin.manage')" class="dropdown-item"
+                            :class="{ 'active': $page.url === '/admins' }">
                         <i class="fa fa-chevron-circle-right me-2"></i> All
                         </Link>
                     </div>
@@ -65,26 +70,47 @@ const imagePreview = ref(
                 <div class="nav-item dropdown"
                     v-if="authUser && (authUser.type === 'superadmin' || authUser.type === 'admin' || authUser.type === 'vendor')">
 
-                    <a href="" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" :class="{ 'active': ['/section/list', '/category/list' ,'/brand/list', '/product/list', '/product/save'].includes($page.url) }">
+                    <a href="" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                        :class="{ 'active': ['/section/list', '/category/list', '/brand/list'].includes($page.url) }">
                         <i class="fa fa-bars" aria-hidden="true"></i> Catalogue Manage
                     </a>
 
                     <div class="dropdown-menu bg-transparent border-0">
-                        <Link :href="route('show.section')" class="dropdown-item" :class="{'active': $page.url === '/section/list'}">
+                        <Link :href="route('show.section')" class="dropdown-item"
+                            :class="{ 'active': $page.url === '/section/list' }">
                         <i class="fa fa-chevron-circle-right me-2"></i> Sections
                         </Link>
-                        <Link :href="route('show.category')" class="dropdown-item" :class="{'active': $page.url === '/category/list'}">
+                        <Link :href="route('show.category')" class="dropdown-item"
+                            :class="{ 'active': $page.url === '/category/list' }">
                         <i class="fa fa-chevron-circle-right me-2"></i> Category
                         </Link>
-                        <Link :href="route('show.brand')" class="dropdown-item" :class="{'active': $page.url === '/brand/list'}">
+                        <Link :href="route('show.brand')" class="dropdown-item"
+                            :class="{ 'active': $page.url === '/brand/list' }">
                         <i class="fa fa-chevron-circle-right me-2"></i> Brand
-                        </Link>
-                        <Link :href="route('show.product')" class="dropdown-item" :class="{'active': $page.url === '/product/list'}">
-                        <i class="fa fa-chevron-circle-right me-2"></i> Products
                         </Link>
                     </div>
                 </div>
 
+                <!-- product manage -->
+                <div class="nav-item dropdown"
+                    v-if="authUser && (authUser.type === 'superadmin' || authUser.type === 'admin' || authUser.type === 'vendor')">
+                    <a href="" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
+                        :class="{ 'active': ['/product/list', '/product/slider-list'].includes($page.url) }">
+                        <i class="fa fa-user"></i> Product Manage
+                    </a>
+                    <div class="dropdown-menu bg-transparent border-0">
+                        <Link :href="route('show.product')" class="dropdown-item"
+                            :class="{ 'active': $page.url === '/product/list' }">
+                        <i class="fa fa-chevron-circle-right me-2"></i> Products
+                        </Link>
+                        <Link :href="route('show.product.slider')" class="dropdown-item"
+                            :class="{ 'active': $page.url === '/product/slider-list' }"> <i
+                            class="fa fa-chevron-circle-right me-2"></i> Product
+                        Slider
+                        </Link>
+                    </div>
+                </div>
+                <!-- user manage -->
                 <div class="nav-item dropdown"
                     v-if="authUser && authUser.type === 'superadmin' || authUser && authUser.type === 'admin'">
                     <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
@@ -97,8 +123,7 @@ const imagePreview = ref(
                     </div>
                 </div>
 
-
-                <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Widgets</a>
+                <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Product Slider</a>
                 <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
                 <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
                 <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>
@@ -118,4 +143,14 @@ const imagePreview = ref(
     <!-- Sidebar End -->
 </template>
 
-<style scoped></style>
+<style scoped>
+.nav-link.dropdown-toggle::after {
+    display: inline-block;
+    margin-left: 0.5em;
+    vertical-align: middle;
+    content: "";
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-left: 0.3em solid transparent;
+}
+</style>

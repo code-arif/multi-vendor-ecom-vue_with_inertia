@@ -222,7 +222,7 @@ function handleImageInput(event) {
                                 </div>
                             </div>
                             <div class="form-group col-md-4">
-                                <label class="mb-2" for="remark">Stock Status</label>
+                                <label class="mb-2" for="remark">Remark</label>
                                 <select v-model="form.remark" id="remark" class="form-select"
                                     :class="{ 'is-invalid': form.errors.remark }">
                                     <option value="popular">Popular</option>

@@ -22,6 +22,6 @@ class Section extends Model
         return $this->hasMany(Category::class, 'section_id')
             ->whereNull('parent_id')
             ->where('status', 1)
-            ->select(['id', 'name', 'section_id'])->with('subcategories');
+            ->select(['id', 'name', 'section_id', 'url'])->with('subcategories');
     }
 }

@@ -57,7 +57,6 @@ const form = useForm({
     status: "",
     logo: null,
     description: "",
-
 });
 
 // Function to set form data when editing

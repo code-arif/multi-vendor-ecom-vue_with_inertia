@@ -1,16 +1,17 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
+import { Link } from "@inertiajs/vue3";
 
 const sections = ref([]);
 
 const fetchSections = async () => {
     try {
         const response = await axios.get("/get-header-section");
-        console.log(response.data); // Check if data is received
+        // console.log(response.data); // Check if data is received
         sections.value = response.data;
     } catch (error) {
-        console.error("Error fetching sections:", error);
+        errorToast("Error fetching sections:", error);
     }
 };
 
@@ -21,6 +22,7 @@ onMounted(fetchSections);
     <!-- Navbar Start -->
     <div class="container-fluid bg-dark mb-30">
         <div class="row px-xl-5">
+            <!-- categories -->
             <div class="col-lg-3 d-none d-lg-block">
                 <a class="d-flex align-items-center justify-content-between bg-info w-100" data-bs-toggle="collapse"
                     href="#navbar-vertical" style="height: 65px; padding: 0 30px;">
@@ -39,11 +41,12 @@ onMounted(fetchSections);
                                 style="width: 600px; left: 100%; top: 0;">
                                 <div class="row">
                                     <div class="col-md-4" v-for="category in section.categories" :key="category.id">
-                                        <h6 class="text-info">{{ category.name }}</h6>
-                                        <a href="" class="dropdown-item" v-for="subcategory in category.subcategories"
+                                        <Link :href="route('show.product.by.category',{url:category.url})" class="text-info">{{ category.name }}</Link>
+
+                                        <Link :href="route('show.product.by.category',{url:subcategory.url})" class="dropdown-item" v-for="subcategory in category.subcategories"
                                             :key="subcategory.id">
                                             {{ subcategory.name }}
-                                        </a>
+                                        </Link>
                                     </div>
                                 </div>
                             </div>
@@ -51,41 +54,27 @@ onMounted(fetchSections);
                     </div>
                 </nav>
             </div>
+
+            <!-- other navs -->
             <div class="col-lg-9">
                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
-                    <a href="" class="text-decoration-none d-block d-lg-none">
+                    <Link :href="route('show.home.page')" class="text-decoration-none d-block d-lg-none">
                         <span class="h1 text-uppercase text-dark bg-light px-2">Mini</span>
                         <span class="h1 text-uppercase text-light bg-primary px-2 ml-n1">Shop</span>
-                    </a>
+                    </Link>
                     <button type="button" class="navbar-toggler" data-bs-toggle="collapse"
                         data-target="#navbarCollapse">
                         <span class="navbar-toggler-icon"></span>
                     </button>
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
-                            <a href="index.html" class="nav-item nav-link active">Home</a>
-                            <a href="shop.html" class="nav-item nav-link">Shop</a>
-                            <a href="detail.html" class="nav-item nav-link">Shop Detail</a>
-                            <div class="nav-item dropdown">
-                                <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages <i
-                                        class="fa fa-angle-down mt-1"></i></a>
-                                <div class="dropdown-menu bg-info rounded-0 border-0 m-0">
-                                    <a href="cart.html" class="dropdown-item">Shopping Cart</a>
-                                    <a href="checkout.html" class="dropdown-item">Checkout</a>
-                                </div>
-                            </div>
-                            <a href="contact.html" class="nav-item nav-link">Contact</a>
+
+                            <Link :href="route('show.home.page')" class="nav-item nav-link" :class="{ 'active': $page.url === '/' }">Home</Link>
+
+                            <Link :href="route('show.products.page')" class="nav-item nav-link"
+                            :class="{ 'active': $page.url === '/products' }">Shop</Link>
                         </div>
-                        <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
-                            <a href="" class="btn px-0" style="margin-right: 10px;">
-                                <i class="fas fa-heart text-info" style="margin-right: 5px;"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle">0</span>
-                            </a>
-                            <a href="" class="btn px-0 ml-3">
-                                <i class="fas fa-shopping-cart text-info" style="margin-right: 5px;"></i>
-                                <span class="badge text-secondary border border-secondary rounded-circle">0</span>
-                            </a>
-                        </div>
+
                     </div>
                 </nav>
             </div>

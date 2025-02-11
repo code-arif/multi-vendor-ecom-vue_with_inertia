@@ -12,7 +12,7 @@ import FeaturedProductComponent from '../../../Components/User/Home/FeaturedProd
     </Head>
     <GuestLayout>
         <ProductDetailsComponent />
-        <FeaturedProductComponent />
+        <!-- <FeaturedProductComponent /> -->
     </GuestLayout>
 </template>
 

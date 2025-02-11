@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('zip', 20)->nullable();
             $table->string('pin', 20);
             $table->tinyInteger('status');
+            $table->enum('confirm', ['yes', 'No'])->default('No');
             $table->timestamps();
         });
     }

@@ -16,7 +16,8 @@ class Vendor extends Model
         'country',
         'zip',
         'pin',
-        'status'
+        'status',
+        'confirm',
     ];
     protected $hidden = ['created_at', 'updated_at' ];
 

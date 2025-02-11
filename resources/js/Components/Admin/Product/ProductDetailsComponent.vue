@@ -4,16 +4,7 @@ import { Link, usePage } from '@inertiajs/vue3';
 
 // Product details receive from props
 const list = usePage();
-const productDetails = ref(list.props.productDetails || {});
-
-// Parse policies safely
-const parsedPolicies = computed(() => {
-    try {
-        return JSON.parse(productDetails.value?.product_details?.policies || '[]');
-    } catch {
-        return [];
-    }
-});
+const productDetails = list.props.productDetails || [];
 </script>
 
 
@@ -28,36 +19,37 @@ const parsedPolicies = computed(() => {
                     </div>
                     <hr>
                     <div class="row">
+                        <!-- product image -->
                         <div class="col-md-5 mb-30">
                             <div id="product-carousel" class="carousel slide" data-bs-ride="carousel">
                                 <div class="carousel-inner bg-light">
-                                    <div class="carousel-item">
+                                    <!-- Primary Image (From product table) -->
+                                    <div class="carousel-item active">
                                         <img class="w-100 h-100"
                                             :src="productDetails.image ? `/storage/${productDetails.image}` : 'https://skala.or.id/wp-content/uploads/2024/01/dummy-post-square-1-1.jpg'"
                                             alt="Image">
                                     </div>
-                                    <div id="productCarousel" class="carousel slide" data-bs-ride="carousel">
-                                        <div class="carousel-inner">
-                                            <div class="carousel-item"
-                                                v-for="(image, index) in productDetails.product_images" :key="index"
-                                                :class="{ 'active': index === 0 }">
 
-                                                <img class="w-100 h-100"
-                                                    :src="image.image_path ? `/storage/${image.image_path}` : 'https://skala.or.id/wp-content/uploads/2024/01/dummy-post-square-1-1.jpg'"
-                                                    alt="Product Image">
-                                            </div>
-                                        </div>
+                                    <!-- Extra Images (From product_images table) -->
+                                    <div class="carousel-item" v-for="(image, index) in productDetails.product_images"
+                                        :key="index">
+                                        <img class="w-100 h-100"
+                                            :src="image.image_path ? `/storage/${image.image_path}` : 'https://skala.or.id/wp-content/uploads/2024/01/dummy-post-square-1-1.jpg'"
+                                            alt="Product Image">
                                     </div>
-                                    <a class="carousel-control-prev" href="#product-carousel" data-bs-slide="prev">
-                                            <i class="fa fa-2x fa-angle-left text-dark"></i>
-                                        </a>
-                                        <a class="carousel-control-next" href="#product-carousel" data-bs-slide="next">
-                                            <i class="fa fa-2x fa-angle-right text-dark"></i>
-                                        </a>
                                 </div>
+
+                                <a class="carousel-control-prev" href="#product-carousel" data-bs-slide="prev">
+                                    <i class="fa fa-2x fa-angle-left text-dark"></i>
+                                </a>
+                                <a class="carousel-control-next" href="#product-carousel" data-bs-slide="next">
+                                    <i class="fa fa-2x fa-angle-right text-dark"></i>
+                                </a>
                             </div>
+
                         </div>
 
+                        <!-- product details -->
                         <div class="col-md-7 h-auto mb-30">
                             <div class="h-100 bg-light p-30">
                                 <h3>{{ productDetails.product_name }}</h3>
@@ -72,7 +64,9 @@ const parsedPolicies = computed(() => {
                                     <small class="pt-1">(99 Reviews) <span class="text-danger">(Not
                                             functional)</span></small>
                                 </div>
-                                <h3 class="font-weight-semi-bold mb-4">Price(৳) {{ productDetails.price }}</h3>
+                                <h5 class="font-weight-semi-bold mb-3">Price(৳): {{ productDetails.price }}</h5>
+                                <h6 class="mb-3 text-muted">Additional Price(৳): {{
+                                    productDetails.specifications?.additional_price ?? "N/A" }}</h6>
                                 <p class="mb-4">{{ productDetails.short_description }}</p>
 
                                 <h4>Product Summary:</h4>
@@ -110,7 +104,8 @@ const parsedPolicies = computed(() => {
                                                 <td class="text-nowrap">{{ productDetails.remark }}</td>
                                                 <td class="text-nowrap">{{ productDetails.has_discount == 1 ? 'Yes' :
                                                     'No' }}</td>
-                                                <td class="text-nowrap">{{ productDetails?.discount_price || 'N/A' }}</td>
+                                                <td class="text-nowrap">{{ productDetails?.discount_price || 'N/A' }}
+                                                </td>
                                                 <td class="text-nowrap">{{ productDetails.status == 1 ? 'Active' :
                                                     'Inactive' }}</td>
                                                 <td class="text-nowrap">{{ productDetails.is_featured == 1 ? 'Yes' :
@@ -133,71 +128,96 @@ const parsedPolicies = computed(() => {
                                     <a class="nav-item nav-link text-dark" data-bs-toggle="tab"
                                         href="#tab-pane-2">Specifications</a>
                                     <a class="nav-item nav-link text-dark" data-bs-toggle="tab"
-                                        href="#tab-pane-3">Policies</a>
+                                        href="#tab-pane-3">Meta</a>
                                     <a class="nav-item nav-link text-dark" data-bs-toggle="tab"
-                                        href="#tab-pane-4">Meta</a>
-                                    <a class="nav-item nav-link text-dark" data-bs-toggle="tab"
-                                        href="#tab-pane-5">Reviews (0) <span class="text-danger">Not
+                                        href="#tab-pane-4">Reviews (0) <span class="text-danger">Not
                                             functional</span></a>
                                 </div>
                                 <div class="tab-content">
+
                                     <div class="tab-pane fade show active" id="tab-pane-1">
                                         <h4 class="mb-3">Product Description</h4>
                                         <p>{{ productDetails.product_details?.long_description || "N/A" }}</p>
                                     </div>
+
                                     <div class="tab-pane fade" id="tab-pane-2">
                                         <h4 class="mb-3"></h4>
                                         <div class="row">
                                             <!-- Attributes List -->
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 <ul class="list-group list-group-flush">
-                                                    <li class="list-group-item"
-                                                        v-for="(spec, index) in productDetails.specifications"
-                                                        :key="index">
-                                                        {{ spec.attribute }}
-                                                    </li>
+                                                    <li class="list-group-item">Size</li>
+                                                    <li class="list-group-item">Color</li>
+                                                    <li class="list-group-item">Material</li>
+                                                    <li class="list-group-item">Weight</li>
+                                                    <li class="list-group-item">Length</li>
+                                                    <li class="list-group-item">Width</li>
+                                                    <li class="list-group-item">Height</li>
+                                                    <li class="list-group-item">Volume</li>
+                                                    <li class="list-group-item">Weight Unit</li>
+                                                    <li class="list-group-item">Length Unit</li>
+                                                    <li class="list-group-item">Width Unit</li>
+                                                    <li class="list-group-item">Height Unit</li>
+                                                    <li class="list-group-item">Volume Unit</li>
+                                                    <li class="list-group-item">Additional Price</li>
                                                 </ul>
                                             </div>
+
                                             <!-- Values List -->
-                                            <div class="col-md-10">
+                                            <div class="col-md-9">
                                                 <ul class="list-group list-group-flush">
-                                                    <li class="list-group-item"
-                                                        v-for="(spec, index) in productDetails.specifications"
-                                                        :key="index">
-                                                        {{ spec.value }}
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.size || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.color || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.material || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.weight || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.length || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.width || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.height || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.volume || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.weight_unit || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.length_unit || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.width_unit || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.height_unit || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.volume_unit || "N/A" }}
+                                                    </li>
+                                                    <li class="list-group-item">
+                                                        {{ productDetails.specifications?.additional_price || "N/A" }}
                                                     </li>
                                                 </ul>
                                             </div>
                                         </div>
                                     </div>
+
                                     <div class="tab-pane fade" id="tab-pane-3">
                                         <h4 class="mb-3"></h4>
                                         <div class="row">
                                             <!-- Keys List -->
-                                            <div class="col-md-2">
-                                                <ul class="list-group list-group-flush">
-                                                    <li class="list-group-item"
-                                                        v-for="(policy, index) in parsedPolicies" :key="index">
-                                                        {{ policy.key }}
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <!-- Values List -->
-                                            <div class="col-md-10">
-                                                <ul class="list-group list-group-flush">
-                                                    <li class="list-group-item"
-                                                        v-for="(policy, index) in parsedPolicies" :key="index">
-                                                        {{ policy.value }}
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="tab-pane fade" id="tab-pane-4">
-                                        <h4 class="mb-3"></h4>
-                                        <div class="row">
-                                            <!-- Keys List -->
-                                            <div class="col-md-2">
+                                            <div class="col-md-3">
                                                 <ul class="list-group list-group-flush">
                                                     <li class="list-group-item">
                                                         Meta Keyword
@@ -211,7 +231,7 @@ const parsedPolicies = computed(() => {
                                                 </ul>
                                             </div>
                                             <!-- Values List -->
-                                            <div class="col-md-10">
+                                            <div class="col-md-9">
                                                 <ul class="list-group list-group-flush">
                                                     <li class="list-group-item">
                                                         {{ productDetails.meta_keywords ?? 'N/A' }}
@@ -226,6 +246,7 @@ const parsedPolicies = computed(() => {
                                             </div>
                                         </div>
                                     </div>
+                                    
                                     <div class="tab-pane fade" id="tab-pane-4">
                                         <div class="row">
                                             <div class="col-md-6">

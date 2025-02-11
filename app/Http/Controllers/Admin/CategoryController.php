@@ -86,12 +86,9 @@ class CategoryController extends Controller
             'section_id.exists' => 'Selected section does not exist.',
             'parent_id.exists' => 'Selected parent category does not exist.',
             'description.max' => 'Description cannot exceed 500 characters.',
-            // 'image.image' => 'The image must be a valid image file.',
-            // 'image.mimes' => 'The image format must be jpeg, png, jpg, or webp.',
             'image.max' => 'Image size should not exceed 2MB.',
             'discount.numeric' => 'Discount must be a numeric value.',
             'discount.min' => 'Discount cannot be negative.',
-            'url.url' => 'Please enter a valid URL, e.g., https://xyz.com',
             'meta_title.max' => 'Meta title cannot exceed 255 characters.',
             'meta_description.max' => 'Meta description cannot exceed 500 characters.',
             'meta_keywords.max' => 'Meta keywords cannot exceed 255 characters.',
@@ -107,7 +104,6 @@ class CategoryController extends Controller
                 'description' => 'nullable|max:500',
                 'image' => 'nullable|max:2048',
                 'discount' => 'nullable|numeric|min:0',
-                'url' => 'nullable|string|url',
                 'meta_title' => 'nullable|max:255',
                 'meta_description' => 'nullable|max:500',
                 'meta_keywords' => 'nullable|max:255',
@@ -115,6 +111,17 @@ class CategoryController extends Controller
             ],
             $messages,
         );
+
+        //Generate URL from category name
+        $validatedData['url'] = strtolower(str_replace(' ', '_', trim($request->name)));
+
+        // Ensure URL is unique in categories table
+        $counter = 1;
+        $originalUrl = $validatedData['url'];
+        while (Category::where('url', $validatedData['url'])->exists()) {
+            $validatedData['url'] = $originalUrl . '_' . $counter;
+            $counter++;
+        }
 
         // Handle image upload properly
         if ($request->hasFile('image')) {
@@ -126,15 +133,25 @@ class CategoryController extends Controller
             $validatedData['image'] = $image_url;
         }
 
-        // Create category
+        //Create category
         $category = Category::create($validatedData);
 
         if ($category) {
-            $data = ['message' => 'Category created successfully', 'status' => true, 'code' => 200];
-            return redirect()->route('show.category')->with($data);
+            return redirect()
+                ->route('show.category')
+                ->with([
+                    'message' => 'Category created successfully',
+                    'status' => true,
+                    'code' => 200,
+                ]);
         } else {
-            $data = ['message' => 'Failed to create category', 'status' => false, 'code' => 500];
-            return redirect()->back()->with($data);
+            return redirect()
+                ->back()
+                ->with([
+                    'message' => 'Failed to create category',
+                    'status' => false,
+                    'code' => 500,
+                ]);
         }
     }
 
@@ -157,12 +174,9 @@ class CategoryController extends Controller
             'section_id.exists' => 'Selected section does not exist.',
             'parent_id.exists' => 'Selected parent category does not exist.',
             'description.max' => 'Description cannot exceed 500 characters.',
-            // 'image.image' => 'The image must be a valid image file.',
-            // 'image.mimes' => 'The image format must be jpeg, png, jpg, or webp.',
             'image.max' => 'Image size should not exceed 2MB.',
             'discount.numeric' => 'Discount must be a numeric value.',
             'discount.min' => 'Discount cannot be negative.',
-            'url.url' => 'Please enter a valid URL, e.g., https://xyz.com',
             'meta_title.max' => 'Meta title cannot exceed 255 characters.',
             'meta_description.max' => 'Meta description cannot exceed 500 characters.',
             'meta_keywords.max' => 'Meta keywords cannot exceed 255 characters.',
@@ -178,7 +192,6 @@ class CategoryController extends Controller
                 'description' => 'nullable|max:500',
                 'image' => 'nullable|max:2048',
                 'discount' => 'nullable|numeric|min:0',
-                'url' => 'nullable|url',
                 'meta_title' => 'nullable|max:255',
                 'meta_description' => 'nullable|max:500',
                 'meta_keywords' => 'nullable|max:255',
@@ -186,6 +199,21 @@ class CategoryController extends Controller
             ],
             $messages,
         );
+
+        // Check if name is changed, then update URL, otherwise keep old URL
+        if ($category->name !== $request->name) {
+            $validatedData['url'] = strtolower(str_replace(' ', '_', trim($request->name)));
+
+            // Ensure URL is unique in categories table
+            $counter = 1;
+            $originalUrl = $validatedData['url'];
+            while (Category::where('url', $validatedData['url'])->where('id', '!=', $id)->exists()) {
+                $validatedData['url'] = $originalUrl . '_' . $counter;
+                $counter++;
+            }
+        } else {
+            $validatedData['url'] = $category->url; // Keep the old URL
+        }
 
         // Handle image upload
         if ($request->hasFile('image')) {
@@ -213,7 +241,6 @@ class CategoryController extends Controller
             return redirect()->back()->with($data);
         }
     }
-
 
     //========================delete category========================//
     public function deleteCategory($id)

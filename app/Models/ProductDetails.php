@@ -9,6 +9,5 @@ class ProductDetails extends Model
     protected $fillable = [
         'product_id',
         'long_description',
-        'policies'
     ];
 }

@@ -12,26 +12,31 @@ const imagePreview = ref(
     product?.image ? `/storage/${product?.image}` : 'https://skala.or.id/wp-content/uploads/2024/01/dummy-post-square-1-1.jpg'
 );
 
-//==================product sepcification====================//
-// Form data using Inertia's useForm
+//================== Product Specification Form ====================//
 const form = useForm({
     product_id: product?.id || '',
+    size: product_specifications?.size || '',
+    color: product_specifications?.color || '',
+    material: product_specifications?.material || '',
+    weight: product_specifications?.weight || '',
+    weight_unit: product_specifications?.weight_unit || 'kg',
+    length: product_specifications?.length || '',
+    length_unit: product_specifications?.length_unit || 'cm',
+    width: product_specifications?.width || '',
+    width_unit: product_specifications?.width_unit || 'cm',
+    height: product_specifications?.height || '',
+    height_unit: product_specifications?.height_unit || 'cm',
+    volume: product_specifications?.volume || '',
+    volume_unit: product_specifications?.volume_unit || 'cm3',
     additional_price: product_specifications?.additional_price || '',
-    specifications: product_specifications?.specifications || [{ attribute: "", value: "" }],
 });
-// Function to add new specification input fields
-function addSpecification() {
-    form.specifications.push({ attribute: "", value: "" });
-}
-
-// Function to remove a specification field
-function removeSpecification(index) {
-    form.specifications.splice(index, 1);
-}
 
 // Function to submit form data
 function saveSpecification() {
-    form.post(route('save.product.specification'), {
+    const routeName = product_specifications?.id ? "update.product.specification" : "save.product.specification";
+
+    const requestData = form.product_id ? { product_id: form.product_id } : {};
+    form.post(route(routeName, requestData), {
         onSuccess: () => {
             if (list.props.flash.status === true) {
                 successToast(list.props.flash.message);
@@ -43,10 +48,34 @@ function saveSpecification() {
         onError: (errors) => {
             if (errors.product_id) {
                 errorToast(errors.product_id);
+            } else if (errors.size) {
+                errorToast(errors.size);
+            } else if (errors.color) {
+                errorToast(errors.color);
+            } else if (errors.material) {
+                errorToast(errors.material);
+            } else if (errors.weight) {
+                errorToast(errors.weight);
+            } else if (errors.weight_unit) {
+                errorToast(errors.weight_unit);
+            } else if (errors.length) {
+                errorToast(errors.length);
+            } else if (errors.length_unit) {
+                errorToast(errors.length_unit);
+            } else if (errors.width) {
+                errorToast(errors.width);
+            } else if (errors.width_unit) {
+                errorToast(errors.width_unit);
+            } else if (errors.height) {
+                errorToast(errors.height);
+            } else if (errors.height_unit) {
+                errorToast(errors.height_unit);
+            } else if (errors.volume) {
+                errorToast(errors.volume);
+            } else if (errors.volume_unit) {
+                errorToast(errors.volume_unit);
             } else if (errors.additional_price) {
                 errorToast(errors.additional_price);
-            } else if (errors.specifications) {
-                errorToast(errors.specifications);
             } else {
                 errorToast('Failed to save product specification');
             }
@@ -122,7 +151,7 @@ function saveProductImage() {
                         <Link class="btn btn-sm btn-primary" :href="route('show.product')">Back to list</Link>
                     </div>
                     <hr>
-                    <div class="card">
+                    <div class="card mb-3">
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <img :src="imagePreview" alt="Product Image" width="150">
                             <div>
@@ -132,42 +161,89 @@ function saveProductImage() {
                         </div>
                     </div>
 
+                    <hr>
                     <!-- Form to Add/Edit Product Specifications -->
                     <form @submit.prevent="saveSpecification">
                         <input type="hidden" v-model="form.product_id">
 
-                        <div class="mb-3 mt-3">
-                            <label for="additional_price">Additional Price</label>
-                            <input type="number" id="additional_price" class="form-control"
-                                v-model="form.additional_price" :class="{ 'is-invalid': form.errors.additional_price }">
-                            <div v-if="form.errors.additional_price" class="invalid-feedback">
-                                {{ form.errors.additional_price }}
+                        <div class="mb-3">
+                            <label for="size">Size</label>
+                            <input type="text" id="size" class="form-control" v-model="form.size">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="color">Color</label>
+                            <input type="text" id="color" class="form-control" v-model="form.color">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="material">Material</label>
+                            <input type="text" id="material" class="form-control" v-model="form.material">
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="weight">Weight</label>
+                            <input type="number" step="0.01" id="weight" class="form-control" v-model="form.weight">
+                            <select v-model="form.weight_unit" class="form-select mt-1">
+                                <option value="kg">kg</option>
+                                <option value="g">g</option>
+                                <option value="lb">lb</option>
+                            </select>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="length">Length</label>
+                                <input type="number" step="0.01" id="length" class="form-control" v-model="form.length">
+                                <select v-model="form.length_unit" class="form-select mt-1">
+                                    <option value="cm">cm</option>
+                                    <option value="m">m</option>
+                                    <option value="in">in</option>
+                                    <option value="ft">ft</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="width">Width</label>
+                                <input type="number" step="0.01" id="width" class="form-control" v-model="form.width">
+                                <select v-model="form.width_unit" class="form-select mt-1">
+                                    <option value="cm">cm</option>
+                                    <option value="m">m</option>
+                                    <option value="in">in</option>
+                                    <option value="ft">ft</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="height">Height</label>
+                                <input type="number" step="0.01" id="height" class="form-control" v-model="form.height">
+                                <select v-model="form.height_unit" class="form-select mt-1">
+                                    <option value="cm">cm</option>
+                                    <option value="m">m</option>
+                                    <option value="in">in</option>
+                                    <option value="ft">ft</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="volume">Volume</label>
+                                <input type="number" step="0.01" id="volume" class="form-control" v-model="form.volume">
+                                <select v-model="form.volume_unit" class="form-select mt-1">
+                                    <option value="cm3">cm³</option>
+                                    <option value="m3">m³</option>
+                                    <option value="L">L</option>
+                                </select>
                             </div>
                         </div>
 
-                        <!-- Specifications Section -->
                         <div class="mb-3">
-                            <label style="margin-right: 10px;">Product Specifications</label>
-                            <div v-for="(spec, index) in form.specifications" :key="index" class="d-flex gap-2 mb-2">
-                                <input v-model="spec.attribute" class="form-control w-50"
-                                    placeholder="Attribute (e.g., Color, Size)" required
-                                    :class="{ 'is-invalid': form.errors.attribute }" />
-                                <input v-model="spec.value" class="form-control w-50" placeholder="Value (e.g., Red, L)"
-                                    required :class="{ 'is-invalid': form.errors.value }" />
-                                <button type="button" class="btn btn-outline-danger btn-sm"
-                                    @click="removeSpecification(index)">×</button>
-
-                                <div v-if="form.errors.attribute" class="invalid-feedback">
-                                    {{ form.errors.attribute }}
-                                </div>
-                                <div v-if="form.errors.value" class="invalid-feedback"> {{ form.errors.value }}</div>
-                            </div>
-                            <button type="button" class="btn btn-sm btn-primary" @click="addSpecification">+ Add
-                                Specification</button>
+                            <label for="additional_price">Additional Price</label>
+                            <input type="number" step="0.01" id="additional_price" class="form-control"
+                                v-model="form.additional_price">
                         </div>
 
                         <!-- Submit Button -->
-                        <button type="submit" class="btn btn-primary w-100"> Submit </button>
+                        <button type="submit" class="btn btn-primary w-100">Submit</button>
                     </form>
                 </div>
             </div>
@@ -189,7 +265,7 @@ function saveProductImage() {
                                     :class="{ 'is-invalid': img_form.errors.image_path }">
 
                                 <div v-if="img_form.errors.image_path" class="invalid-feedback">
-                                    {{img_form.errors.image_path }}
+                                    {{ img_form.errors.image_path }}
                                 </div>
 
                                 <div class="d-flex flex-wrap mt-2">

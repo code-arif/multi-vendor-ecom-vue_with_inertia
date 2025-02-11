@@ -61,8 +61,6 @@ const ChangeCategory = () => {
                 errorToast(errors.section_id);
             } else if (errors.name) {
                 errorToast(errors.name);
-            } else if (errors.url) {
-                errorToast(errors.url);
             } else if (errors.discount) {
                 errorToast(errors.discount);
             } else if (errors.description) {
@@ -174,16 +172,6 @@ const ChangeCategory = () => {
                             <label for="floatingDis">Discount</label>
                             <div v-if="form.errors.discount" class="invalid-feedback">
                                 {{ form.errors.discount }}
-                            </div>
-                        </div>
-
-                        <!-- URL -->
-                        <div class="form-floating mb-3">
-                            <input v-model="form.url" type="text" class="form-control" id="floatingUrl"
-                                placeholder="Url" :class="{ 'is-invalid': form.errors.url }">
-                            <label for="floatingUrl">URL</label>
-                            <div v-if="form.errors.url" class="invalid-feedback">
-                                {{ form.errors.url }}
                             </div>
                         </div>
 

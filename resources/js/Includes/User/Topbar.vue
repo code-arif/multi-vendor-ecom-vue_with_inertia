@@ -13,12 +13,15 @@ import { Link } from '@inertiajs/vue3';
                     <Link class="text-white" href="" style="margin-right: 10px;">FAQs</Link>
                 </div>
             </div>
+
             <div class="text-center">
+                <Link :href="route('show.vendor.account.create.page')" type="button" class="btn btn-sm btn-light" style="margin-right: 10px;">Become a Saller</Link>
+
                 <div class="btn-group">
                     <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">My
                         Account</button>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <button class="dropdown-item" type="button">Sign in</button>
+                        <Link :href="route('show.user.login')" class="dropdown-item" type="button">Sign in</Link>
                         <button class="dropdown-item" type="button">Sign up</button>
                     </div>
                 </div>
@@ -26,7 +29,7 @@ import { Link } from '@inertiajs/vue3';
         </div>
         <div class="row align-items-center bg-light py-3 px-xl-5 d-none d-lg-flex">
             <div class="col-lg-4">
-                <Link href="" class="text-decoration-none">
+                <Link href="/" class="text-decoration-none">
                 <span class="h1 text-uppercase text-info bg-dark px-2">Mini</span>
                 <span class="h1 text-uppercase text-light bg-info px-2 ml-n1">Shop</span>
                 </Link>

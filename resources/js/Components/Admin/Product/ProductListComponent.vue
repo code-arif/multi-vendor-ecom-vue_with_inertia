@@ -15,6 +15,7 @@ const Header = [
     { text: "Status", value: "status", sortable: true },
     { text: "Remark", value: "remark", sortable: true },
     { text: "Category", value: "category", sortable: true },
+    { text: "Is Featured", value: "is_featured", sortable: true },
     { text: "Brand", value: "brand", sortable: true },
     { text: "Added By", value: "added_by" },
     { text: "Type", value: "type" },
@@ -34,7 +35,7 @@ const Item = computed(() => {
         status: product.status == 1 ? "Active" : "Inactive",
         remark: product.remark,
         category: product.category.name || "N/A",
-        // section: product.section.sec_name || "N/A",
+        is_featured: product.is_featured == 1 ? "Featured" : "Not Featured",
         brand: product.brand?.name || "N/A",
         added_by: product.admin?.name || "N/A",
         type: product.admin?.type || "N/A",
@@ -140,6 +141,10 @@ function deleteProduct() {
                                 </template>
                             </template>
 
+                            <template #item-is_featured = "{is_featured}">
+                                <span :class="is_featured === 'Featured' ? 'text-primary' : 'text-danger'">{{ is_featured }}</span>
+                            </template>
+
 
                             <template #item-added_date="{ added_date }">
                                 {{ moment(added_date).format("MMM Do YYYY, h:mm A") }}
@@ -178,7 +183,7 @@ function deleteProduct() {
                                     <i class="fa fa-plus"></i>
                                     </Link>
                                     <Link class="btn btn-sm btn-outline-info me-2" :href="route('show.product.specification', {id: id})">
-                                        <i class="fa fa-plus-square" aria-hidden="true"></i>
+                                        <i class="fa fa-bars" aria-hidden="true"></i>
                                     </Link>
                                     <Link class="btn btn-sm btn-outline-primary me-2"
                                         :href="route('show.save.product', { id: id })">
