@@ -1,6 +1,6 @@
 <script setup>
 import { ref } from 'vue';
-import { useForm, usePage } from '@inertiajs/vue3';
+import { useForm, usePage, Head, Link } from '@inertiajs/vue3';
 import VendorAccountLayout from '../../../Layouts/VendorAccountLayout.vue';
 
 const list = usePage();
@@ -32,8 +32,9 @@ function submitForm() {
                 isSubmitting.value = false;
             } else {
                 errorToast(list.props.flash.message);
-                isSubmitting.value = false;
             }
+
+            isSubmitting.value = false;
         },
         onError: (errors) => {
             console.log(errors);
@@ -67,6 +68,11 @@ function submitForm() {
 </script>
 
 <template>
+
+<Head>
+    <title>Mini Shop || Vendor Account</title>
+</Head>
+
     <VendorAccountLayout>
         <div class="position-relative bg-white d-flex p-0">
             <div class="container-fluid">
@@ -176,7 +182,8 @@ function submitForm() {
                                     {{ isSubmitting ? 'Creating Account...' : 'Create Account' }}
                                 </button>
                             </form>
-                            <p class="text-center mb-0">Already have an Account? <a href="">Sign In</a></p>
+                            <p class="text-center mb-0">Already have an Account? <Link :href="route('show.admin.login')">Sign In</Link></p>
+                            <p class="text-center mb-0"><Link :href="route('show.home.page')"><i class="fa fa-arrow-left me-2"></i> Back to Home</Link></p>
                         </div>
                     </div>
                 </div>

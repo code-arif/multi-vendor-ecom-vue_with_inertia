@@ -9,25 +9,30 @@ use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
-class VendorConfirmationMail extends Mailable
+class VendorStatusMail extends Mailable
 {
     use Queueable, SerializesModels;
 
     /**
      * Create a new message instance.
      */
-    public $vendor;
 
-    public function __construct($vendor)
+    public $vendor;
+    public $status;
+    public function __construct($vendor, $status)
     {
         $this->vendor = $vendor;
+        $this->status = $status;
     }
 
     public function build()
     {
-        return $this->subject('Confirm Your Account')
-            ->view('emails.vendor_confirmation')
-            ->with(['code' => base64_encode($this->vendor->email)]);
+        return $this->subject('Account Status Update')
+            ->view('emails.vendor_status')
+            ->with([
+                'vendorName' => $this->vendor->name,
+                'status' => $this->status,
+            ]);
     }
 
     /**
@@ -35,7 +40,7 @@ class VendorConfirmationMail extends Mailable
      */
     public function envelope(): Envelope
     {
-        return new Envelope(subject: 'Vendor Confirmation Mail');
+        return new Envelope(subject: 'Vendor Status Mail');
     }
 
     /**
@@ -43,7 +48,7 @@ class VendorConfirmationMail extends Mailable
      */
     public function content(): Content
     {
-        return new Content(view: 'emails.vendor_confirmation');
+        return new Content(view: 'emails.vendor_status');
     }
 
     /**

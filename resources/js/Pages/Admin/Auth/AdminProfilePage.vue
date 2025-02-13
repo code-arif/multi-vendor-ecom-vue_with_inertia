@@ -12,7 +12,6 @@ const form = useForm({
     name: admin.name || '',
     type: admin.type || '',
     mobile: admin.mobile || '',
-    status: admin.status || '',
     zip: admin.zip || '',
     address: admin.address || '',
     image: admin.image || ''
@@ -52,8 +51,6 @@ const updateAdminProfile = () => {
                 errorToast(errors.name);
             } else if (errors.mobile) {
                 errorToast(errors.mobile);
-            } else if (errors.status) {
-                errorToast(errors.status);
             } else if (errors.zip) {
                 errorToast(errors.zip);
             } else if (errors.address) {
@@ -158,19 +155,6 @@ function UpdatePassword() {
                                 <label for="floatingMobile">Mobile</label>
                                 <div v-if="form.errors.mobile" class="invalid-feedback">
                                     {{ form.errors.mobile }}
-                                </div>
-                            </div>
-
-                            <div class="form-floating mb-3">
-                                <select v-model="form.status" class="form-select" id="floatingSelect"
-                                    :class="{ 'is-invalid': form.errors.status }">
-                                    <option>Select Status</option>
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                </select>
-                                <label for="floatingSelect">Status</label>
-                                <div v-if="form.errors.status" class="invalid-feedback">
-                                    {{ form.errors.status }}
                                 </div>
                             </div>
 

@@ -22,7 +22,7 @@ return new class extends Migration {
             $table->string('address')->nullable();
             $table->string('zip')->nullable();
             $table->tinyInteger('status');
-            $table->enum('confirm', ['Yes', 'No'])->default('No');
+            $table->enum('confirm', ['yes', 'no'])->default('no');
             $table->timestamps();
         });
     }

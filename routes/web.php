@@ -115,6 +115,7 @@ Vendor Route
 ================================*/
 Route::get('/vendor-account',[VendorController::class,'showVendorAccountCreatePage'])->name('show.vendor.account.create.page');
 Route::post('/vendor-account',[VendorController::class,'createVendorAccount'])->name('create.vendor.account');
+Route::get('/vendor/confirm/{code}',[VendorController::class,'vendorConfirmation']);
 
 
 /*================================

@@ -90,13 +90,15 @@ const toggleStatus = (id, currentStatus) => {
                                     {{ type }}
                                 </span>
                             </template>
-                            <template #item-status="{ status, id }">
-                                <button @click="toggleStatus(id, status)"
+
+                            <template #item-status="{ status, id, type }">
+                                <button v-if="type !== 'superadmin'" @click="toggleStatus(id, status)"
                                     :class="status === 'Active' ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-outline-danger'"
                                     class="btn btn-sm">
                                     {{ status }}
                                 </button>
                             </template>
+
                             <template #item-image="{ image }">
                                 <img :src="image ? `/storage/${image}` : 'https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?uid=R75970278&ga=GA1.1.215570311.1722317775&semt=ais_hybrid'"
                                     alt="Profile image" style="width: 50px; height: 50px; object-fit: cover;"

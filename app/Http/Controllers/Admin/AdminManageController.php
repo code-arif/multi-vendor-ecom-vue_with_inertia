@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin;
 
+use Inertia\Inertia;
 use App\Models\Admin;
 use Illuminate\Http\Request;
+use App\Mail\VendorStatusMail;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
+use Illuminate\Support\Facades\Mail;
 
 class AdminManageController extends Controller
 {
@@ -56,9 +58,27 @@ class AdminManageController extends Controller
     }
 
     //=====================change status of admin/subadmin/vendor=====================//
+    // public function changeStatus($id, Request $request)
+    // {
+    //     // Check if the logged-in user is superadmin or admin
+    //     if (!in_array(Auth::guard('admin')->user()->type, ['superadmin', 'admin'])) {
+    //         return response()->json(['error' => 'Unauthorized access'], 403);
+    //     }
+
+    //     $admin = Admin::find($id);
+    //     if (!$admin) {
+    //         return response()->json(['error' => 'Admin not found'], 404);
+    //     }
+
+    //     $admin->status = $request->status;
+    //     $admin->save();
+
+    //     $data = ['message' => 'Status changed successfully', 'status' => $admin->status, 'code' => 200];
+    //     return redirect()->back()->with($data);
+    // }
+
     public function changeStatus($id, Request $request)
     {
-        // Check if the logged-in user is superadmin or admin
         if (!in_array(Auth::guard('admin')->user()->type, ['superadmin', 'admin'])) {
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
@@ -68,10 +88,12 @@ class AdminManageController extends Controller
             return response()->json(['error' => 'Admin not found'], 404);
         }
 
-        $admin->status = $request->status; // Get status from the request
+        $admin->status = $request->status;
         $admin->save();
 
-        $data = ['message' => 'Status changed successfully', 'status' => $admin->status, 'code' => 200];
-        return redirect()->back()->with($data);
+        // Email Pathano
+        Mail::to($admin->email)->send(new VendorStatusMail($admin, $request->status));
+
+        return redirect()->back()->with('message', 'Status changed and email sent successfully');
     }
 }

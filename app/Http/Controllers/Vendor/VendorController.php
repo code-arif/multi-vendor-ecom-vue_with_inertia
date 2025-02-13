@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers\Vendor;
 
+use Exception;
 use Inertia\Inertia;
 use App\Models\Admin;
 use App\Models\Vendor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Mail\VendorConfirmationMail;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 
@@ -47,18 +49,21 @@ class VendorController extends Controller
         ];
 
         try {
-            $request->validate([
-                'name' => 'required|max:50',
-                'email' => 'required|email|unique:vendors',
-                'phone' => 'required|numeric',
-                'address' => 'required|max:250',
-                'city' => 'required|max:50',
-                'state' => 'nullable|max:50',
-                'country' => 'required|max:50',
-                'zip' => 'nullable|numeric',
-                'password' => 'required|min:4',
-                'confirm_password' => 'required|same:password',
-            ], $rule);
+            $request->validate(
+                [
+                    'name' => 'required|max:50',
+                    'email' => 'required|email|unique:vendors',
+                    'phone' => 'required|numeric',
+                    'address' => 'required|max:250',
+                    'city' => 'required|max:50',
+                    'state' => 'nullable|max:50',
+                    'country' => 'required|max:50',
+                    'zip' => 'nullable|numeric',
+                    'password' => 'required|min:4',
+                    'confirm_password' => 'required|same:password',
+                ],
+                $rule,
+            );
 
             // Insert data into vendor table
             $vendor = Vendor::create([
@@ -85,28 +90,53 @@ class VendorController extends Controller
                 'status' => 0,
             ]);
 
-            //send confirmation email
-            $message = 'Your account has been created successfully. Please verify your email address to activate your account.';
-            $email = $request->email;
-            $messageData = [
-                'email' => $email,
-                'name' => $request->name,
-                'code' => base64_encode($email)
-            ];
-
-            Mail::send('Email.VendorConfirmation', $messageData, function($message)use($email){
-                $message->to($email)->subject('Confirm Your Account');
-            });
+            // Send email using Laravel Mailables
+            Mail::to($vendor->email)->send(new VendorConfirmationMail($vendor));
 
             DB::commit();
 
-            $data = ['message' => 'Vendor account created successfully', 'status' => true];
-            return redirect()->back()->with($data);
-        } catch (\Exception $e) {
+            $data = ['message' => 'Your account has been created successfully. Please verify your email address to activate your account', 'status' => true];
+            return redirect()->route('show.admin.login')->with($data);
+        } catch (Exception $e) {
             DB::rollBack();
 
-            $data = ['message' => 'Error creating vendor account', 'status' => false];
+            $data = ['message' => $e->getMessage()];
+            // $data = ['message' => ' An error occurred while creating your account', 'status' => false];
             return redirect()->back()->with($data);
         }
     }
+
+    //=====================vendor confimation =====================//
+    public function vendorConfirmation($email) {
+        $email = base64_decode($email);
+
+        $vendor = Vendor::where('email', $email)->first();
+        $admin = Admin::where('email', $email)->first();
+
+        if (!$vendor || !$admin) {
+            return redirect()->route('show.admin.login')->with('message', 'Invalid confirmation link.');
+        }
+
+        // Jodi already confirmed hoy
+        if ($vendor->confirm == 'Yes' && $admin->confirm == 'Yes') {
+            return redirect()->route('show.admin.login')->with('message', 'Your account is already confirmed.');
+        }
+
+        // Status update for Vendor and Admin
+        $vendor->update(['confirm' => 'Yes']);
+        $admin->update(['confirm' => 'Yes']);
+
+        // Farewell Email Send
+        $messageData = [
+            'email' => $email,
+            'name' => $vendor->name
+        ];
+
+        Mail::send('emails.vendorConfirmed', $messageData, function($message) use ($email) {
+            $message->to($email)->subject('Welcome! Your Account is Confirmed');
+        });
+
+        return redirect()->route('show.admin.login')->with('message', 'Your account has been successfully confirmed! You can now log in.');
+    }
+
 }

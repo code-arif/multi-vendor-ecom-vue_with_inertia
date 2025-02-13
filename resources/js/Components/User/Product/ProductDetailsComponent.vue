@@ -1,8 +1,30 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed } from 'vue';
 import { Link, usePage } from '@inertiajs/vue3';
+
 const list = usePage();
-const productDetails = list.props.productDetails || [];
+const productDetails = list.props.productDetails || {};
+const specifications = productDetails.specifications || {};
+
+// Convert size and color strings to arrays
+const sizes = specifications.size ? specifications.size.split(', ') : [];
+const colors = specifications.color ? specifications.color.split(', ') : [];
+
+// Selected options
+const selectedSize = ref(sizes.length ? sizes[0] : '');
+const selectedColor = ref(colors.length ? colors[0] : '');
+const quantity = ref(1);
+
+// Methods
+const increaseQuantity = () => {
+    quantity.value++;
+};
+
+const decreaseQuantity = () => {
+    if (quantity.value > 1) {
+        quantity.value--;
+    }
+};
 </script>
 
 <template>
@@ -73,75 +95,57 @@ const productDetails = list.props.productDetails || [];
                     </div>
 
                     <p class="mb-4">{{ productDetails.short_description }}</p>
-
+                    <p class="mb-2"><Strong>Only </Strong> <span class="text-info">{{ productDetails.stock_quantity }}</span> left in stock</p>
+                    <p class="mb-2"><Strong>Brand: </Strong> <span class="text-info">{{ productDetails.brand?.name || "No Brand" }}</span></p>
+                    <p class="mb-2"><Strong>Remark: </Strong> <span class="text-info">{{ productDetails.remark }}</span></p>
+                    <p class="mb-2"><Strong>SKU: </Strong> <span class="text-info">{{ productDetails.sku }}</span></p>
+                    <p class="mb-4" style="border: 1px solid red ; padding: 5px;"><Strong>Availability: </Strong> <span class="text-info">{{ productDetails.stock_status }}</span></p>
+                    <!-- Sizes -->
                     <div class="d-flex mb-3">
-                        <strong class="text-dark" style="margin-right: 20px;">Sizes:</strong>
-                        <form>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" id="size-1" name="size">
-                                <label class="custom-control-label" for="size-1">XS</label>
-                            </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" id="size-2" name="size">
-                                <label class="custom-control-label" for="size-2">S</label>
-                            </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" id="size-3" name="size">
-                                <label class="custom-control-label" for="size-3">M</label>
-                            </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" id="size-4" name="size">
-                                <label class="custom-control-label" for="size-4">L</label>
-                            </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" id="size-5" name="size">
-                                <label class="custom-control-label" for="size-5">XL</label>
-                            </div>
-                        </form>
+                        <strong class="text-dark" style="margin-right: 10px;">Sizes:</strong>
+                        <div v-for="size in sizes" :key="size"
+                            class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" :id="'size-' + size" name="size"
+                                v-model="selectedSize" :value="size">
+                            <label class="custom-control-label" :for="'size-' + size">{{ size }}</label>
+                        </div>
                     </div>
+
+                    <!-- Colors -->
                     <div class="d-flex mb-4">
-                        <strong class="text-dark" style="margin-right: 20px;">Colors:</strong>
-                        <form>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" id="color-1" name="color">
-                                <label class="custom-control-label" for="color-1">Black</label>
-                            </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" id="color-2" name="color">
-                                <label class="custom-control-label" for="color-2">White</label>
-                            </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" id="color-3" name="color">
-                                <label class="custom-control-label" for="color-3">Red</label>
-                            </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" id="color-4" name="color">
-                                <label class="custom-control-label" for="color-4">Blue</label>
-                            </div>
-                            <div class="custom-control custom-radio custom-control-inline">
-                                <input type="radio" class="custom-control-input" id="color-5" name="color">
-                                <label class="custom-control-label" for="color-5">Green</label>
-                            </div>
-                        </form>
+                        <strong class="text-dark" style="margin-right: 10px;">Colors:</strong>
+                        <div v-for="color in colors" :key="color"
+                            class="custom-control custom-radio custom-control-inline">
+                            <input type="radio" class="custom-control-input" :id="'color-' + color" name="color"
+                                v-model="selectedColor" :value="color">
+                            <label class="custom-control-label" :for="'color-' + color">{{ color }}</label>
+                        </div>
                     </div>
+
+                    <!-- Quantity and Add to Cart -->
                     <div class="d-flex align-items-center mb-4 pt-2">
                         <div class="input-group quantity mr-3" style="width: 130px;">
                             <div class="input-group-btn">
-                                <button class="btn btn-info btn-minus">
+                                <button class="btn btn-info btn-minus" @click="decreaseQuantity">
                                     <i class="fa fa-minus"></i>
                                 </button>
                             </div>
-                            <input type="text" class="form-control border-0 text-center" value="1">
+                            <input type="text" class="form-control border-0 text-center" v-model="quantity" readonly>
                             <div class="input-group-btn">
-                                <button class="btn btn-info btn-plus">
+                                <button class="btn btn-info btn-plus" @click="increaseQuantity">
                                     <i class="fa fa-plus"></i>
                                 </button>
                             </div>
                         </div>
-                        <button class="btn btn-info px-3" style="margin-left: 15px;"><i class="fa fa-shopping-cart"></i>
-                            Add To
-                            Cart</button>
+                        <button class="btn btn-info px-3" style="margin-left: 10px;">
+                            <i class="fa fa-shopping-cart"></i> Add To Cart
+                        </button>
+
+                        <button class="btn btn-info px-3" style="margin-left: 10px;">
+                            <i class="fa fa-heart"></i> Add to Wish list
+                        </button>
                     </div>
+
                     <div class="d-flex pt-2">
                         <strong class="text-dark mr-2">Share on:</strong>
                         <div class="d-inline-flex">
@@ -159,6 +163,11 @@ const productDetails = list.props.productDetails || [];
                             </a>
                         </div>
                     </div>
+
+                    <hr>
+                    <div class="d-flex align-items-center mb-4 pt-2">
+                        <strong class="text-dark mr-2">Saller Details:</strong>
+                    </div>
                 </div>
             </div>
         </div>
@@ -171,7 +180,7 @@ const productDetails = list.props.productDetails || [];
                     <div class="nav nav-tabs mb-4">
                         <a class="nav-item nav-link text-dark active" data-bs-toggle="tab"
                             href="#tab-pane-1">Description</a>
-                            
+
                         <a class="nav-item nav-link text-dark" data-bs-toggle="tab"
                             href="#tab-pane-2">Specifications</a>
 
@@ -329,4 +338,9 @@ const productDetails = list.props.productDetails || [];
     <!-- Shop Detail End -->
 </template>
 
-<style scoped></style>
+<style scoped>
+.custom-control-input:checked+.custom-control-label {
+    font-weight: bold;
+    color: #0dcaf0;    ;
+}
+</style>

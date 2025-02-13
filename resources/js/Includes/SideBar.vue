@@ -34,7 +34,7 @@ const imagePreview = ref(
 
                 <Link v-if="authUser && authUser.type === 'vendor'" class="nav-item nav-link"
                     :href="route('show.vendor.profile')" :class="{ 'active': $page.url === '/vendor/profile' }">
-                <i class="fa fa-users me-2"></i>Vendor
+                <i class="fa fa-users me-2"></i>My Details
                 </Link>
 
                 <!-- admin manage -->
@@ -68,7 +68,7 @@ const imagePreview = ref(
 
                 <!-- catalogue manage -->
                 <div class="nav-item dropdown"
-                    v-if="authUser && (authUser.type === 'superadmin' || authUser.type === 'admin' || authUser.type === 'vendor')">
+                    v-if="authUser && (authUser.type === 'superadmin' || authUser.type === 'admin')">
 
                     <a href="" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
                         :class="{ 'active': ['/section/list', '/category/list', '/brand/list'].includes($page.url) }">

@@ -17,7 +17,7 @@ const Header = [
     { text: "Category", value: "category", sortable: true },
     { text: "Is Featured", value: "is_featured", sortable: true },
     { text: "Brand", value: "brand", sortable: true },
-    { text: "Added By", value: "added_by" },
+    { text: "Added By", value: "added_by", width:200 },
     { text: "Type", value: "type" },
     { text: "Added Date", value: "added_date", width: 100 },
     { text: "Updated Date", value: "updated_date", width: 100 },
@@ -37,12 +37,12 @@ const Item = computed(() => {
         category: product.category.name || "N/A",
         is_featured: product.is_featured == 1 ? "Featured" : "Not Featured",
         brand: product.brand?.name || "N/A",
-        added_by: product.admin?.name || "N/A",
-        type: product.admin?.type || "N/A",
+        added_by: product.admin?.name ?? product.vendor?.name ?? "N/A",
+        type: product.admin_type ?? "N/A",
         added_date: product.created_at,
         updated_date: product.updated_at,
         id: product.id,
-        isVendor: product.admin?.type == "vendor"
+        isVendor: product.admin_type == "vendor"
     }));
 });
 

@@ -19,6 +19,7 @@ class AdminAuthController extends Controller
     }
 
     //========================show admin login page ========================//
+
     public function AdminLogin(Request $request)
     {
         // Validate the request data
@@ -36,19 +37,49 @@ class AdminAuthController extends Controller
         );
 
         // Attempt login using the 'admin' guard
-        if (
-            Auth::guard('admin')->attempt([
-                'email' => $request->input('email'),
-                'password' => $request->input('password'),
-            ])
-        ) {
-            $data = ['message' => 'Login Successfull', 'status' => true, 'code' => 200];
-            $request->session()->regenerate();
-            return to_route('show.admin.dashboard')->with($data);
-        } else {
-            $data = ['message' => 'Email or Password is incorrect', 'status' => false, 'code' => 401];
-            return redirect()->back()->with($data);
+        if (!Auth::guard('admin')->attempt(['email' => $request->email, 'password' => $request->password])) {
+            return redirect()
+                ->back()
+                ->with([
+                    'message' => 'Email or Password is incorrect',
+                    'status' => false,
+                    'code' => 401,
+                ]);
         }
+
+        // Get the authenticated admin user
+        $admin = Auth::guard('admin')->user();
+
+        // Check if the admin is a vendor and not confirmed
+        if ($admin->type == 'vendor' && $admin->confirm == 'no') {
+            Auth::guard('admin')->logout();
+            return redirect()
+                ->back()
+                ->with([
+                    'message' => 'Please confirm your email to activate your account',
+                    'status' => false,
+                ]);
+        }
+
+        // Check if the admin account is inactive
+        if ($admin->status == 0) {
+            Auth::guard('admin')->logout();
+            return redirect()
+                ->back()
+                ->with([
+                    'message' => 'Your account is not active',
+                    'status' => false,
+                ]);
+        }
+
+        // Regenerate session after login
+        $request->session()->regenerate();
+
+        return to_route('show.admin.dashboard')->with([
+            'message' => 'Login Successful',
+            'status' => true,
+            'code' => 200,
+        ]);
     }
 
     //========================admin logout=======================//
@@ -72,31 +103,29 @@ class AdminAuthController extends Controller
         $admin = Auth::guard('admin')->user();
 
         if ($admin === null) {
-            $data = ['message' => 'You are not logged in', 'status' => false, 'code' => 401];
-            return redirect()->back()->with($data);
+            return redirect()->back()->with([
+                'message' => 'You are not logged in',
+                'status' => false,
+                'code' => 401
+            ]);
         }
 
-        $update_admin = $request->validate(
-            [
-                'name' => 'required|max:255',
-                'mobile' => 'required|numeric|digits_between:11,15',
-                'status' => 'required|boolean',
-                'zip' => 'nullable|string|max:10',
-                'address' => 'nullable|max:255',
-            ],
-            [
-                'name.required' => 'Please enter your name',
-                'name.max' => 'Name must be less than 255 characters',
-                'mobile.required' => 'Please enter your mobile',
-                'mobile.numeric' => 'Mobile must be a number',
-                'mobile.digits_between' => 'Mobile must be between 11 to 15 digits',
-                'status.required' => 'Please enter your status',
-                'status.boolean' => 'Status must be a boolean',
-                'zip.max' => 'Zip must be less than 10 characters',
-                'address.max' => 'Address must be less than 255 characters',
-            ],
-        );
+        $update_admin = $request->validate([
+            'name' => 'required|max:255',
+            'mobile' => 'required|numeric|digits_between:11,15',
+            'zip' => 'nullable|string|max:10',
+            'address' => 'nullable|max:255',
+        ], [
+            'name.required' => 'Please enter your name',
+            'name.max' => 'Name must be less than 255 characters',
+            'mobile.required' => 'Please enter your mobile',
+            'mobile.numeric' => 'Mobile must be a number',
+            'mobile.digits_between' => 'Mobile must be between 11 to 15 digits',
+            'zip.max' => 'Zip must be less than 10 characters',
+            'address.max' => 'Address must be less than 255 characters',
+        ]);
 
+        // Handle image upload
         if ($request->hasFile('image')) {
             if ($admin->image) {
                 Storage::disk('public')->delete($admin->image);
@@ -108,14 +137,22 @@ class AdminAuthController extends Controller
             $admin->image = $image_url;
         }
 
+        // Update admin profile
         if ($admin->update($update_admin)) {
-            $data = ['message' => 'Admin profile updated successfully', 'status' => true, 'code' => 200];
-            return to_route('show.admin.dashboard')->with($data);
-        } else {
-            $data = ['message' => 'Failed to update admin profile', 'status' => false, 'code' => 500];
-            return redirect()->back()->with($data);
+            return to_route('show.admin.dashboard')->with([
+                'message' => 'Admin profile updated successfully',
+                'status' => true,
+                'code' => 200
+            ]);
         }
+
+        return redirect()->back()->with([
+            'message' => 'Failed to update admin profile',
+            'status' => false,
+            'code' => 500
+        ]);
     }
+
 
     //admin password update
     public function updateAdminPassword(Request $request)

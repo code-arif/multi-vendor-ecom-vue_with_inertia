@@ -11,7 +11,7 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['vendor_id', 'admin_id', 'category_id', 'brand_id', 'product_name', 'slug', 'sku', 'price', 'image', 'stock_quantity', 'stock_status', 'remark', 'short_description', 'meta_title', 'meta_description', 'meta_keywords', 'has_discount', 'discount_price', 'status', 'is_featured'];
+    protected $fillable = ['vendor_id', 'admin_id', 'category_id', 'brand_id', 'admin_type', 'product_name', 'slug', 'sku', 'price', 'image', 'stock_quantity', 'stock_status', 'remark', 'short_description', 'meta_title', 'meta_description', 'meta_keywords', 'has_discount', 'discount_price', 'status', 'is_featured'];
 
     // **Relationships**
 
@@ -42,7 +42,7 @@ class Product extends Model
     // Relation with Admin table
     public function admin()
     {
-        return $this->belongsTo(Admin::class);
+        return $this->belongsTo(Admin::class)->select(['id', 'vendor_id', 'name', 'type']);
     }
 
     // Product has one Product Detail

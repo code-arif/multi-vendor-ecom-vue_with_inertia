@@ -16,7 +16,7 @@ class ProductDetailsController extends Controller
     {
         // Check if the logged-in user is superadmin or admin
         $admin = Auth::guard('admin')->user();
-        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin', 'vendor'])) {
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
 
@@ -39,7 +39,7 @@ class ProductDetailsController extends Controller
     {
         // Check if the logged-in user is superadmin or admin
         $admin = Auth::guard('admin')->user();
-        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin', 'vendor'])) {
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
 
@@ -70,7 +70,7 @@ class ProductDetailsController extends Controller
     {
         // Check if the logged-in user is superadmin or admin
         $admin = Auth::guard('admin')->user();
-        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin', 'vendor'])) {
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
 
@@ -107,7 +107,7 @@ class ProductDetailsController extends Controller
     {
         // Check if the logged-in user is superadmin or admin
         $admin = Auth::guard('admin')->user();
-        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin', 'vendor'])) {
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
 

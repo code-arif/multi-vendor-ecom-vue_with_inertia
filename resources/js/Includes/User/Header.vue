@@ -41,11 +41,13 @@ onMounted(fetchSections);
                                 style="width: 600px; left: 100%; top: 0;">
                                 <div class="row">
                                     <div class="col-md-4" v-for="category in section.categories" :key="category.id">
-                                        <Link :href="route('show.product.by.category',{url:category.url})" class="text-info">{{ category.name }}</Link>
+                                        <Link :href="route('show.product.by.category', { url: category.url })"
+                                            class="text-info">{{ category.name }}</Link>
 
-                                        <Link :href="route('show.product.by.category',{url:subcategory.url})" class="dropdown-item" v-for="subcategory in category.subcategories"
+                                        <Link :href="route('show.product.by.category', { url: subcategory.url })"
+                                            class="dropdown-item" v-for="subcategory in category.subcategories"
                                             :key="subcategory.id">
-                                            {{ subcategory.name }}
+                                        {{ subcategory.name }}
                                         </Link>
                                     </div>
                                 </div>
@@ -59,8 +61,8 @@ onMounted(fetchSections);
             <div class="col-lg-9">
                 <nav class="navbar navbar-expand-lg bg-dark navbar-dark py-3 py-lg-0 px-0">
                     <Link :href="route('show.home.page')" class="text-decoration-none d-block d-lg-none">
-                        <span class="h1 text-uppercase text-dark bg-light px-2">Mini</span>
-                        <span class="h1 text-uppercase text-light bg-primary px-2 ml-n1">Shop</span>
+                    <span class="h1 text-uppercase text-dark bg-light px-2">Mini</span>
+                    <span class="h1 text-uppercase text-light bg-primary px-2 ml-n1">Shop</span>
                     </Link>
                     <button type="button" class="navbar-toggler" data-bs-toggle="collapse"
                         data-target="#navbarCollapse">
@@ -69,12 +71,26 @@ onMounted(fetchSections);
                     <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse">
                         <div class="navbar-nav mr-auto py-0">
 
-                            <Link :href="route('show.home.page')" class="nav-item nav-link" :class="{ 'active': $page.url === '/' }">Home</Link>
+                            <Link :href="route('show.home.page')" class="nav-item nav-link"
+                                :class="{ 'active': $page.url === '/' }">Home</Link>
 
                             <Link :href="route('show.products.page')" class="nav-item nav-link"
-                            :class="{ 'active': $page.url === '/products' }">Shop</Link>
+                                :class="{ 'active': $page.url === '/products' }">Shop</Link>
                         </div>
 
+                    </div>
+
+                    <div class="navbar-nav ml-auto py-0 d-none d-lg-block">
+                        <a href="" class="btn px-0">
+                            <i class="fas fa-heart text-info" style="margin-right: 5px;"></i>
+                            <span class="badge text-light border border-light rounded-circle"
+                                style="padding-bottom: 2px;">0</span>
+                        </a>
+                        <a href="" class="btn px-0" style="margin-left: 10px;">
+                            <i class="fas fa-shopping-cart text-info" style="margin-right: 5px;"></i>
+                            <span class="badge text-light border border-light rounded-circle"
+                                style="padding-bottom: 2px;">0</span>
+                        </a>
                     </div>
                 </nav>
             </div>

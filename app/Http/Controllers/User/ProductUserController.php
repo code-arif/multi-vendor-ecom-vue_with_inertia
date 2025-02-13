@@ -41,6 +41,8 @@ class ProductUserController extends Controller
         // Fetch product details along with relationships
         $productDetails = Product::with(['product_details', 'specifications', 'productImages', 'category:id,name', 'brand:id,name'])->find($id);
 
+        // return $productDetails;dd();
+
         // Check if the product exists
         if (!$productDetails) {
             return response()->json(['error' => 'Product not found'], 404);

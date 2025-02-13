@@ -96,7 +96,7 @@ class ProductSpecificationController extends Controller
 
         // Return success message and redirect back to the product list
         $data = ['message' => 'Product specification saved successfully', 'status' => true];
-        return redirect()->route('show.product')->with($data);
+        return redirect()->back()->with($data);
     }
 
     //==========================update product specification==========================//
@@ -168,7 +168,7 @@ class ProductSpecificationController extends Controller
 
         // Return success message and redirect back to the product list
         $data = ['message' => 'Product specification updated successfully', 'status' => true];
-        return redirect()->route('show.product')->with($data);
+        return redirect()->back()->with($data);
     }
 
     //==============================save product images=========================

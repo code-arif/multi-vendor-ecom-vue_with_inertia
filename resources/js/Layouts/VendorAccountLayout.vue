@@ -14,14 +14,6 @@
     <slot>
 
     </slot>
-    
-    <!-- Hero Section (Bottom) -->
-    <section class="bottor-hero-section">
-        <div class="overlay d-flex flex-column align-items-center justify-content-center text-white">
-            <h2>Sell with Confidence</h2>
-            <p>We provide all the tools you need to grow your business.</p>
-        </div>
-    </section>
 </template>
 
 <style scoped>

@@ -10,6 +10,7 @@ use App\Models\Category;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\ProductDetails;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -24,19 +25,53 @@ class ProductController extends Controller
      */
 
     //======================show product list in proudct list page =====================//
+    // public function showProduct()
+    // {
+    //     // Check if the logged-in user is superadmin or admin
+    //     $admin = Auth::guard('admin')->user();
+    //     if (!$admin || !in_array($admin->type, ['superadmin', 'admin', 'vendor'])) {
+    //         return response()->json(['error' => 'Unauthorized access'], 403);
+    //     }
+
+    //     $products = Product::with(['vendor:id,name', 'section:id,sec_name', 'category:id,name', 'brand:id,name', 'admin:id,type,name'])
+    //         ->orderByDesc('created_at')
+    //         ->get();
+
+    //     // return $products;
+    //     return Inertia::render('Admin/Product/ProductPage', ['products' => $products]);
+    // }
+
     public function showProduct()
     {
-        // Check if the logged-in user is superadmin or admin
+        // Check if the logged-in user is superadmin, admin, or vendor
         $admin = Auth::guard('admin')->user();
-        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin', 'vendor'])) {
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
 
-        $products = Product::with(['vendor:id,name', 'section:id,sec_name', 'category:id,name', 'brand:id,name', 'admin:id,type,name'])
-            ->orderByDesc('created_at')
-            ->get();
+        // Superadmin & Admin → All Products
+        if (in_array($admin->type, ['superadmin', 'admin'])) {
+            $products = Product::with(['vendor:id,name', 'section:id,sec_name', 'category:id,name', 'brand:id,name', 'admin'])
+                ->orderByDesc('created_at')
+                ->get();
 
-        // return $products;
+            // return $products;dd();
+        }
+        // Vendor → Only Their Products & Status Must Be Approved
+        else {
+            if ($admin->status == 0) {
+                $data = ['message' => 'Your account is not approved. Please contact admin.', 'status' => false];
+                return redirect()->route('show.vendor.profile')->with($data);
+            }
+
+            $products = Product::where('vendor_id', $admin->vendor_id)
+                ->with(['vendor:id,name', 'section:id,sec_name', 'category:id,name', 'brand:id,name', 'admin'])
+                ->orderByDesc('created_at')
+                ->get();
+
+            // return $products;
+        }
+
         return Inertia::render('Admin/Product/ProductPage', ['products' => $products]);
     }
 
@@ -45,7 +80,7 @@ class ProductController extends Controller
     {
         // Check if the logged-in user is superadmin or admin
         $admin = Auth::guard('admin')->user();
-        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin', 'vendor'])) {
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
 
@@ -68,7 +103,7 @@ class ProductController extends Controller
     {
         // Check if the logged-in user is superadmin or admin
         $admin = Auth::guard('admin')->user();
-        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin', 'vendor'])) {
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
 
@@ -171,13 +206,21 @@ class ProductController extends Controller
 
         // Determine the correct vendor_id and admin_id
         if ($admin->type === 'vendor') {
-            $productData['vendor_id'] = $admin->id; // Vendor is creating the product
-            $productData['admin_id'] = null; // Initially, admin_id is null, will be updated upon approval
-            $productData['status'] = 0; // Set status to 0 for pending approval
+            $vendorExists = DB::table('vendors')->where('id', $admin->vendor_id)->exists();
+
+            if (!$vendorExists) {
+                $data = ['message' => 'Vendor does not exist', 'status' => false];
+                return redirect()->back()->with($data);
+            }
+
+            $productData['vendor_id'] = $admin->vendor_id;
+            $productData['admin_id'] = null;
+            $productData['admin_type'] = 'vendor';
+            $productData['status'] = 0;
         } else {
-            // superadmin, admin, or subadmin
-            $productData['vendor_id'] = $request->input('vendor_id'); // Use vendor_id from the request (if provided). Important for Subadmins!
-            $productData['admin_id'] = $admin->id; // Admin/Subadmin is creating/adding the product.
+            $productData['admin_id'] = $admin->id;
+            $productData['vendor_id'] = null;
+            $productData['admin_type'] = Auth::guard('admin')->user()->type;
         }
 
         // Handle Image Upload
@@ -305,7 +348,7 @@ class ProductController extends Controller
     {
         // Check if the logged-in user is superadmin or admin
         $admin = Auth::guard('admin')->user();
-        if (!$admin || !in_array($admin->type, ['superadmin', 'admin'])) {
+        if (!$admin || !in_array($admin->type, ['superadmin', 'admin', 'vendor'])) {
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
 
