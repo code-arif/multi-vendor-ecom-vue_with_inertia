@@ -226,7 +226,6 @@ function deleteSlider() {
                         <div class="form-floating mb-3">
                             <select v-model="form.status" class="form-select"
                                 :class="{ 'is-invalid': form.errors.status }">
-                                <option value="">Select Status</option>
                                 <option value="1">Active</option>
                                 <option value="0">Inactive</option>
                             </select>
