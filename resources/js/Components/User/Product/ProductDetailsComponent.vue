@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from 'vue';
-import { Link, usePage } from '@inertiajs/vue3';
+import { Link, usePage, useForm } from '@inertiajs/vue3';
 
 const list = usePage();
 const productDetails = list.props.productDetails || {};
@@ -25,6 +25,8 @@ const decreaseQuantity = () => {
         quantity.value--;
     }
 };
+
+//======================cart functionallity======================//
 </script>
 
 <template>
@@ -137,7 +139,7 @@ const decreaseQuantity = () => {
                                 </button>
                             </div>
                         </div>
-                        <button class="btn btn-info px-3" style="margin-left: 10px;">
+                        <button class="btn btn-info px-3" style="margin-left: 10px;" @click="addToCart">
                             <i class="fa fa-shopping-cart"></i> Add To Cart
                         </button>
 

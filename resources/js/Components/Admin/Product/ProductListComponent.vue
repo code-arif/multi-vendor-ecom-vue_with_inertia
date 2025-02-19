@@ -17,7 +17,7 @@ const Header = [
     { text: "Category", value: "category", sortable: true },
     { text: "Is Featured", value: "is_featured", sortable: true },
     { text: "Brand", value: "brand", sortable: true },
-    { text: "Added By", value: "added_by", width:200 },
+    { text: "Added By", value: "added_by", width: 100 },
     { text: "Type", value: "type" },
     { text: "Added Date", value: "added_date", width: 100 },
     { text: "Updated Date", value: "updated_date", width: 100 },
@@ -42,7 +42,8 @@ const Item = computed(() => {
         added_date: product.created_at,
         updated_date: product.updated_at,
         id: product.id,
-        isVendor: product.admin_type == "vendor"
+        isVendor: product.admin_type == "vendor",
+        isAdmin: product.admin_type == "admin"
     }));
 });
 
@@ -141,10 +142,10 @@ function deleteProduct() {
                                 </template>
                             </template>
 
-                            <template #item-is_featured = "{is_featured}">
-                                <span :class="is_featured === 'Featured' ? 'text-primary' : 'text-danger'">{{ is_featured }}</span>
+                            <template #item-is_featured="{ is_featured }">
+                                <span :class="is_featured === 'Featured' ? 'text-primary' : 'text-danger'">{{
+                                    is_featured }}</span>
                             </template>
-
 
                             <template #item-added_date="{ added_date }">
                                 {{ moment(added_date).format("MMM Do YYYY, h:mm A") }}
@@ -176,14 +177,17 @@ function deleteProduct() {
 
                             <template #item-number="{ id }">
                                 <div class="d-flex align-items-center">
-                                    <Link class="btn btn-sm btn-outline-success me-2" :href="route('show.product.details', { id: id })">
+                                    <Link class="btn btn-sm btn-outline-success me-2"
+                                        :href="route('show.product.details', { id: id })">
                                     <i class="fa fa-eye"></i>
                                     </Link>
-                                    <Link class="btn btn-sm btn-outline-info me-2" :href="route('show.save.product.details', {id: id})">
+                                    <Link class="btn btn-sm btn-outline-info me-2"
+                                        :href="route('show.save.product.details', { id: id })">
                                     <i class="fa fa-plus"></i>
                                     </Link>
-                                    <Link class="btn btn-sm btn-outline-info me-2" :href="route('show.product.specification', {id: id})">
-                                        <i class="fa fa-bars" aria-hidden="true"></i>
+                                    <Link class="btn btn-sm btn-outline-info me-2"
+                                        :href="route('show.product.specification', { id: id })">
+                                    <i class="fa fa-bars" aria-hidden="true"></i>
                                     </Link>
                                     <Link class="btn btn-sm btn-outline-primary me-2"
                                         :href="route('show.save.product', { id: id })">

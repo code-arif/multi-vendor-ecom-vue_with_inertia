@@ -12,6 +12,8 @@ use Illuminate\Http\Request;
 use App\Models\ProductDetails;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\Admin;
+use App\Models\Vendor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -25,22 +27,6 @@ class ProductController extends Controller
      */
 
     //======================show product list in proudct list page =====================//
-    // public function showProduct()
-    // {
-    //     // Check if the logged-in user is superadmin or admin
-    //     $admin = Auth::guard('admin')->user();
-    //     if (!$admin || !in_array($admin->type, ['superadmin', 'admin', 'vendor'])) {
-    //         return response()->json(['error' => 'Unauthorized access'], 403);
-    //     }
-
-    //     $products = Product::with(['vendor:id,name', 'section:id,sec_name', 'category:id,name', 'brand:id,name', 'admin:id,type,name'])
-    //         ->orderByDesc('created_at')
-    //         ->get();
-
-    //     // return $products;
-    //     return Inertia::render('Admin/Product/ProductPage', ['products' => $products]);
-    // }
-
     public function showProduct()
     {
         // Check if the logged-in user is superadmin, admin, or vendor
@@ -54,22 +40,17 @@ class ProductController extends Controller
             $products = Product::with(['vendor:id,name', 'section:id,sec_name', 'category:id,name', 'brand:id,name', 'admin'])
                 ->orderByDesc('created_at')
                 ->get();
-
-            // return $products;dd();
         }
         // Vendor → Only Their Products & Status Must Be Approved
         else {
             if ($admin->status == 0) {
-                $data = ['message' => 'Your account is not approved. Please contact admin.', 'status' => false];
-                return redirect()->route('show.vendor.profile')->with($data);
+                return redirect()->route('show.vendor.desclaimer');
             }
 
             $products = Product::where('vendor_id', $admin->vendor_id)
                 ->with(['vendor:id,name', 'section:id,sec_name', 'category:id,name', 'brand:id,name', 'admin'])
                 ->orderByDesc('created_at')
                 ->get();
-
-            // return $products;
         }
 
         return Inertia::render('Admin/Product/ProductPage', ['products' => $products]);
@@ -84,18 +65,25 @@ class ProductController extends Controller
             return response()->json(['error' => 'Unauthorized access'], 403);
         }
 
-        //find product
-        $product = Product::find($id);
+        // Find the product
+        $product = Product::findOrFail($id);
         if (!$product) {
-            $data = ['message' => 'Product not found', 'status' => false, 'code' => 404];
+            $data = ['message' => 'Product not found', 'status' => false];
             return redirect()->back()->with($data);
         }
-        //change status
-        $product->status = $request->status;
-        $product->save();
 
-        $data = ['message' => 'Product status changed successfully', 'status' => true, 'code' => 200];
-        return redirect()->back()->with($data);
+        // Check if the product was added by a vendor
+        if ($admin->type === 'vendor') {
+            $data = ['message' => 'Vendor can not change product status', 'status' => false];
+            return redirect()->back()->with($data);
+        } else {
+            //change status
+            $product->status = $request->status;
+            $product->save();
+
+            $data = ['message' => 'Product status changed successfully', 'status' => true];
+            return redirect()->back()->with($data);
+        }
     }
 
     //======================show add/edit product page=====================//
@@ -206,7 +194,9 @@ class ProductController extends Controller
 
         // Determine the correct vendor_id and admin_id
         if ($admin->type === 'vendor') {
-            $vendorExists = DB::table('vendors')->where('id', $admin->vendor_id)->exists();
+            // $vendorExists = DB::table('admins')->where('id', $admin->vendor_id)->exists();
+            $vendorExists = Vendor::where('id', $admin->vendor_id)->exists();
+            // dd($vendorExists);
 
             if (!$vendorExists) {
                 $data = ['message' => 'Vendor does not exist', 'status' => false];

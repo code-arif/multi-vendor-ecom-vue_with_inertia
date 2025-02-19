@@ -96,7 +96,7 @@ const imagePreview = ref(
                     v-if="authUser && (authUser.type === 'superadmin' || authUser.type === 'admin' || authUser.type === 'vendor')">
                     <a href="" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"
                         :class="{ 'active': ['/product/list', '/product/slider-list'].includes($page.url) }">
-                        <i class="fa fa-user"></i> Product Manage
+                        <i class="fa fa-shopping-bag"></i> Product Manage
                     </a>
                     <div class="dropdown-menu bg-transparent border-0">
                         <Link :href="route('show.product')" class="dropdown-item"

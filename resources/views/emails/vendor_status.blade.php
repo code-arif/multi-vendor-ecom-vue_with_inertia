@@ -8,7 +8,7 @@
 </head>
 <body>
     <p>Dear {{ $vendorName }},</p>
-    <p>Your account status has been changed to: <strong>{{ $status }}</strong>.</p>
+    <p>Your account status has been changed to: <strong>{{ $status == 1 ? 'Active' : 'Inactive' }}</strong>.</p>
     <p>
         @if($status == 'active')
             Congratulations! You can now access all vendor privileges.

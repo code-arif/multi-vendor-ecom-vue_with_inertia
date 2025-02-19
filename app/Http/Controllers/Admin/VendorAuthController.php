@@ -168,4 +168,9 @@ class VendorAuthController extends Controller
             return redirect()->back()->with($data);
         }
     }
+
+    //=====================shwo vendor desclaimer =====================//
+    public function showVendorDesclaimer(){
+        return Inertia::render('Admin/Vendor/DesclaimerPage');
+    }
 }

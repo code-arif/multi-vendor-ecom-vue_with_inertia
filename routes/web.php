@@ -27,7 +27,6 @@ use App\Http\Controllers\Vendor\VendorController;
 Route::get('/admin/login', [AdminAuthController::class, 'ShowAdminLogin'])->name('show.admin.login');
 Route::post('/admin/login', [AdminAuthController::class, 'AdminLogin'])->name('admin.login');
 
-
 Route::group(['middleware' => AdminAuthMiddleware::class], function () {
     Route::group(['prefix' => 'admin'], function () {
         Route::get('/dashboard', [DashboardController::class, 'showDashboard'])->name('show.admin.dashboard');
@@ -48,9 +47,12 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
         Route::post('/profile/update', [VendorAuthController::class, 'updateVendorProfile'])->name('update.vendor.profile');
         Route::post('/business/update', [VendorAuthController::class, 'updateVendorBusiness'])->name('update.vendor.business');
         Route::post('/bank/update', [VendorAuthController::class, 'updateVendorBank'])->name('update.vendor.bank');
+
+        //desclaimer
+        Route::get('/desclaimer', [VendorAuthController::class, 'showVendorDesclaimer'])->name('show.vendor.desclaimer');
     });
 
-    //=======================section manage ==========================//
+    //=====================section manage=========================//
     Route::group(['prefix' => 'section'], function () {
         Route::get('/list', [SectionController::class, 'showSections'])->name('show.section');
         Route::post('/add', [SectionController::class, 'addSection'])->name('add.section');
@@ -78,7 +80,7 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
         Route::post('/change-status/{id}', [BrandController::class, 'changeBrandStatus'])->name('change.brand.status');
     });
 
-    //======================product manage======================//
+    //========================product manage========================//
     Route::group(['prefix' => 'product'], function () {
         Route::get('/list', [ProductController::class, 'showProduct'])->name('show.product');
         Route::get('/save', [ProductController::class, 'showSaveProduct'])->name('show.save.product');
@@ -91,8 +93,8 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
         Route::get('/details', [ProductDetailsController::class, 'showSaveProductDetails'])->name('show.save.product.details');
         Route::post('/details', [ProductDetailsController::class, 'saveProductDetails'])->name('save.product.details');
         Route::post('/update-details', [ProductDetailsController::class, 'updateProductDetails'])->name('update.product.details');
-         //product all details
-         Route::get('/product-details',[ProductDetailsController::class,'showProductDetails'])->name('show.product.details');
+        //product all details
+        Route::get('/product-details', [ProductDetailsController::class, 'showProductDetails'])->name('show.product.details');
 
         // product sepcification controller,table, page manage
         Route::post('/image', [ProductSpecificationController::class, 'saveProductImage'])->name('save.product.image');
@@ -113,16 +115,15 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
 /*================================
 Vendor Route
 ================================*/
-Route::get('/vendor-account',[VendorController::class,'showVendorAccountCreatePage'])->name('show.vendor.account.create.page');
-Route::post('/vendor-account',[VendorController::class,'createVendorAccount'])->name('create.vendor.account');
-Route::get('/vendor/confirm/{code}',[VendorController::class,'vendorConfirmation']);
-
+Route::get('/vendor-account', [VendorController::class, 'showVendorAccountCreatePage'])->name('show.vendor.account.create.page');
+Route::post('/vendor-account', [VendorController::class, 'createVendorAccount'])->name('create.vendor.account');
+Route::get('/vendor/confirm/{code}', [VendorController::class, 'vendorConfirmation']);
 
 /*================================
 User Route
 ================================*/
 //========================index page =========================//
-Route::get('/',[HomeController::class,'home'])->name('show.home.page');
+Route::get('/', [HomeController::class, 'home'])->name('show.home.page');
 
 //====================user login registration, forget password=====================//
 Route::get('/login', [UserAuthController::class, 'showLogin'])->name('show.user.login');
@@ -141,4 +142,3 @@ Route::get('/cart', [CartController::class, 'showCartPage'])->name('show.cart.pa
 
 //==========================get section for header =====================//
 Route::get('/get-header-section', [HomeController::class, 'getHeaderSection'])->name('get.header.section');
-
