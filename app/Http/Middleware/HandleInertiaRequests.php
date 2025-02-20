@@ -69,7 +69,7 @@ class HandleInertiaRequests extends Middleware
             //for user token validation
             'authUser' => [
                 'authenticatedUser' => $user ?? null,
-                'count_cart_item' => $cartItemCount ?? 5, 
+                'count_cart_item' => $cartItemCount ?? 0, 
             ],
         ]);
     }

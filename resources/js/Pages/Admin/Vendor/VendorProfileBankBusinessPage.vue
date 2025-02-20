@@ -16,7 +16,6 @@ const form = useForm({
     country: vendor.country || '',
     zip: vendor.zip || '',
     pin: vendor.pin || '',
-    status: vendor.status || ''
 });
 
 const updateVendorProfile = () => {
@@ -43,8 +42,6 @@ const updateVendorProfile = () => {
                 errorToast(errors.address);
             } else if (errors.city) {
                 errorToast(errors.city);
-            } else if (errors.state) {
-                errorToast(errors.state);
             } else if (errors.country) {
                 errorToast(errors.country);
             }
@@ -247,19 +244,6 @@ const updateVendorBank = () => {
                             </div>
 
                             <div class="form-floating mb-3">
-                                <select v-model="form.status" class="form-select" id="floatingSelect"
-                                    :class="{ 'is-invalid': form.errors.status }">
-                                    <option>Select Status</option>
-                                    <option value="1">Active</option>
-                                    <option value="0">Inactive</option>
-                                </select>
-                                <label for="floatingSelect">Status</label>
-                                <div v-if="form.errors.status" class="invalid-feedback">
-                                    {{ form.errors.status }}
-                                </div>
-                            </div>
-
-                            <div class="form-floating mb-3">
                                 <input v-model="form.zip" type="number" class="form-control" id="floatingMobile"
                                     placeholder="Zip" :class="{ 'is-invalid': form.errors.zip }">
                                 <label for="floatingMobile">Zip</label>
@@ -412,7 +396,7 @@ const updateVendorBank = () => {
                             </div>
                             <div class="form-floating mb-3">
                                 <input v-model="business_form.shop_license" type="text" class="form-control"
-                                    id="floatingLic" placeholder="Pin" readonly>
+                                    id="floatingLic" placeholder="Licencer">
                                 <label for="floatingLic">Shop Licence</label>
                             </div>
                             <div class="form-floating mb-3">

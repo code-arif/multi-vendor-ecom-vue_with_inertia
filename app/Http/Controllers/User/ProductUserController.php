@@ -40,7 +40,7 @@ class ProductUserController extends Controller
         }
 
         // Fetch product details along with relationships
-        $productDetails = Product::with(['product_details', 'specifications', 'productImages', 'category:id,name', 'brand:id,name'])->find($id);
+        $productDetails = Product::with(['product_details', 'specifications', 'productImages', 'category:id,name', 'brand:id,name', 'vendor.vendor_business'])->find($id);
 
         // return $productDetails;dd();
 

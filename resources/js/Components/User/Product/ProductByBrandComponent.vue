@@ -200,13 +200,13 @@ const productsByBrand = list.props.productsByBrand || [];
                     <!-- filter by remark and sorting end -->
 
                     <!-- product cart start -->
-                    <div class="col-lg-4 col-md-6 col-sm-6 pb-1"
+                    <div class="col-lg-3 col-md-6 col-sm-6 pb-1"
                         v-for="(product, index) in (productsByBrand.length > 0 ? productsByBrand[0].products : [])"
                         :key="index">
 
                         <div class="product-item bg-light mb-4" style="border: 1px solid #ddd;">
                             <div class="product-img position-relative overflow-hidden">
-                                <img class="img-fluid w-100" :src="`/storage/${product.image}`" alt="product image">
+                                <img class="custom-img" :src="`/storage/${product.image}`" alt="product image">
                                 <div class="product-action">
                                     <a class="btn btn-outline-dark btn-square" href=""><i
                                             class="fa fa-shopping-cart"></i></a>
@@ -220,9 +220,14 @@ const productsByBrand = list.props.productsByBrand || [];
                                 </div>
                             </div>
                             <div class="text-center py-4 px-3">
-                                <Link class="h6 text-decoration-none text-truncate product-name" href="">{{ product.product_name }}</Link>
+                                <Link class="h6 text-decoration-none text-truncate product-name"
+                                    :href="route('show.product.details.page', { id: product.id })"> {{
+                                        product?.product_name.length > 50
+                                            ? product.product_name.slice(0, 40) + '...'
+                                            : product.product_name
+                                    }}</Link>
                                 <div class="d-flex align-items-center justify-content-center mt-2">
-                                    <h5>${{ product.price }}</h5>
+                                    <h5 class="">${{ product.price }}</h5>
                                     <h6 v-if="product.has_discount" class="text-muted" style="margin-left: 10px;">
                                         <del>${{ product.discount_price }}</del>
                                     </h6>
@@ -267,5 +272,11 @@ const productsByBrand = list.props.productsByBrand || [];
     word-wrap: break-word;
     overflow-wrap: break-word;
     text-align: left;
+}
+
+.custom-img {
+    width: 300px !important;
+    height: 200px !important;
+    object-fit: cover;
 }
 </style>

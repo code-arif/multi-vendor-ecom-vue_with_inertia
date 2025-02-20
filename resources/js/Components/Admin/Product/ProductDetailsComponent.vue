@@ -93,8 +93,8 @@ const productDetails = list.props.productDetails || [];
                                         <tbody>
                                             <tr>
                                                 <th class="text-nowrap">{{ productDetails.id }}</th>
-                                                <td class="text-nowrap">{{ productDetails.admin?.name || "N/A" }}</td>
-                                                <td class="text-nowrap">{{ productDetails.admin?.type || "N/A" }}</td>
+                                                <td class="text-nowrap">{{ productDetails.admin?.name ?? productDetails.vendor?.name ?? "N/A" }}</td>
+                                                <td class="text-nowrap">{{ productDetails.admin_type || "N/A" }}</td>
                                                 <td class="text-nowrap">{{ productDetails.category?.name }}</td>
                                                 <td class="text-nowrap">{{ productDetails.brand?.name || 'N/A' }}</td>
                                                 <td class="text-nowrap">{{ productDetails.slug }}</td>

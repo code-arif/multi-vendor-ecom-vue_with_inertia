@@ -202,7 +202,8 @@ const products = list.props.products || [];
                     <div class="col-lg-4 col-md-6 col-sm-6 pb-1" v-for="(product, index, id) in products" :key="id">
                         <div class="product-item bg-light mb-4" style="border: 1px solid #ddd;">
                             <div class="product-img position-relative overflow-hidden">
-                                <img class="img-fluid w-100" :src="`/storage/${product.image}`" alt="Product Image">
+                                <img class="custom-img" :src="`/storage/${product.image}`" alt="Product Image">
+
                                 <div class="product-action">
                                     <a class="btn btn-outline-dark btn-square" href=""><i
                                             class="fa fa-shopping-cart"></i></a>
@@ -217,7 +218,8 @@ const products = list.props.products || [];
                             </div>
                             <div class="text-center py-4 px-3">
                                 <Link class="h6 text-decoration-none text-truncate product-name"
-                                :href="route('show.product.details.page', { id: product.id })">{{ product.product_name }}</Link>
+                                    :href="route('show.product.details.page', { id: product.id })">{{
+                                product.product_name }}</Link>
                                 <div class="d-flex align-items-center justify-content-center mt-2">
                                     <h5>{{ product.price }}</h5>
                                     <h6 v-if="product.has_discount" class="text-muted" style="margin-left: 10px;">
@@ -265,5 +267,11 @@ const products = list.props.products || [];
     word-wrap: break-word;
     overflow-wrap: break-word;
     text-align: left;
+}
+
+.custom-img {
+    width: 400px !important;
+    height: 300px !important;
+    object-fit: cover;
 }
 </style>

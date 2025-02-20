@@ -14,7 +14,7 @@ use App\Http\Controllers\User\UserAuthController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\VendorAuthController;
+use App\Http\Controllers\Admin\VendorProfileManageController;
 use App\Http\Controllers\Admin\AdminManageController;
 use App\Http\Controllers\Admin\ProductDetailsController;
 use App\Http\Controllers\Admin\ProductSliderController;
@@ -44,13 +44,13 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
 
     //=========================vendor============================//
     Route::group(['prefix' => 'vendor'], function () {
-        Route::get('/profile', [VendorAuthController::class, 'showVendorProfile'])->name('show.vendor.profile');
-        Route::post('/profile/update', [VendorAuthController::class, 'updateVendorProfile'])->name('update.vendor.profile');
-        Route::post('/business/update', [VendorAuthController::class, 'updateVendorBusiness'])->name('update.vendor.business');
-        Route::post('/bank/update', [VendorAuthController::class, 'updateVendorBank'])->name('update.vendor.bank');
+        Route::get('/profile', [VendorProfileManageController::class, 'showVendorProfile'])->name('show.vendor.profile');
+        Route::post('/profile/update', [VendorProfileManageController::class, 'updateVendorProfile'])->name('update.vendor.profile');
+        Route::post('/business/update', [VendorProfileManageController::class, 'updateVendorBusiness'])->name('update.vendor.business');
+        Route::post('/bank/update', [VendorProfileManageController::class, 'updateVendorBank'])->name('update.vendor.bank');
 
         //desclaimer
-        Route::get('/desclaimer', [VendorAuthController::class, 'showVendorDesclaimer'])->name('show.vendor.desclaimer');
+        Route::get('/desclaimer', [VendorProfileManageController::class, 'showVendorDesclaimer'])->name('show.vendor.desclaimer');
     });
 
     //=====================section manage=========================//
@@ -139,7 +139,6 @@ Route::group(['middleware' => TokenVerificationMiddleware::class], function () {
     //=======================Cart page =========================//
     Route::get('/cart', [CartController::class, 'showCartPage'])->name('show.cart.page');
     Route::post('/cart-create', [CartController::class, 'createCart'])->name('create.cart');
-    Route::get('/cart-item-count', [CartController::class, 'cartItemCount'])->name('cart.item.count');
 });
 
 // ======================Product page=======================//

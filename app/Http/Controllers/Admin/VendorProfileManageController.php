@@ -10,7 +10,7 @@ use App\Models\VendorBankDetails;
 use App\Models\VendorBusinessDetails;
 use Illuminate\Support\Facades\Auth;
 
-class VendorAuthController extends Controller
+class VendorProfileManageController extends Controller
 {
     //========================get vendor details===========================//
     public function showVendorProfile()
@@ -18,8 +18,7 @@ class VendorAuthController extends Controller
         $vendor_profile = Vendor::where('id', Auth::guard('admin')->user()->vendor_id)->first() ?? [];
         $vendor_business = VendorBusinessDetails::where('vendor_id', Auth::guard('admin')->user()->vendor_id)->first() ?? [];
         $vendor_bank = VendorBankDetails::where('vendor_id', Auth::guard('admin')->user()->vendor_id)->first() ?? [];
-        return Inertia::render('Admin/Vendor/VendorProfilePage', ['vendor_profile' => $vendor_profile, 'vendor_business' => $vendor_business, 'vendor_bank' => $vendor_bank]);
-
+        return Inertia::render('Admin/Vendor/VendorProfileBankBusinessPage', ['vendor_profile' => $vendor_profile, 'vendor_business' => $vendor_business, 'vendor_bank' => $vendor_bank]);
     }
 
     //=========================update vendor profile==========================//
@@ -34,10 +33,8 @@ class VendorAuthController extends Controller
                 'phone' => 'required|numeric|digits_between:11,15',
                 'address' => 'required|max:255',
                 'city' => 'required|max:100',
-                'state' => 'nullable|string|max:100',
                 'country' => 'required|max:100',
                 'zip' => 'nullable|string|max:20',
-                'status' => 'required|integer|in:0,1',
             ],
             [
                 'name.required' => 'Vendor name is required.',
@@ -47,8 +44,6 @@ class VendorAuthController extends Controller
                 'phone.digits_between' => 'Mobile must be between 11 to 15 digits',
                 'country.required' => 'Country is required',
                 'city.required' => 'City is required',
-                'status.required' => 'Status is required.',
-                'status.in' => 'Invalid status value.',
                 'address.required' => 'Address is required',
                 'address.max' => 'Address must not be greater than 255 characters.',
             ],
@@ -68,7 +63,7 @@ class VendorAuthController extends Controller
     {
         $vendor_id = Auth::guard('admin')->user()->vendor_id;
 
-        $validatedData = $request->validate(
+        $validatedBusiness = $request->validate(
             [
                 'shop_name' => 'required|max:255',
                 'shop_address' => 'required|max:255',
@@ -111,14 +106,23 @@ class VendorAuthController extends Controller
             ],
         );
 
-        $vendorBusiness = VendorBusinessDetails::where('vendor_id', $vendor_id)->firstOrFail();
-        if ($vendorBusiness->update($validatedData)) {
-            $data = ['message' => 'Vendor business updated successfully', 'status' => true, 'code' => 200];
-            return to_route('show.admin.dashboard')->with($data);
+        $validatedBusiness['vendor_id'] = $vendor_id;
+
+        $vendorBusiness = VendorBusinessDetails::where('vendor_id', $vendor_id)->first();
+
+        if ($vendorBusiness) {
+            $vendorBusiness->update($validatedBusiness);
         } else {
-            $data = ['message' => 'Failed to update vendor business', 'status' => false, 'code' => 500];
-            return redirect()->back()->with($data);
+            VendorBusinessDetails::create($validatedBusiness);
         }
+
+        return redirect()
+            ->route('show.admin.dashboard')
+            ->with([
+                'message' => 'Vendor business updated successfully',
+                'status' => true,
+                'code' => 200,
+            ]);
     }
 
     //=======================update vendor bank details=====================//
@@ -159,18 +163,30 @@ class VendorAuthController extends Controller
             ],
         );
 
-        $vendorBank = VendorBankDetails::where('vendor_id', $vendor_id)->firstOrFail();
-        if ($vendorBank->update($validateBank)) {
-            $data = ['message' => 'Vendor bank updated successfully', 'status' => true, 'code' => 200];
-            return to_route('show.admin.dashboard')->with($data);
+        // Ensure the vendor_id is included for identification
+        $validateBank['vendor_id'] = $vendor_id;
+
+        // Check if a bank record exists for this vendor
+        $vendorBank = VendorBankDetails::where('vendor_id', $vendor_id)->first();
+
+        if ($vendorBank) {
+            $vendorBank->update($validateBank);
         } else {
-            $data = ['message' => 'Failed to update vendor bank', 'status' => false, 'code' => 500];
-            return redirect()->back()->with($data);
+            VendorBankDetails::create($validateBank);
         }
+
+        return redirect()
+            ->route('show.admin.dashboard')
+            ->with([
+                'message' => 'Vendor bank details updated successfully.',
+                'status' => true,
+                'code' => 200,
+            ]);
     }
 
     //=====================shwo vendor desclaimer =====================//
-    public function showVendorDesclaimer(){
+    public function showVendorDesclaimer()
+    {
         return Inertia::render('Admin/Vendor/DesclaimerPage');
     }
 }

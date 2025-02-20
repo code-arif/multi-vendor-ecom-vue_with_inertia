@@ -30,6 +30,6 @@ class Vendor extends Model
     //relation with vendor business table
     public function vendor_business()
     {
-        return $this->belongsTo(VendorBusinessDetails::class, 'vendor_id')->withDefault();
+        return $this->hasOne(VendorBusinessDetails::class, 'vendor_id');
     }
 }

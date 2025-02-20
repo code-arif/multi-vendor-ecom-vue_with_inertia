@@ -32,7 +32,7 @@ const decreaseQuantity = () => {
 
 // Cart functionality (using computed properties for reactivity where needed)
 const form = useForm({
-    user_id: authUser.id,
+    user_id: authUser?.id,
     product_id: computed(() => productDetails.value.id),
     qty: computed(() => quantity.value),
     size: computed(() => selectedSize.value),
@@ -145,7 +145,7 @@ const addToCart = () => {
                     <p class="mb-4">
                         <strong>Availability: </strong>
                         <span class="text-info">{{
-                        productDetails.stock_status == "in_stock" ? "In Stock" : "Out Of Stock" }}</span>
+                            productDetails.stock_status == "in_stock" ? "In Stock" : "Out Of Stock" }}</span>
                     </p>
 
                     <!-- Sizes -->
@@ -221,6 +221,25 @@ const addToCart = () => {
                     <hr>
                     <div class="d-flex align-items-center mb-4 pt-2">
                         <strong class="text-dark mr-2">Saller Details:</strong>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead class="thead-dark">
+                                <tr>
+                                    <th scope="col">Name</th>
+                                    <th scope="col">Phone</th>
+                                    <th scope="col">Shop</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>{{ productDetails.vendor?.name ?? "N/A" }}</td>
+                                    <td>{{ productDetails.vendor?.phone ?? "N/A" }}</td>
+                                    <td>{{ productDetails.vendor?.vendor_business.shop_name ?? "N/A" }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>

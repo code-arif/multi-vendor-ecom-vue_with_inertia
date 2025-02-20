@@ -95,7 +95,7 @@ const cartItem = page.props.authUser.count_cart_item;
                         <Link :href="route('show.cart.page')" class="btn px-0" style="margin-left: 10px;">
                             <i class="fas fa-shopping-cart text-info" style="margin-right: 5px;"></i>
                             <span class="badge text-light border border-light rounded-circle"
-                                style="padding-bottom: 2px;">{{ cartItem }}</span>
+                                style="padding-bottom: 2px;">{{ cartItem ?? 0 }}</span>
                         </Link>
                     </div>
                 </nav>
