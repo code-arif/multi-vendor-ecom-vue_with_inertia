@@ -2,17 +2,21 @@
 import { ref, computed } from 'vue';
 import { Link, usePage, useForm } from '@inertiajs/vue3';
 
-const list = usePage();
-const productDetails = list.props.productDetails || {};
-const specifications = productDetails.specifications || {};
+const page = usePage();
 
-// Convert size and color strings to arrays
-const sizes = specifications.size ? specifications.size.split(', ') : [];
-const colors = specifications.color ? specifications.color.split(', ') : [];
+const authUser = page.props.authUser.authenticatedUser;
 
-// Selected options
-const selectedSize = ref(sizes.length ? sizes[0] : '');
-const selectedColor = ref(colors.length ? colors[0] : '');
+
+const productDetails = computed(() => page.props.productDetails || {});
+const specifications = computed(() => productDetails.value.specifications || {});
+
+// Convert size and color strings to arrays (using computed properties for reactivity)
+const sizes = computed(() => specifications.value.size ? specifications.value.size.split(', ') : []);
+const colors = computed(() => specifications.value.color ? specifications.value.color.split(', ') : []);
+
+// Selected options (using computed properties for reactivity)
+const selectedSize = ref(sizes.value.length ? sizes.value[0] : '');
+const selectedColor = ref(colors.value.length ? colors.value[0] : '');
 const quantity = ref(1);
 
 // Methods
@@ -26,7 +30,29 @@ const decreaseQuantity = () => {
     }
 };
 
-//======================cart functionallity======================//
+// Cart functionality (using computed properties for reactivity where needed)
+const form = useForm({
+    user_id: authUser.id,
+    product_id: computed(() => productDetails.value.id),
+    qty: computed(() => quantity.value),
+    size: computed(() => selectedSize.value),
+    color: computed(() => selectedColor.value),
+    price: computed(() => productDetails.value.price),
+});
+
+const addToCart = () => {
+    form.post(route('create.cart'), {
+        // preserveScroll: true,
+        onSuccess: () => {
+            if (page.props.flash.status === true) {
+                successToast(page.props.flash.message);
+            } else {
+                errorToast(page.props.flash.message);
+            }
+        },
+    });
+};
+
 </script>
 
 <template>
@@ -35,7 +61,7 @@ const decreaseQuantity = () => {
         <div class="row px-xl-5">
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30 p-3">
-                    <Link class="breadcrumb-item text-dark" href="/">Home</Link>
+                    <Link class="breadcrumb-item text-dark" :href="route('show.home.page')">Home</Link>
                     <Link class="breadcrumb-item text-dark" :href="route('show.products.page')">Shop</Link>
                     <span class="breadcrumb-item active">Shop Detail</span>
                 </nav>
@@ -97,13 +123,33 @@ const decreaseQuantity = () => {
                     </div>
 
                     <p class="mb-4">{{ productDetails.short_description }}</p>
-                    <p class="mb-2"><Strong>Only </Strong> <span class="text-info">{{ productDetails.stock_quantity }}</span> left in stock</p>
-                    <p class="mb-2"><Strong>Brand: </Strong> <span class="text-info">{{ productDetails.brand?.name || "No Brand" }}</span></p>
-                    <p class="mb-2"><Strong>Remark: </Strong> <span class="text-info">{{ productDetails.remark }}</span></p>
-                    <p class="mb-2"><Strong>SKU: </Strong> <span class="text-info">{{ productDetails.sku }}</span></p>
-                    <p class="mb-4" style="border: 1px solid red ; padding: 5px;"><Strong>Availability: </Strong> <span class="text-info">{{ productDetails.stock_status }}</span></p>
+
+                    <p class="mb-2">
+                        <strong> Only </strong>
+                        <span class="text-info">{{ productDetails.stock_quantity }}</span> left in stock
+                    </p>
+                    <p class="mb-2">
+                        <strong>Brand: </strong>
+                        <span class="text-info">
+                            <Link :href="route('show.product.by.brand', { id: productDetails.brand.id })"
+                                class="text-info">{{ productDetails.brand?.name || "No Brand" }}</Link>
+                        </span>
+                    </p>
+                    <p class="mb-2">
+                        <strong>Remark: </strong>
+                        <span class="text-info">{{ productDetails.remark }}</span>
+                    </p>
+                    <p class="mb-2">
+                        <strong>SKU: </strong> <span class="text-info">{{ productDetails.sku }}</span>
+                    </p>
+                    <p class="mb-4">
+                        <strong>Availability: </strong>
+                        <span class="text-info">{{
+                        productDetails.stock_status == "in_stock" ? "In Stock" : "Out Of Stock" }}</span>
+                    </p>
+
                     <!-- Sizes -->
-                    <div class="d-flex mb-3">
+                    <div class="d-flex mb-3" v-if="productDetails.stock_status == 'in_stock'">
                         <strong class="text-dark" style="margin-right: 10px;">Sizes:</strong>
                         <div v-for="size in sizes" :key="size"
                             class="custom-control custom-radio custom-control-inline">
@@ -114,7 +160,7 @@ const decreaseQuantity = () => {
                     </div>
 
                     <!-- Colors -->
-                    <div class="d-flex mb-4">
+                    <div class="d-flex mb-4" v-if="productDetails.stock_status == 'in_stock'">
                         <strong class="text-dark" style="margin-right: 10px;">Colors:</strong>
                         <div v-for="color in colors" :key="color"
                             class="custom-control custom-radio custom-control-inline">
@@ -125,7 +171,7 @@ const decreaseQuantity = () => {
                     </div>
 
                     <!-- Quantity and Add to Cart -->
-                    <div class="d-flex align-items-center mb-4 pt-2">
+                    <div class="d-flex align-items-center mb-4 pt-2" v-if="productDetails.stock_status == 'in_stock'">
                         <div class="input-group quantity mr-3" style="width: 130px;">
                             <div class="input-group-btn">
                                 <button class="btn btn-info btn-minus" @click="decreaseQuantity">
@@ -145,6 +191,12 @@ const decreaseQuantity = () => {
 
                         <button class="btn btn-info px-3" style="margin-left: 10px;">
                             <i class="fa fa-heart"></i> Add to Wish list
+                        </button>
+                    </div>
+
+                    <div v-if="productDetails.stock_status == 'out_of_stock'">
+                        <button class="btn btn-danger px-3 mb-2">
+                            <i class="fa fa-times me-2"></i> Out Of Stock
                         </button>
                     </div>
 
@@ -343,6 +395,7 @@ const decreaseQuantity = () => {
 <style scoped>
 .custom-control-input:checked+.custom-control-label {
     font-weight: bold;
-    color: #0dcaf0;    ;
+    color: #0dcaf0;
+    ;
 }
 </style>

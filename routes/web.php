@@ -21,6 +21,7 @@ use App\Http\Controllers\Admin\ProductSliderController;
 use App\Http\Controllers\Admin\ProductSpecificationController;
 use App\Http\Controllers\User\ProductUserController;
 use App\Http\Controllers\Vendor\VendorController;
+use App\Http\Middleware\TokenVerificationMiddleware;
 
 //=================================ADMIN ROUTES=================================//
 //admin login
@@ -127,18 +128,28 @@ Route::get('/', [HomeController::class, 'home'])->name('show.home.page');
 
 //====================user login registration, forget password=====================//
 Route::get('/login', [UserAuthController::class, 'showLogin'])->name('show.user.login');
-Route::get('/register', [UserAuthController::class, 'showRegister'])->name('show.user.register');
+Route::post('/login', [UserAuthController::class, 'userLogin'])->name('user.login');
+Route::get('/otp', [UserAuthController::class, 'showOTP'])->name('show.otp');
+Route::post('/otp', [UserAuthController::class, 'verifyOTP'])->name('verify.otp');
+
+//=======================authenticated routes====================================//
+Route::group(['middleware' => TokenVerificationMiddleware::class], function () {
+    Route::get('/user/logout', [UserAuthController::class, 'userLogout'])->name('user.logout');
+
+    //=======================Cart page =========================//
+    Route::get('/cart', [CartController::class, 'showCartPage'])->name('show.cart.page');
+    Route::post('/cart-create', [CartController::class, 'createCart'])->name('create.cart');
+    Route::get('/cart-item-count', [CartController::class, 'cartItemCount'])->name('cart.item.count');
+});
 
 // ======================Product page=======================//
 Route::get('/products', [ProductUserController::class, 'showProductPage'])->name('show.products.page');
 Route::get('/product', [ProductUserController::class, 'showProductDetailsPage'])->name('show.product.details.page');
 Route::get('/product/by-category', [ProductUserController::class, 'productByCategory'])->name('show.product.by.category');
+Route::get('/product/by-brand', [ProductUserController::class, 'productByBrand'])->name('show.product.by.brand');
 
 //=======================Checkout=========================//
 Route::get('/checkout', [CheckOutController::class, 'showCheckoutPage'])->name('show.checkout.page');
-
-//=======================Cart page =========================//
-Route::get('/cart', [CartController::class, 'showCartPage'])->name('show.cart.page');
 
 //==========================get section for header =====================//
 Route::get('/get-header-section', [HomeController::class, 'getHeaderSection'])->name('get.header.section');

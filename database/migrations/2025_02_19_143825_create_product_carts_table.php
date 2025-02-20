@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->string('size', 200)->nullable();
             $table->string('qty', 200);
             $table->string('price', 200);
+            $table->string('subtotal', 200);
 
             //foreign key
             $table->unsignedBigInteger('product_id');

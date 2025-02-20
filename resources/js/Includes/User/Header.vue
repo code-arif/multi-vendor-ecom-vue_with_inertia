@@ -1,21 +1,27 @@
 <script setup>
 import { ref, onMounted } from "vue";
 import axios from "axios";
-import { Link } from "@inertiajs/vue3";
-
+import { Link, usePage } from "@inertiajs/vue3";
+const page = usePage();
 const sections = ref([]);
 
 const fetchSections = async () => {
     try {
         const response = await axios.get("/get-header-section");
-        // console.log(response.data); // Check if data is received
         sections.value = response.data;
     } catch (error) {
         errorToast("Error fetching sections:", error);
     }
 };
 
-onMounted(fetchSections);
+// onMounted();
+onMounted(() => {
+    fetchSections();
+});
+
+//=================cart item count=================//
+const cartItem = page.props.authUser.count_cart_item;
+
 </script>
 
 <template>
@@ -86,11 +92,11 @@ onMounted(fetchSections);
                             <span class="badge text-light border border-light rounded-circle"
                                 style="padding-bottom: 2px;">0</span>
                         </a>
-                        <a href="" class="btn px-0" style="margin-left: 10px;">
+                        <Link :href="route('show.cart.page')" class="btn px-0" style="margin-left: 10px;">
                             <i class="fas fa-shopping-cart text-info" style="margin-right: 5px;"></i>
                             <span class="badge text-light border border-light rounded-circle"
-                                style="padding-bottom: 2px;">0</span>
-                        </a>
+                                style="padding-bottom: 2px;">{{ cartItem }}</span>
+                        </Link>
                     </div>
                 </nav>
             </div>

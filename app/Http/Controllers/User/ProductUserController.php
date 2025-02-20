@@ -3,14 +3,15 @@
 namespace App\Http\Controllers\User;
 
 use Inertia\Inertia;
+use App\Models\Brand;
+use App\Models\Product;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Models\Category;
-use App\Models\Product;
 
 class ProductUserController extends Controller
 {
-        /**
+    /**
      * =====================================
      *  User Product Controller
      * =====================================
@@ -22,14 +23,14 @@ class ProductUserController extends Controller
     {
         $products = Product::get();
         $all_products = 'All Products';
-        return Inertia::render('User/Product/ProductsPage',[
+        return Inertia::render('User/Product/ProductsPage', [
             'products' => $products,
             'all_products' => $all_products,
         ]);
     }
 
     //======================show product details page ======================//
-    public function showProductDetailsPage(Request $request , $id = null)
+    public function showProductDetailsPage(Request $request, $id = null)
     {
         // Ensure we get the correct product ID
         $id = $id ?? $request->query('id');
@@ -48,7 +49,7 @@ class ProductUserController extends Controller
             return response()->json(['error' => 'Product not found'], 404);
         }
 
-        return Inertia::render('User/Product/ProductDetailsPage',[
+        return Inertia::render('User/Product/ProductDetailsPage', [
             'productDetails' => $productDetails,
         ]);
     }
@@ -59,17 +60,34 @@ class ProductUserController extends Controller
         $url = $url ?? $request->query('url');
 
         $productsByCategory = Category::where('url', $url)
-            ->where('status', 1) // Only active categories
-            ->with(['products' => function ($query) {
-                $query->where('status', 1); // Only active products
-            }])
+            ->where('status', 1)
+            ->with([
+                'products' => function ($query) {
+                    $query->where('status', 1);
+                },
+            ])
             ->get();
 
-            // return $productsByCategory;dd();
-
         return Inertia::render('User/Product/ProductByCategoryPage', [
-            'productsByCategory' => $productsByCategory
+            'productsByCategory' => $productsByCategory,
         ]);
     }
 
+    //=====================get product by brand=======================//
+    public function productByBrand(Request $request, $id = null)
+    {
+        $id = $id ?? $request->query('id');
+        $productsByBrand = Brand::where('id', $id)
+            ->where('status', 1)
+            ->with([
+                'products' => function ($query) {
+                    $query->where('status', 1);
+                },
+            ])
+            ->get();
+
+        return Inertia::render('User/Product/ProductByBrandPage', [
+            'productsByBrand' => $productsByBrand,
+        ]);
+    }
 }

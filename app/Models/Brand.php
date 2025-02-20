@@ -14,4 +14,9 @@ class Brand extends Model
         'created_at',
         'updated_at'
     ];
+
+    //relation with product table
+    public function products(){
+        return $this->hasMany(Product::class);
+    }
 }

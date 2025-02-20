@@ -1,5 +1,8 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
+
+const page = usePage();
+const authUser = page.props.authUser.authenticatedUser;
 </script>
 <template>
     <!-- Topbar Start -->
@@ -15,14 +18,24 @@ import { Link } from '@inertiajs/vue3';
             </div>
 
             <div class="text-center">
-                <Link :href="route('show.vendor.account.create.page')" type="button" class="btn btn-sm btn-light" style="margin-right: 10px;">Become a Saller</Link>
+                <Link :href="route('show.vendor.account.create.page')" type="button" class="btn btn-sm btn-light"
+                    style="margin-right: 10px;">Become a Saller</Link>
 
                 <div class="btn-group">
-                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">My
-                        Account</button>
+                    <button type="button" class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                        My Account
+                    </button>
                     <div class="dropdown-menu dropdown-menu-right">
-                        <Link :href="route('show.user.login')" class="dropdown-item" type="button">Sign in</Link>
-                        <button class="dropdown-item" type="button">Sign up</button>
+                        <template v-if="authUser">
+                            <Link class="dropdown-item">Profile</Link>
+                            <Link class="dropdown-item">Wishlist</Link>
+                            <Link class="dropdown-item">All Orders</Link>
+                            <Link :href="route('user.logout')" class="dropdown-item">Logout</Link>
+                        </template>
+                        <template v-else>
+                            <Link :href="route('show.user.login')" class="dropdown-item">Sign in</Link>
+                        </template>
+
                     </div>
                 </div>
             </div>

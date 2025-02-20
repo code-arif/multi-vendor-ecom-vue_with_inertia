@@ -121,4 +121,6 @@ return [
         'driver' => env('APP_MAINTENANCE_DRIVER', 'file'),
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
+
+    'jwt_key' => env('JWT_KEY'),
 ];

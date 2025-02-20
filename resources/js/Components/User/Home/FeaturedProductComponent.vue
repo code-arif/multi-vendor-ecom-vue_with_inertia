@@ -21,8 +21,9 @@ const featured_products = list.props.featured_products || [];
                             <a :href="route('show.product.details.page',{id:product.id})" class="btn btn-outline-dark btn-square" href=""><i class="fa fa-eye"></i></a>
                         </div>
                     </div>
-                    <div class="text-center py-4">
-                        <Link class="h6 text-decoration-none text-truncate" href="">{{ product.product_name }}</Link>
+                    <div class="text-center py-4 px-3">
+                        <Link class="h6 text-decoration-none text-truncate product-name"
+                            :href="route('show.product.details.page', { id: product.id })">{{ product.product_name }}</Link>
                         <div class="d-flex align-items-center justify-content-center mt-2">
                             <h5 style="margin-right: 10px;">৳ {{ product.price }}</h5>
                             <h6 class="text-muted">
@@ -47,4 +48,12 @@ const featured_products = list.props.featured_products || [];
     <!-- Products End -->
 </template>
 
-<style scoped></style>
+<style scoped>
+.product-name {
+    display: block;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    text-align: left;
+}
+</style>

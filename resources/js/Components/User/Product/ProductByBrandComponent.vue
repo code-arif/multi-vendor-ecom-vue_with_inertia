@@ -1,7 +1,7 @@
 <script setup>
-import { usePage, Link } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 const list = usePage();
-const productsByCategory = list.props.productsByCategory || [];
+const productsByBrand = list.props.productsByBrand || [];
 </script>
 
 <template>
@@ -13,7 +13,7 @@ const productsByCategory = list.props.productsByCategory || [];
                     <a class="breadcrumb-item text-dark" href="#">Home</a>
                     <a class="breadcrumb-item text-dark" href="#">Shop</a>
                     <span class="breadcrumb-item active">
-                        {{ productsByCategory.length > 0 ? productsByCategory[0].name : 'No Product For This Category' }}
+                        {{ productsByBrand.length > 0 ? productsByBrand[0].name : 'No Product For This Brand' }}
                     </span>
                 </nav>
             </div>
@@ -200,8 +200,8 @@ const productsByCategory = list.props.productsByCategory || [];
                     <!-- filter by remark and sorting end -->
 
                     <!-- product cart start -->
-                    <div class="col-lg-4 col-md-6 col-sm-6 pb-1" style="box-sizing: border-box;"
-                        v-for="(product, index) in (productsByCategory.length > 0 ? productsByCategory[0].products : [])"
+                    <div class="col-lg-4 col-md-6 col-sm-6 pb-1"
+                        v-for="(product, index) in (productsByBrand.length > 0 ? productsByBrand[0].products : [])"
                         :key="index">
 
                         <div class="product-item bg-light mb-4" style="border: 1px solid #ddd;">
@@ -220,8 +220,7 @@ const productsByCategory = list.props.productsByCategory || [];
                                 </div>
                             </div>
                             <div class="text-center py-4 px-3">
-                                <Link class="h6 text-decoration-none text-truncate product-name"
-                                :href="route('show.product.details.page', { id: product.id })">{{ product.product_name }}</Link>
+                                <Link class="h6 text-decoration-none text-truncate product-name" href="">{{ product.product_name }}</Link>
                                 <div class="d-flex align-items-center justify-content-center mt-2">
                                     <h5>${{ product.price }}</h5>
                                     <h6 v-if="product.has_discount" class="text-muted" style="margin-left: 10px;">
@@ -240,6 +239,7 @@ const productsByCategory = list.props.productsByCategory || [];
                         </div>
                     </div>
                     <!-- product cart end -->
+
 
                     <div class="col-12">
                         <nav>

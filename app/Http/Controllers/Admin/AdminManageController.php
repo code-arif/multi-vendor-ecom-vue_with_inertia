@@ -7,6 +7,7 @@ use App\Models\Admin;
 use Illuminate\Http\Request;
 use App\Mail\VendorStatusMail;
 use App\Http\Controllers\Controller;
+use App\Models\Vendor;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 
@@ -88,8 +89,12 @@ class AdminManageController extends Controller
             return response()->json(['error' => 'Admin not found'], 404);
         }
 
+        $vendor = Vendor::where('id', $admin->vendor_id)->first();
+
         $admin->status = $request->status;
+        $vendor->status = $request->status;
         $admin->save();
+        $vendor->save();
 
         // Email Pathano
         Mail::to($admin->email)->send(new VendorStatusMail($admin, $request->status));

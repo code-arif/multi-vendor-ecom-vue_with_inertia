@@ -215,8 +215,9 @@ const products = list.props.products || [];
                                     </Link>
                                 </div>
                             </div>
-                            <div class="text-center py-4">
-                                <a class="h6 text-decoration-none text-truncate" href="">{{ product.product_name }}</a>
+                            <div class="text-center py-4 px-3">
+                                <Link class="h6 text-decoration-none text-truncate product-name"
+                                :href="route('show.product.details.page', { id: product.id })">{{ product.product_name }}</Link>
                                 <div class="d-flex align-items-center justify-content-center mt-2">
                                     <h5>{{ product.price }}</h5>
                                     <h6 v-if="product.has_discount" class="text-muted" style="margin-left: 10px;">
@@ -257,4 +258,12 @@ const products = list.props.products || [];
     <!-- Shop End -->
 </template>
 
-<style scoped></style>
+<style scoped>
+.product-name {
+    display: block;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    text-align: left;
+}
+</style>

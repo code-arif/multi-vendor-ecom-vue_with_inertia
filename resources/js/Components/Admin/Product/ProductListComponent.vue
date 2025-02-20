@@ -7,21 +7,21 @@ import moment from "moment";
 const list = usePage();
 
 const Header = [
-    { text: "No", value: "no", width: 40 },
+    { text: "No", value: "no", width: 40, fixed:true },
     { text: "Image", value: "image" },
-    { text: "Name", value: "name", sortable: true, width: 100 },
+    { text: "Name", value: "name", sortable: true, width: 250 },
     { text: "Price", value: "price" },
     { text: "Quantity", value: "quantity", width: 70 },
     { text: "Status", value: "status", sortable: true },
     { text: "Remark", value: "remark", sortable: true },
     { text: "Category", value: "category", sortable: true },
-    { text: "Is Featured", value: "is_featured", sortable: true },
+    { text: "Is Featured", value: "is_featured", width: 100, sortable: true },
     { text: "Brand", value: "brand", sortable: true },
-    { text: "Added By", value: "added_by", width: 100 },
+    { text: "Added By", value: "added_by", width: 200 },
     { text: "Type", value: "type" },
-    { text: "Added Date", value: "added_date", width: 100 },
-    { text: "Updated Date", value: "updated_date", width: 100 },
-    { text: "Action", value: "number", width: 170 },
+    { text: "Added Date", value: "added_date", width: 150 },
+    { text: "Updated Date", value: "updated_date", width: 160 },
+    { text: "Action", value: "number", width: 210 },
 ];
 
 // Transform data for table
@@ -232,4 +232,23 @@ function deleteProduct() {
     </div>
 </template>
 
-<style scoped></style>
+<style scoped>
+/* Custom scrollbar for EasyDataTable */
+.table-responsive ::-webkit-scrollbar {
+    height: 15px;
+}
+
+.table-responsive ::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.table-responsive ::-webkit-scrollbar-thumb {
+    background: #3db5ff;
+    border-radius: 10px;
+}
+
+.table-responsive ::-webkit-scrollbar-thumb:hover {
+    background: #009CFF ;
+}
+</style>
+
