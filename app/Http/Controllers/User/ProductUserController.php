@@ -39,12 +39,10 @@ class ProductUserController extends Controller
             return response()->json(['error' => 'Product ID is required'], 400);
         }
 
-        // Fetch product details along with relationships
         $productDetails = Product::with(['product_details', 'specifications', 'productImages', 'category:id,name', 'brand:id,name', 'vendor.vendor_business'])->find($id);
 
         // return $productDetails;dd();
 
-        // Check if the product exists
         if (!$productDetails) {
             return response()->json(['error' => 'Product not found'], 404);
         }

@@ -15,4 +15,9 @@ class ProductCart extends Model
         'size',
         'subtotal'
     ];
+
+    //relation with product table
+    public function products(){
+        return $this->belongsTo(Product::class, 'product_id', 'id');
+    }
 }

@@ -1,62 +1,136 @@
 <script setup>
+import { ref, computed } from "vue";
+import { Link, router, usePage } from "@inertiajs/vue3";
 
+const page = usePage();
+const cartProducts = ref(
+    (page.props.cartProducts || []).map(item => ({ ...item, selected: false })) // Add 'selected' property
+);
+
+// Function to increase quantity
+const increaseQty = (cartItem) => {
+    cartItem.qty++;
+    updateSubtotal(cartItem);
+};
+
+// Function to decrease quantity
+const decreaseQty = (cartItem) => {
+    if (cartItem.qty > 1) {
+        cartItem.qty--;
+        updateSubtotal(cartItem);
+    }
+};
+
+// Function to update subtotal
+const updateSubtotal = (cartItem) => {
+    cartItem.subtotal = cartItem.qty * cartItem.price;
+};
+
+// **Calculate cart summary only for selected items**
+const cartSummary = computed(() => {
+    let selectedItems = cartProducts.value.filter(item => item.selected); // Filter selected items
+    let subtotal = selectedItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
+    let shipping = subtotal > 0 ? 10 : 0;
+    let total = subtotal + shipping;
+    return { subtotal, shipping, total };
+});
+
+// **Delete cart item functionality**
+const deleteItem = (cartItem) => {
+    if (window.confirm("Are you sure you want to remove this item from the cart?")) {
+        router.delete(route('delete.cart', { id: cartItem.id }), {
+            onSuccess: () => {
+                successToast(page.props.flash.message);
+                // Remove item from frontend cartProducts state
+                cartProducts.value = cartProducts.value.filter(item => item.id !== cartItem.id);
+            },
+            onError: () => {
+                errorToast('Error deleting cart item');
+            }
+        });
+    }
+};
 </script>
 
 <template>
-        <!-- Breadcrumb Start -->
-        <div class="container-fluid">
+    <!-- Breadcrumb Start -->
+    <div class="container-fluid">
         <div class="row px-xl-5">
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30 p-3">
-                    <a class="breadcrumb-item text-dark" href="#">Home</a>
-                    <a class="breadcrumb-item text-dark" href="#">Shop</a>
-                    <span class="breadcrumb-item active">Shoping Cart</span>
+                    <Link class="breadcrumb-item text-dark" :href="route('show.home.page')">Home</Link>
+                    <Link class="breadcrumb-item text-dark" :href="route('show.products.page')">Shop</Link>
+                    <span class="breadcrumb-item active">Shopping Cart</span>
                 </nav>
             </div>
         </div>
     </div>
     <!-- Breadcrumb End -->
 
-
     <!-- Cart Start -->
     <div class="container-fluid">
         <div class="row px-xl-5">
             <div class="col-lg-8 table-responsive" style="margin-bottom: 10px;">
-                <table class="table table-light table-border table-hover text-center mb-0">
-                    <thead class="thead-dark" style="padding: 10px 0px;">
+                <table class="table table-light table-hover text-center mb-0">
+                    <thead class="thead-dark">
                         <tr>
-                            <th>Products</th>
+                            <th>Select</th>
+                            <th class="text-start">Products</th>
                             <th>Price</th>
                             <th>Quantity</th>
                             <th>Total</th>
                             <th>Remove</th>
                         </tr>
                     </thead>
-                    <tbody class="align-middle">
-                        <tr>
-                            <td class="align-middle"><img src="https://plus.unsplash.com/premium_photo-1719609141104-afeaa94f458c?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mzd8fHByb2R1Y3QlMjBpbWFnZXxlbnwwfHwwfHx8MA%3D%3D" alt="" style="width: 50px;"> Product Name</td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle">
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-info btn-minus" >
-                                        <i class="fa fa-minus"></i>
-                                        </button>
+                    <tbody>
+                        <tr v-for="(cartItem, index) in cartProducts" :key="index">
+                            <td class="pt-4">
+                                <input class="form-check-input" type="checkbox" v-model="cartItem.selected" />
+                            </td>
+                            <td class="">
+                                <div style="display: flex;">
+                                    <div class="display-inline-flex">
+                                        <img :src="cartItem.products.image ? `/storage/${cartItem.products.image}` : 'https://skala.or.id/wp-content/uploads/2024/01/dummy-post-square-1-1.jpg'"
+                                            alt="Product image" style="width: 70px; height: 70px; object-fit: cover;"
+                                            class="" />
                                     </div>
-                                    <input type="text" class="form-control form-control-sm border-0 text-center" value="1">
-                                    <div class="input-group-btn">
-                                        <button class="btn btn-sm btn-info btn-plus">
-                                            <i class="fa fa-plus"></i>
-                                        </button>
+                                    <div class="text-start ms-3">
+                                        <Link class="text-start"
+                                            :href="route('show.product.details.page', { id: cartItem.products.id })">
+                                        {{ cartItem.products.product_name }}
+                                        </Link>
+
+                                        <div>
+                                            <span class="text-muted">Color: {{ cartItem.color }} ||</span>
+                                            <span class="text-muted" style="padding-left: 10px;">Size: {{ cartItem.size }}</span>
+                                        </div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="align-middle">$150</td>
-                            <td class="align-middle"><button class="btn btn-sm btn-outline-danger"><i class="fa fa-times"></i></button></td>
+                            <td class="text-danger">৳: {{ cartItem.price }}/-</td>
+                            <td>
+                                <div class="input-group quantity mx-auto" style="width: 100px;">
+                                    <button class="btn btn-sm btn-info btn-minus" @click="decreaseQty(cartItem)">
+                                        <i class="fa fa-minus"></i>
+                                    </button>
+                                    <input type="text" class="form-control form-control-sm border-0 text-center"
+                                        v-model="cartItem.qty" readonly>
+                                    <button class="btn btn-sm btn-info btn-plus" @click="increaseQty(cartItem)">
+                                        <i class="fa fa-plus"></i>
+                                    </button>
+                                </div>
+                            </td>
+                            <td class="text-danger">{{ cartItem.subtotal }}</td>
+                            <td>
+                                <button @click="deleteItem(cartItem)" class="btn btn-sm btn-outline-danger">
+                                    <i class="fa fa-times"></i>
+                                </button>
+                            </td>
                         </tr>
                     </tbody>
                 </table>
             </div>
+
             <div class="col-lg-4">
                 <form class="mb-30" action="">
                     <div class="input-group">
@@ -66,24 +140,33 @@
                         </div>
                     </div>
                 </form>
-                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-light" style="padding: 5px 10px">Cart Summary</span></h5>
+                <h5 class="section-title position-relative text-uppercase mb-3">
+                    <span class="bg-light" style="padding: 5px 10px">Cart Summary</span>
+                </h5>
                 <div class="bg-light p-30 mb-5">
                     <div class="border-bottom pb-2">
                         <div class="d-flex justify-content-between mb-3">
                             <h6>Subtotal</h6>
-                            <h6>$150</h6>
+                            <h6>{{ cartSummary.subtotal }}</h6>
+                        </div>
+                        <div class="d-flex justify-content-between mb-3">
+                            <h6 class="font-weight-medium">Shipping</h6>
+                            <h6 class="font-weight-medium">{{ cartSummary.shipping }}</h6>
                         </div>
                         <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">$10</h6>
+                            <h6 class="font-weight-medium">Coupon Discount</h6>
+                            <h6 class="font-weight-medium">0</h6>
                         </div>
                     </div>
                     <div class="pt-2">
                         <div class="d-flex justify-content-between mt-2">
                             <h5>Total</h5>
-                            <h5>$160</h5>
+                            <h5>{{ cartSummary.total }}</h5>
                         </div>
-                        <button class="btn btn-block btn-info font-weight-bold mt-3 w-100">Proceed To Checkout</button>
+                        <button class="btn btn-block btn-info font-weight-bold mt-3 w-100"
+                            :disabled="cartSummary.total === 0">
+                            Proceed To Checkout
+                        </button>
                     </div>
                 </div>
             </div>
@@ -91,7 +174,3 @@
     </div>
     <!-- Cart End -->
 </template>
-
-<style scoped>
-
-</style>

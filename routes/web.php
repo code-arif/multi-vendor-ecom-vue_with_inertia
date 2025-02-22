@@ -139,6 +139,7 @@ Route::group(['middleware' => TokenVerificationMiddleware::class], function () {
     //=======================Cart page =========================//
     Route::get('/cart', [CartController::class, 'showCartPage'])->name('show.cart.page');
     Route::post('/cart-create', [CartController::class, 'createCart'])->name('create.cart');
+    Route::delete('/cart-delete/{id}', [CartController::class,'deleteCart'])->name('delete.cart');
 });
 
 // ======================Product page=======================//
