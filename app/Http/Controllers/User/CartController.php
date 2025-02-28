@@ -25,9 +25,9 @@ class CartController extends Controller
     //======================create cart=======================//
     public function createCart(Request $request)
     {
+        $id = $request->header('id');
         $request->validate([
             'product_id' => 'required|exists:products,id',
-            'user_id' => 'required|exists:users,id',
             'qty' => 'required|integer|min:1',
             'price' => 'required|numeric',
             'color' => 'nullable|string',
@@ -45,7 +45,7 @@ class CartController extends Controller
         }
 
         // Check if product is already in the cart
-        $existingCartItem = ProductCart::where('product_id', $request->product_id)->where('user_id', $request->user_id)->first();
+        $existingCartItem = ProductCart::where('product_id', $request->product_id)->where('user_id', $id)->first();
 
         if ($existingCartItem) {
             // Update existing quantity
@@ -69,7 +69,7 @@ class CartController extends Controller
             // Add new product to cart
             ProductCart::create([
                 'product_id' => $request->product_id,
-                'user_id' => $request->user_id,
+                'user_id' => $id,
                 'qty' => $request->qty,
                 'price' => $request->price,
                 'color' => $request->color,

@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
+use App\Models\CouponCategory;
 use Illuminate\Support\Facades\Auth;
 
 class CouponController extends Controller
@@ -124,7 +125,12 @@ class CouponController extends Controller
     
             // Attach Categories to Pivot Table
             if ($coupon && $request->has('category_ids')) {
-                $coupon->categories()->sync($request->category_ids);
+                foreach ($request->category_ids as $category_id) {
+                    CouponCategory::create([
+                        'coupon_id' => $coupon->id,
+                        'category_id' => $category_id,
+                    ]);
+                }
             }
     
             DB::commit();
@@ -141,6 +147,7 @@ class CouponController extends Controller
             ]);
         }
     }
+    
 
 
     //=========================update coupon==============================//
@@ -197,13 +204,21 @@ class CouponController extends Controller
             $couponData = collect($validated)->except('category_ids')->toArray();
             $coupon->update($couponData);
     
-            // Sync Categories to Pivot Table
             if ($request->has('category_ids')) {
-                $coupon->categories()->sync($request->category_ids);
+                // Delete previous categories
+                CouponCategory::where('coupon_id', $coupon->id)->delete();
+            
+                // Insert new category mappings
+                foreach ($request->category_ids as $category_id) {
+                    CouponCategory::create([
+                        'coupon_id' => $coupon->id,
+                        'category_id' => $category_id,
+                    ]);
+                }
             } else {
-                // If no categories are provided, detach all existing categories
-                $coupon->categories()->detach();
+                CouponCategory::where('coupon_id', $coupon->id)->delete();
             }
+            
     
             DB::commit();
     

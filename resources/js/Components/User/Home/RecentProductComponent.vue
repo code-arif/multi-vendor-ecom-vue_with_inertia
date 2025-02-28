@@ -66,6 +66,6 @@ const products = list.props.products || [];
 .custom-img {
     width: 300px !important;
     height: 200px !important;
-    object-fit: cover;
+    object-fit: cover !important;
 }
 </style>

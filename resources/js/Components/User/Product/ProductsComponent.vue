@@ -199,7 +199,7 @@ const products = list.props.products || [];
                     <!-- filter and sroting end -->
 
                     <!-- product cart start -->
-                    <div class="col-lg-4 col-md-6 col-sm-6 pb-1" v-for="(product, index, id) in products" :key="id">
+                    <div class="col-lg-3 col-md-6 col-sm-6 pb-1" v-for="(product, index, id) in products" :key="id">
                         <div class="product-item bg-light mb-4" style="border: 1px solid #ddd;">
                             <div class="product-img position-relative overflow-hidden">
                                 <img class="custom-img" :src="`/storage/${product.image}`" alt="Product Image">
@@ -270,8 +270,8 @@ const products = list.props.products || [];
 }
 
 .custom-img {
-    width: 400px !important;
-    height: 300px !important;
+    width: 300px !important;
+    height: 200px !important;
     object-fit: cover;
 }
 </style>

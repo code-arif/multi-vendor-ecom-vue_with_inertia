@@ -154,7 +154,7 @@ const deleteItem = (cartItem) => {
             </div>
 
             <div class="col-lg-4">
-                <form class="mb-30" action="">
+                <form class="mb-30">
                     <div class="input-group">
                         <input type="text" class="form-control" placeholder="Coupon Code">
                         <div class="input-group-append">

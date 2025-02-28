@@ -4,9 +4,6 @@ import { Link, usePage, useForm } from '@inertiajs/vue3';
 
 const page = usePage();
 
-const authUser = page.props.authUser.authenticatedUser;
-
-
 const productDetails = computed(() => page.props.productDetails || {});
 const specifications = computed(() => productDetails.value.specifications || {});
 
@@ -32,7 +29,6 @@ const decreaseQuantity = () => {
 
 // Cart functionality (using computed properties for reactivity where needed)
 const form = useForm({
-    user_id: authUser?.id,
     product_id: computed(() => productDetails.value.id),
     qty: computed(() => quantity.value),
     size: computed(() => selectedSize.value),
@@ -50,6 +46,9 @@ const addToCart = () => {
                 errorToast(page.props.flash.message);
             }
         },
+        onError: () => {
+            errorToast('Failed to add product to cart');
+        }
     });
 };
 

@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\ProductSliderController;
 use App\Http\Controllers\Admin\ProductDetailsController;
 use App\Http\Controllers\Admin\VendorProfileManageController;
 use App\Http\Controllers\Admin\ProductSpecificationController;
+use App\Http\Controllers\User\ApplyCouponController;
 
 //=================================ADMIN ROUTES=================================//
 //admin login
@@ -152,6 +153,9 @@ Route::group(['middleware' => TokenVerificationMiddleware::class], function () {
     Route::post('/cart-create', [CartController::class, 'createCart'])->name('create.cart');
     Route::delete('/cart-delete/{id}', [CartController::class,'deleteCart'])->name('delete.cart');
     Route::patch('/cart/update/{id}', [CartController::class, 'updateCart'])->name('update.cart');
+
+    //copon apply
+    Route::post('/apply-coupon', [ApplyCouponController::class, 'applyCoupon'])->name('apply.coupon');
 });
 
 // ======================Product page=======================//
