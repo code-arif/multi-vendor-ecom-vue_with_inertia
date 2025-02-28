@@ -15,7 +15,7 @@ const imagePreview = ref(
     <div class="sidebar ">
         <nav class="navbar navbar-light">
             <a href="" class="navbar-brand mx-4 mb-3">
-                <h3 class="text-primary"><i class="fa fa-hashtag me-2"></i>Mini Shop</h3>
+                <h3 class="text-primary"><i class="fa fa-shopping-cart me-2"></i>Mini Shop</h3>
             </a>
             <div class="d-flex align-items-center ms-4 mb-4" v-if="authUser">
                 <div class="position-relative">
@@ -110,6 +110,9 @@ const imagePreview = ref(
                         </Link>
                     </div>
                 </div>
+
+                <!-- coupon manage -->
+                <Link :href="route('show.coupon')" class="nav-item nav-link" :class="{ 'active' : route().current('show.coupon') }"><i class="fa fa-gift me-2"></i>Coupon</Link>
                 <!-- user manage -->
                 <div class="nav-item dropdown"
                     v-if="authUser && authUser.type === 'superadmin' || authUser && authUser.type === 'admin'">
@@ -123,7 +126,6 @@ const imagePreview = ref(
                     </div>
                 </div>
 
-                <a href="widget.html" class="nav-item nav-link"><i class="fa fa-th me-2"></i>Product Slider</a>
                 <a href="form.html" class="nav-item nav-link"><i class="fa fa-keyboard me-2"></i>Forms</a>
                 <a href="table.html" class="nav-item nav-link"><i class="fa fa-table me-2"></i>Tables</a>
                 <a href="chart.html" class="nav-item nav-link"><i class="fa fa-chart-bar me-2"></i>Charts</a>

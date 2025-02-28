@@ -7,21 +7,22 @@ use App\Http\Middleware\AdminAuthMiddleware;
 use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\Admin\BrandController;
+use App\Http\Controllers\Admin\CouponController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SectionController;
 use App\Http\Controllers\User\CheckOutController;
 use App\Http\Controllers\User\UserAuthController;
+use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
-use App\Http\Controllers\Admin\VendorProfileManageController;
-use App\Http\Controllers\Admin\AdminManageController;
-use App\Http\Controllers\Admin\ProductDetailsController;
-use App\Http\Controllers\Admin\ProductSliderController;
-use App\Http\Controllers\Admin\ProductSpecificationController;
 use App\Http\Controllers\User\ProductUserController;
-use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Middleware\TokenVerificationMiddleware;
+use App\Http\Controllers\Admin\AdminManageController;
+use App\Http\Controllers\Admin\ProductSliderController;
+use App\Http\Controllers\Admin\ProductDetailsController;
+use App\Http\Controllers\Admin\VendorProfileManageController;
+use App\Http\Controllers\Admin\ProductSpecificationController;
 
 //=================================ADMIN ROUTES=================================//
 //admin login
@@ -111,6 +112,16 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
         Route::delete('/slider/delete/{id}', [ProductSliderController::class, 'deleteProductSlider'])->name('delete.product.slider');
         Route::post('/change-status/slider/{id}', [ProductSliderController::class, 'changeProductSliderStatus'])->name('change.product.slider.status');
     });
+
+    //========================coupon manage========================//
+    Route::group(['prefix' => 'coupon'], function () {
+        Route::get('/list', [CouponController::class, 'showCoupon'])->name('show.coupon');
+        Route::post('/add', [CouponController::class, 'addCoupon'])->name('add.coupon');
+        Route::post('/update/{id}', [CouponController::class, 'updateCoupon'])->name('update.coupon');
+        Route::delete('/delete/{id}', [CouponController::class, 'deleteCoupon'])->name('delete.coupon');
+        Route::post('/change-status/{id}', [CouponController::class, 'changeCouponStatus'])->name('change.coupon.status');
+    });
+
 });
 
 /*================================
@@ -140,6 +151,7 @@ Route::group(['middleware' => TokenVerificationMiddleware::class], function () {
     Route::get('/cart', [CartController::class, 'showCartPage'])->name('show.cart.page');
     Route::post('/cart-create', [CartController::class, 'createCart'])->name('create.cart');
     Route::delete('/cart-delete/{id}', [CartController::class,'deleteCart'])->name('delete.cart');
+    Route::patch('/cart/update/{id}', [CartController::class, 'updateCart'])->name('update.cart');
 });
 
 // ======================Product page=======================//

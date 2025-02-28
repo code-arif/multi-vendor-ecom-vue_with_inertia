@@ -79,11 +79,11 @@ class CartController extends Controller
         }
 
         return redirect()
-        ->back()
-        ->with([
-            'message' => 'Product added to cart successfully. <a href="'. route('show.cart.page') .'" class="text-blue-500 underline">View Cart</a>',
-            'status'  => true
-        ]);    
+            ->back()
+            ->with([
+                'message' => 'Product added to cart successfully. <a href="' . route('show.cart.page') . '" class="text-blue-500 underline">View Cart</a>',
+                'status' => true,
+            ]);
     }
 
     //====================cart delete=========================//
@@ -96,5 +96,38 @@ class CartController extends Controller
     }
 
     //update cart quantity and total in cart list page
+    public function updateCart(Request $request, $id)
+    {
+        $user_id = $request->header('id');
+        $request->validate([
+            'qty' => 'required|integer|min:1',
+        ]);
+    
+        // Find the cart item
+        $cartItem = ProductCart::where('id', $id)->where('user_id', $user_id)->first();
+    
+        if (!$cartItem) {
+            return redirect()->back()->with(['message' => 'Cart item not found', 'status' => false]);
+        }
+    
+        // Get product stock from the products table
+        $product = Product::where('id', $cartItem->product_id)->first();
+    
+        if (!$product) {
+            return redirect()-> back() ->with(['message' => 'Product not found', 'status' => false]);
+        }
+    
+        // Check if requested qty is more than available stock
+        if ($request->qty > $product->stock_quantity) {
+            return redirect()->back()->with(['message' => 'Not enough stock', 'status' => false]);
+        }
+    
+        // Update quantity and subtotal
+        $cartItem->qty = $request->qty;
+        $cartItem->subtotal = $cartItem->qty * $cartItem->price;
+        $cartItem->save();
+
+        return redirect()->back()->with(['message' => 'Cart item updated successfully', 'status' => true]);
+    }
     
 }

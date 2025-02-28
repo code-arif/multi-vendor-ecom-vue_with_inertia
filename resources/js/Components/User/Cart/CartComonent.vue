@@ -11,6 +11,7 @@ const cartProducts = ref(
 const increaseQty = (cartItem) => {
     cartItem.qty++;
     updateSubtotal(cartItem);
+    updateCart(cartItem);
 };
 
 // Function to decrease quantity
@@ -18,6 +19,7 @@ const decreaseQty = (cartItem) => {
     if (cartItem.qty > 1) {
         cartItem.qty--;
         updateSubtotal(cartItem);
+        updateCart(cartItem);
     }
 };
 
@@ -35,7 +37,25 @@ const cartSummary = computed(() => {
     return { subtotal, shipping, total };
 });
 
-// **Delete cart item functionality**
+//==============================Update cart qty and price==================================//
+const updateCart = (cartItem) => {
+    router.patch(route('update.cart', { id: cartItem.id }), { qty: cartItem.qty }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            if (page.props.flash.status === true) {
+                successToast(page.props.flash.message);
+            } else {
+                errorToast(page.props.flash.message);
+            }
+        },
+        onError: () => {
+            errorToast('Failed to update cart');
+        }
+    });
+};
+
+
+//==============================Delete cart item functionality============================//
 const deleteItem = (cartItem) => {
     if (window.confirm("Are you sure you want to remove this item from the cart?")) {
         router.delete(route('delete.cart', { id: cartItem.id }), {
@@ -76,10 +96,10 @@ const deleteItem = (cartItem) => {
                         <tr>
                             <th>Select</th>
                             <th class="text-start">Products</th>
-                            <th>Price</th>
-                            <th>Quantity</th>
-                            <th>Total</th>
-                            <th>Remove</th>
+                            <th class="text-start">Price</th>
+                            <th class="text-start">Quantity</th>
+                            <th class="text-start">Total</th>
+                            <th class="text-start">Remove</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -87,7 +107,7 @@ const deleteItem = (cartItem) => {
                             <td class="pt-4">
                                 <input class="form-check-input" type="checkbox" v-model="cartItem.selected" />
                             </td>
-                            <td class="">
+                            <td>
                                 <div style="display: flex;">
                                     <div class="display-inline-flex">
                                         <img :src="cartItem.products.image ? `/storage/${cartItem.products.image}` : 'https://skala.or.id/wp-content/uploads/2024/01/dummy-post-square-1-1.jpg'"
@@ -102,14 +122,16 @@ const deleteItem = (cartItem) => {
 
                                         <div>
                                             <span class="text-muted">Color: {{ cartItem.color }} ||</span>
-                                            <span class="text-muted" style="padding-left: 10px;">Size: {{ cartItem.size }}</span>
+                                            <span class="text-muted" style="padding-left: 10px;">Size: {{ cartItem.size
+                                                }}</span>
                                         </div>
                                     </div>
                                 </div>
                             </td>
-                            <td class="text-danger">৳: {{ cartItem.price }}/-</td>
+                            <td class="text-danger text-start" style="padding-top: 30px;">৳: {{ cartItem.price }}/-</td>
                             <td>
-                                <div class="input-group quantity mx-auto" style="width: 100px;">
+                                <div class="input-group quantity mx-auto text-start"
+                                    style="width: 100px; padding-top: 20px;">
                                     <button class="btn btn-sm btn-info btn-minus" @click="decreaseQty(cartItem)">
                                         <i class="fa fa-minus"></i>
                                     </button>
@@ -120,10 +142,10 @@ const deleteItem = (cartItem) => {
                                     </button>
                                 </div>
                             </td>
-                            <td class="text-danger">{{ cartItem.subtotal }}</td>
-                            <td>
+                            <td class="text-danger" style="padding-top: 30px;">{{ cartItem.subtotal }}</td>
+                            <td style="padding-top: 30px;">
                                 <button @click="deleteItem(cartItem)" class="btn btn-sm btn-outline-danger">
-                                    <i class="fa fa-times"></i>
+                                    <i class="fa fa-trash"></i>
                                 </button>
                             </td>
                         </tr>

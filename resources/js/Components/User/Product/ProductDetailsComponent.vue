@@ -236,7 +236,7 @@ const addToCart = () => {
                                 <tr>
                                     <td>{{ productDetails.vendor?.name ?? "N/A" }}</td>
                                     <td>{{ productDetails.vendor?.phone ?? "N/A" }}</td>
-                                    <td>{{ productDetails.vendor?.vendor_business.shop_name ?? "N/A" }}</td>
+                                    <td>{{ productDetails.vendor?.vendor_business?.shop_name ?? "N/A" }}</td>
                                 </tr>
                             </tbody>
                         </table>

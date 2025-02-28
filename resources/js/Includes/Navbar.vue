@@ -14,7 +14,7 @@ import { Link } from '@inertiajs/vue3';
             <input class="form-control border-0" type="search" placeholder="Search">
         </form>
         <div class="navbar-nav align-items-center ms-auto">
-            <div class="nav-item dropdown">
+            <!-- <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                     <i class="fa fa-envelope me-lg-2"></i>
                     <span class="d-none d-lg-inline-flex">Message</span>
@@ -56,8 +56,8 @@ import { Link } from '@inertiajs/vue3';
                     <hr class="dropdown-divider">
                     <a href="#" class="dropdown-item text-center">See all message</a>
                 </div>
-            </div>
-            <div class="nav-item dropdown">
+            </div> -->
+            <!-- <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
                     <i class="fa fa-bell me-lg-2"></i>
                     <span class="d-none d-lg-inline-flex">Notification</span>
@@ -80,10 +80,10 @@ import { Link } from '@inertiajs/vue3';
                     <hr class="dropdown-divider">
                     <a href="#" class="dropdown-item text-center">See all notifications</a>
                 </div>
-            </div>
+            </div> -->
             <div class="nav-item dropdown">
                 <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">
-                    <i class="fa fa-cog" aria-hidden="true"></i>
+                    <i class="fa fa-cog me-2" aria-hidden="true"></i>
                     <span class="d-none d-lg-inline-flex">Settings</span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end bg-light border-0 rounded-0 rounded-bottom m-0">

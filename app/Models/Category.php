@@ -32,4 +32,10 @@ class Category extends Model
     public function products(){
         return $this->hasMany(Product::class, 'category_id');
     }
+
+    // Define Many-to-Many Relationship
+    public function coupons()
+    {
+        return $this->belongsToMany(Coupon::class, 'coupon_category');
+    }
 }
