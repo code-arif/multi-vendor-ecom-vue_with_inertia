@@ -126,7 +126,6 @@ const saveCoupon = () => {
 };
 
 
-
 //====================change status functionality==================//
 const toggleStatus = (id, currentStatus) => {
     if (confirm("Are you sure you want to change status?")) {
