@@ -1,6 +1,6 @@
 <script setup>
 import { ref, computed } from "vue";
-import { Link, router, usePage } from "@inertiajs/vue3";
+import { Link, router, useForm, usePage } from "@inertiajs/vue3";
 
 const page = usePage();
 const cartProducts = ref(
@@ -70,6 +70,36 @@ const deleteItem = (cartItem) => {
         });
     }
 };
+
+
+//===========================apply coupon==================================//
+const couponForm = useForm({
+    coupon_code: "",
+    category_ids: [], // Changed to an array
+});
+
+// **Apply Coupon Function**
+const applyCoupon = () => {
+    const selectedProducts = cartProducts.value.filter(item => item.selected);
+
+    if (selectedProducts.length === 0) {
+        errorToast("Please select at least one product before applying the coupon.");
+        return;
+    }
+
+    // Collect category_ids from selected products
+    couponForm.category_ids = selectedProducts.map(item => item.products.category_id);
+
+    couponForm.post(route("apply.coupon"), {
+        onSuccess: () => {
+            successToast(page.props.flash.message);
+        },
+        onError: () => {
+            errorToast("Failed to apply coupon");
+        }
+    });
+};
+
 </script>
 
 <template>
@@ -154,14 +184,15 @@ const deleteItem = (cartItem) => {
             </div>
 
             <div class="col-lg-4">
-                <form class="mb-30">
+                <form class="mb-30" @submit.prevent="applyCoupon">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Coupon Code">
+                        <input type="text" class="form-control" placeholder="Coupon Code" v-model="couponForm.coupon_code">
                         <div class="input-group-append">
-                            <button class="btn btn-info">Apply Coupon</button>
+                            <button type="submit" class="btn btn-info">Apply Coupon</button>
                         </div>
                     </div>
                 </form>
+
                 <h5 class="section-title position-relative text-uppercase mb-3">
                     <span class="bg-light" style="padding: 5px 10px">Cart Summary</span>
                 </h5>

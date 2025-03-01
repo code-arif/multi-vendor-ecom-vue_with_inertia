@@ -147,8 +147,6 @@ class CouponController extends Controller
             ]);
         }
     }
-    
-
 
     //=========================update coupon==============================//
     public function updateCoupon(Request $request, $id)

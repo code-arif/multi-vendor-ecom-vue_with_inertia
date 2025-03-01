@@ -27,7 +27,7 @@ const authUser = page.props.authUser.authenticatedUser;
                     </button>
                     <div class="dropdown-menu dropdown-menu-right">
                         <template v-if="authUser">
-                            <Link class="dropdown-item"> <i class="fa fa-user me-2"></i> Profile</Link>
+                            <Link :href="route('show.profile')" class="dropdown-item"> <i class="fa fa-user me-2"></i> Profile</Link>
                             <Link class="dropdown-item"> <i class="fa fa-heart me-2"></i> Wishlist</Link>
                             <Link class="dropdown-item"> <i class="fa fa-box me-2"></i> All Orders</Link>
                             <Link class="dropdown-item"> <i class="fa fa-shopping-bag me-2"></i> Cart</Link>

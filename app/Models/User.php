@@ -16,4 +16,9 @@ class User extends Authenticatable
         'otp',
     ];
 
+    //relation with customer table
+    public function customer(){
+        return $this->hasOne(CustomerProfile::class);
+    }
+
 }

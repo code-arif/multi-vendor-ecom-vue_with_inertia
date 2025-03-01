@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use Inertia\Inertia;
 use App\Models\Category;
 use Illuminate\Support\Facades\Route;
@@ -8,6 +9,7 @@ use App\Http\Controllers\User\CartController;
 use App\Http\Controllers\User\HomeController;
 use App\Http\Controllers\Admin\BrandController;
 use App\Http\Controllers\Admin\CouponController;
+use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\Admin\ProductController;
 use App\Http\Controllers\Admin\SectionController;
 use App\Http\Controllers\User\CheckOutController;
@@ -16,6 +18,7 @@ use App\Http\Controllers\Vendor\VendorController;
 use App\Http\Controllers\Admin\CategoryController;
 use App\Http\Controllers\Admin\AdminAuthController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\User\ApplyCouponController;
 use App\Http\Controllers\User\ProductUserController;
 use App\Http\Middleware\TokenVerificationMiddleware;
 use App\Http\Controllers\Admin\AdminManageController;
@@ -23,7 +26,6 @@ use App\Http\Controllers\Admin\ProductSliderController;
 use App\Http\Controllers\Admin\ProductDetailsController;
 use App\Http\Controllers\Admin\VendorProfileManageController;
 use App\Http\Controllers\Admin\ProductSpecificationController;
-use App\Http\Controllers\User\ApplyCouponController;
 
 //=================================ADMIN ROUTES=================================//
 //admin login
@@ -123,6 +125,8 @@ Route::group(['middleware' => AdminAuthMiddleware::class], function () {
         Route::post('/change-status/{id}', [CouponController::class, 'changeCouponStatus'])->name('change.coupon.status');
     });
 
+    //======================user manage==============================//
+    Route::get('/user-list', [UserController::class, 'getUserList'])->name('get.user.list');
 });
 
 /*================================
@@ -151,11 +155,15 @@ Route::group(['middleware' => TokenVerificationMiddleware::class], function () {
     //=======================Cart page =========================//
     Route::get('/cart', [CartController::class, 'showCartPage'])->name('show.cart.page');
     Route::post('/cart-create', [CartController::class, 'createCart'])->name('create.cart');
-    Route::delete('/cart-delete/{id}', [CartController::class,'deleteCart'])->name('delete.cart');
+    Route::delete('/cart-delete/{id}', [CartController::class, 'deleteCart'])->name('delete.cart');
     Route::patch('/cart/update/{id}', [CartController::class, 'updateCart'])->name('update.cart');
 
     //copon apply
     Route::post('/apply-coupon', [ApplyCouponController::class, 'applyCoupon'])->name('apply.coupon');
+
+    //profile manage
+    Route::get('/profile', [ProfileController::class, 'showProfile'])->name('show.profile');
+    Route::post('/profile', [ProfileController::class, 'saveProfile'])->name('save.profile');
 });
 
 // ======================Product page=======================//
