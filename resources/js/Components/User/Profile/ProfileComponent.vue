@@ -74,7 +74,7 @@ function saveProfile() {
                     </Link>
                     <Link class="mb-3 text-dark btn btn-info w-100 text-start">My Order</Link>
                     <Link class="mb-3 text-dark btn btn-info w-100 text-start">Wishlist</Link>
-                    <Link class="mb-3 text-dark btn btn-info w-100 text-start">Shipping Address</Link>
+                    <Link :href="route('show.shipping.address')" class="mb-3 text-dark btn btn-info w-100 text-start">Shipping Address</Link>
                 </div>
             </div>
 

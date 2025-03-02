@@ -165,11 +165,14 @@ Route::group(['middleware' => TokenVerificationMiddleware::class], function () {
     Route::get('/profile', [ProfileController::class, 'showProfile'])->name('show.profile');
     Route::post('/profile', [ProfileController::class, 'saveProfile'])->name('save.profile');
 
-    //=======================Checkout=========================//
+    //manage checkout
     Route::get('/checkout', [CheckOutController::class, 'showCheckoutPage'])->name('show.checkout.page');
-    Route::post('create-ship-address', [CheckOutController::class, 'createShipAddress'])->name('create.ship.address');
-    Route::post('update-ship-address/{id}', [CheckOutController::class, 'updateShipAddress'])->name('update.ship.address');
-    Route::delete('delete-ship-address/{id}', [CheckOutController::class, 'deleteShipAddress'])->name('delete.ship.address');
+
+    //manage shiping address
+    Route::get('/shipping-address', [ProfileController::class, 'showShippingAddress'])->name('show.shipping.address');
+    Route::post('create-ship-address', [ProfileController::class, 'createShipAddress'])->name('create.ship.address');
+    Route::post('update-ship-address/{id}', [ProfileController::class, 'updateShipAddress'])->name('update.ship.address');
+    Route::delete('delete-ship-address/{id}', [ProfileController::class, 'deleteShipAddress'])->name('delete.ship.address');
 });
 
 // ======================Product page=======================//

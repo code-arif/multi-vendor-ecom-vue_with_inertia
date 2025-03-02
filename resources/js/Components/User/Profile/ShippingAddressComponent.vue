@@ -81,8 +81,8 @@ function deleteShippingAddress(shipping_address) {
         <div class="row px-xl-5">
             <div class="col-12">
                 <nav class="breadcrumb bg-light mb-30 p-3">
-                    <Link :href="route('show.home.page')" class="breadcrumb-item text-dark">Home</Link>
-                    <span class="breadcrumb-item active">Checkout</span>
+                    <Link :href="route('show.home.page')" class="breadcrumb-item text-dark" href="#">Home</LInk>
+                    <a class="breadcrumb-item text-dark" href="#">Profile</a>
                 </nav>
             </div>
         </div>
@@ -92,10 +92,25 @@ function deleteShippingAddress(shipping_address) {
     <!-- Checkout Start -->
     <div class="container-fluid">
         <div class="row px-xl-5">
+
+            <div class="col-lg-4">
+                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-light"
+                        style="padding:3px 10px">Manage Account</span></h5>
+
+                <div class="bg-light p-30 mb-5">
+
+                    <Link :href="route('show.profile')" class="mb-3 text-dark btn btn-info w-100 text-start">Profile
+                    </Link>
+                    <Link class="mb-3 text-dark btn btn-info w-100 text-start">My Order</Link>
+                    <Link class="mb-3 text-dark btn btn-info w-100 text-start">Wishlist</Link>
+                    <Link :href="route('show.shipping.address')" class="mb-3 text-dark btn btn-info w-100 text-start">
+                    Shipping Address</Link>
+                </div>
+            </div>
+
             <div class="col-lg-8">
                 <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-light"
-                        style="padding:3px 10px">Billing
-                        Address</span></h5>
+                        style="padding:3px 10px">Information</span></h5>
                 <div class="bg-light p-30" style="margin-bottom: 15px;">
                     <div class="row">
                         <div class="col-md-12" style="margin-top: 5px;">
@@ -105,8 +120,7 @@ function deleteShippingAddress(shipping_address) {
                                 <div class="d-flex align-items-center">
                                     <!-- Radio Button -->
                                     <input type="radio" class="custom-control-input radio-btn" :id="'shipping' + index"
-                                        name="shipping_option" 
-                                        :value="shipping_address.ship_name">
+                                        name="shipping_option" :value="shipping_address.ship_name">
 
                                     <!-- Label -->
                                     <label class="custom-control-label d-flex align-items-center radio-label"
@@ -123,7 +137,8 @@ function deleteShippingAddress(shipping_address) {
 
                                 <!-- Buttons -->
                                 <div class="d-flex align-items-center">
-                                    <button class="btn btn-sm btn-warning mx-2" @click="editShippingAddress(shipping_address)">
+                                    <button class="btn btn-sm btn-warning mx-2"
+                                        @click="editShippingAddress(shipping_address)">
                                         <i class="fa fa-edit"></i>
                                     </button>
                                     <button class="btn btn-sm btn-danger"
@@ -137,9 +152,11 @@ function deleteShippingAddress(shipping_address) {
                         </div>
                         <div class="col-md-12" style="margin-top: 5px;">
                             <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="shipto" v-model="showShippingForm">
+                                <input type="checkbox" class="custom-control-input" id="shipto"
+                                    v-model="showShippingForm">
                                 <label class="custom-control-label" for="shipto" data-bs-toggle="collapse"
-                                    :data-bs-target="showShippingForm ? '#shipping-address' : ''">Ship to different address</label>
+                                    :data-bs-target="showShippingForm ? '#shipping-address' : ''">Ship to different
+                                    address</label>
                             </div>
                         </div>
                     </div>
@@ -196,65 +213,6 @@ function deleteShippingAddress(shipping_address) {
                                 </div>
                             </div>
                         </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-lg-4">
-                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-light"
-                        style="padding:3px 10px">Order
-                        Total</span></h5>
-                <div class="bg-light p-30 mb-5">
-                    <div class="border-bottom">
-                        <h6 class="mb-3">Products</h6>
-                        <div class="d-flex justify-content-between">
-                            <p>Product Name 1</p>
-                            <p>$150</p>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <p>Product Name 2</p>
-                            <p>$150</p>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <p>Product Name 3</p>
-                            <p>$150</p>
-                        </div>
-                    </div>
-                    <div class="border-bottom pt-3 pb-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h6>Subtotal</h6>
-                            <h6>$150</h6>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">$10</h6>
-                        </div>
-                    </div>
-                    <div class="pt-2">
-                        <div class="d-flex justify-content-between mt-2">
-                            <h5>Total</h5>
-                            <h5>$160</h5>
-                        </div>
-                    </div>
-                </div>
-                <div class="mb-5">
-                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-light"
-                            style="padding:3px 10px">Payment</span></h5>
-                    <div class="bg-light p-30">
-                        <div class="form-group" style="margin-bottom: 10px;">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input" name="payment" id="paypal">
-                                <label class="custom-control-label" for="paypal">Cash On Delivery</label>
-                            </div>
-                        </div>
-
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input" name="payment" id="banktransfer">
-                                <label class="custom-control-label" for="banktransfer">Bank Transfer</label>
-                            </div>
-                        </div>
-                        <button class="btn btn-block btn-info font-weight-bold w-100">Place Order</button>
                     </div>
                 </div>
             </div>
