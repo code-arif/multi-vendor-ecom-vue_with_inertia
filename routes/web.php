@@ -164,6 +164,12 @@ Route::group(['middleware' => TokenVerificationMiddleware::class], function () {
     //profile manage
     Route::get('/profile', [ProfileController::class, 'showProfile'])->name('show.profile');
     Route::post('/profile', [ProfileController::class, 'saveProfile'])->name('save.profile');
+
+    //=======================Checkout=========================//
+    Route::get('/checkout', [CheckOutController::class, 'showCheckoutPage'])->name('show.checkout.page');
+    Route::post('create-ship-address', [CheckOutController::class, 'createShipAddress'])->name('create.ship.address');
+    Route::post('update-ship-address/{id}', [CheckOutController::class, 'updateShipAddress'])->name('update.ship.address');
+    Route::delete('delete-ship-address/{id}', [CheckOutController::class, 'deleteShipAddress'])->name('delete.ship.address');
 });
 
 // ======================Product page=======================//
@@ -171,9 +177,6 @@ Route::get('/products', [ProductUserController::class, 'showProductPage'])->name
 Route::get('/product', [ProductUserController::class, 'showProductDetailsPage'])->name('show.product.details.page');
 Route::get('/product/by-category', [ProductUserController::class, 'productByCategory'])->name('show.product.by.category');
 Route::get('/product/by-brand', [ProductUserController::class, 'productByBrand'])->name('show.product.by.brand');
-
-//=======================Checkout=========================//
-Route::get('/checkout', [CheckOutController::class, 'showCheckoutPage'])->name('show.checkout.page');
 
 //==========================get section for header =====================//
 Route::get('/get-header-section', [HomeController::class, 'getHeaderSection'])->name('get.header.section');

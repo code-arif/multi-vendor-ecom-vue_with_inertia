@@ -16,10 +16,10 @@ return new class extends Migration
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->string('ship_name',100);
             $table->string('ship_add',100);
-            $table->string('ship_city',100);
-            $table->string('ship_state',100);
+            $table->string('ship_city',100)->nullable();
+            $table->string('ship_state',100)->nullable();
             $table->string('zip',100);
-            $table->string('ship_country',100);
+            $table->string('ship_country',100)->nullable();
             $table->string('ship_phone',50);
             $table->timestamps();
         });
