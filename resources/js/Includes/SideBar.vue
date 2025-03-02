@@ -116,10 +116,11 @@ const imagePreview = ref(
                 <!-- user manage -->
                 <div class="nav-item dropdown"
                     v-if="authUser && authUser.type === 'superadmin' || authUser && authUser.type === 'admin'">
-                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown"><i
+                    <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown" :class="{ 'active': ['/user-list'].includes($page.url) }"><i
                             class="fa fa-user me-2"></i>User Manage</a>
+
                     <div class="dropdown-menu bg-transparent border-0">
-                        <Link href="" class="dropdown-item"> <i class="fa fa-chevron-circle-right me-2"></i> User
+                        <Link :href="route('get.user.list')" class="dropdown-item" :class="{ 'active' : route().current('get.user.list') }"> <i class="fa fa-chevron-circle-right me-2"></i> User
                         </Link>
                         <Link href="" class="dropdown-item"> <i class="fa fa-chevron-circle-right me-2"></i> Subscriber
                         </Link>
