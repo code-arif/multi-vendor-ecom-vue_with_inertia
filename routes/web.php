@@ -167,6 +167,8 @@ Route::group(['middleware' => TokenVerificationMiddleware::class], function () {
 
     //manage checkout
     Route::get('/checkout', [CheckOutController::class, 'showCheckoutPage'])->name('show.checkout.page');
+    Route::post('/checkout', [CheckoutController::class, 'storeCartData'])->name('checkout.store');
+    Route::get('/get-checkout-data', [CheckOutController::class, 'getCheckoutData'])->name('get.checkout.data');
 
     //manage shiping address
     Route::get('/shipping-address', [ProfileController::class, 'showShippingAddress'])->name('show.shipping.address');

@@ -4,6 +4,7 @@ import { Link, useForm, usePage } from '@inertiajs/vue3';
 const page = usePage();
 
 const user = page.props.user || {};
+const user_email = page.props.user_email ?? 'N/A'
 
 const form = useForm({
     cus_name: user.cus_name || '',
@@ -67,13 +68,13 @@ function saveProfile() {
                 <div class="bg-light p-30 mb-5">
 
                     <div class="mb-3" style="text-align: center; padding: 3px 5px; border: 1px solid #ddd;">
-                        <h6>{{ user.user?.email }}</h6>
+                        <h6>{{ user_email?.email }}</h6>
                     </div>
 
                     <Link :href="route('show.profile')" class="mb-3 text-dark btn btn-info w-100 text-start">Profile
                     </Link>
-                    <Link class="mb-3 text-dark btn btn-info w-100 text-start">My Order</Link>
-                    <Link class="mb-3 text-dark btn btn-info w-100 text-start">Wishlist</Link>
+                    <Link href="#" class="mb-3 text-dark btn btn-info w-100 text-start">My Order</Link>
+                    <Link href="#" class="mb-3 text-dark btn btn-info w-100 text-start">Wishlist</Link>
                     <Link :href="route('show.shipping.address')" class="mb-3 text-dark btn btn-info w-100 text-start">Shipping Address</Link>
                 </div>
             </div>

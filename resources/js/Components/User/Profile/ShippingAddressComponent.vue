@@ -5,9 +5,9 @@ import { ref, computed } from 'vue';
 const page = usePage();
 
 const allShippingAddresses = ref(page.props.shipping_addresses || []);
-
 const shipping_addresses = computed(() => allShippingAddresses.value);
 const showShippingForm = ref(false);
+const user_email = page.props.user_email ?? 'N/A'
 
 
 //=================create shipping address===============//
@@ -44,7 +44,18 @@ function saveAddress() {
         preserveScroll: true,
         onSuccess: () => {
             successToast(page.props.flash.message);
-            allShippingAddresses.value.push({ ...form });
+
+            if (form.id) {
+                // Update korle existing address replace korbo
+                const index = allShippingAddresses.value.findIndex(item => item.id === form.id);
+                if (index !== -1) {
+                    allShippingAddresses.value[index] = { ...form };
+                }
+            } else {
+                // New address add korbo
+                allShippingAddresses.value.push({ ...form });
+            }
+
             form.reset();
             showShippingForm.value = false;
         },
@@ -62,13 +73,15 @@ function saveAddress() {
     });
 }
 
+
+
 //====================delete shipping address=======================//
 function deleteShippingAddress(shipping_address) {
     if (confirm('Are you sure you want to delete this shipping address?')) {
         router.delete(route("delete.ship.address", { id: shipping_address.id }), {
             onSuccess: () => {
                 successToast(page.props.flash.message);
-                router.reload();
+                allShippingAddresses.value = allShippingAddresses.value.filter(addr => addr.id !== shipping_address.id);
             }
         });
     }
@@ -98,11 +111,14 @@ function deleteShippingAddress(shipping_address) {
                         style="padding:3px 10px">Manage Account</span></h5>
 
                 <div class="bg-light p-30 mb-5">
+                    <div class="mb-3" style="text-align: center; padding: 3px 5px; border: 1px solid #ddd;">
+                        <h6>{{ user_email?.email }}</h6>
+                    </div>
 
                     <Link :href="route('show.profile')" class="mb-3 text-dark btn btn-info w-100 text-start">Profile
                     </Link>
-                    <Link class="mb-3 text-dark btn btn-info w-100 text-start">My Order</Link>
-                    <Link class="mb-3 text-dark btn btn-info w-100 text-start">Wishlist</Link>
+                    <Link href="#" class="mb-3 text-dark btn btn-info w-100 text-start">My Order</Link>
+                    <Link href="#" class="mb-3 text-dark btn btn-info w-100 text-start">Wishlist</Link>
                     <Link :href="route('show.shipping.address')" class="mb-3 text-dark btn btn-info w-100 text-start">
                     Shipping Address</Link>
                 </div>

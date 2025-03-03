@@ -4,7 +4,7 @@ import { Link, router, useForm, usePage } from "@inertiajs/vue3";
 
 const page = usePage();
 const cartProducts = ref(
-    (page.props.cartProducts || []).map(item => ({ ...item, selected: false })) // Add 'selected' property
+    (page.props.cartProducts || []).map(item => ({ ...item, selected: false }))
 );
 
 // Function to increase quantity
@@ -32,9 +32,8 @@ const updateSubtotal = (cartItem) => {
 const cartSummary = computed(() => {
     let selectedItems = cartProducts.value.filter(item => item.selected); // Filter selected items
     let subtotal = selectedItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
-    let shipping = subtotal > 0 ? 10 : 0;
-    let total = subtotal + shipping;
-    return { subtotal, shipping, total };
+    let total = subtotal;
+    return { subtotal, total };
 });
 
 //==============================Update cart qty and price==================================//
@@ -61,7 +60,6 @@ const deleteItem = (cartItem) => {
         router.delete(route('delete.cart', { id: cartItem.id }), {
             onSuccess: () => {
                 successToast(page.props.flash.message);
-                // Remove item from frontend cartProducts state
                 cartProducts.value = cartProducts.value.filter(item => item.id !== cartItem.id);
             },
             onError: () => {
@@ -75,7 +73,7 @@ const deleteItem = (cartItem) => {
 //===========================apply coupon==================================//
 const couponForm = useForm({
     coupon_code: "",
-    category_ids: [], // Changed to an array
+    category_ids: [],
 });
 
 // **Apply Coupon Function**
@@ -99,6 +97,31 @@ const applyCoupon = () => {
         }
     });
 };
+
+//=======================proceed to checkout===========================//
+const proceedToCheckout = () => {
+    let selectedItems = cartProducts.value.filter(item => item.selected);
+    if (selectedItems.length === 0) {
+        errorToast('Please select at least one product to checkout');
+        return;
+    }
+
+    router.post(route('checkout.store'), {
+        selectedProducts: selectedItems,
+        total: cartSummary.value.total
+    }, {
+        preserveScroll: true,
+        onSuccess: () => {
+            successToast('Proceeding to checkout...');
+            router.visit(route('show.checkout.page'));
+        },
+        onError: () => {
+            errorToast('Failed to proceed to checkout');
+        }
+    });
+};
+
+
 
 </script>
 
@@ -153,7 +176,7 @@ const applyCoupon = () => {
                                         <div>
                                             <span class="text-muted">Color: {{ cartItem.color }} ||</span>
                                             <span class="text-muted" style="padding-left: 10px;">Size: {{ cartItem.size
-                                                }}</span>
+                                            }}</span>
                                         </div>
                                     </div>
                                 </div>
@@ -186,7 +209,8 @@ const applyCoupon = () => {
             <div class="col-lg-4">
                 <form class="mb-30" @submit.prevent="applyCoupon">
                     <div class="input-group">
-                        <input type="text" class="form-control" placeholder="Coupon Code" v-model="couponForm.coupon_code">
+                        <input type="text" class="form-control" placeholder="Coupon Code"
+                            v-model="couponForm.coupon_code">
                         <div class="input-group-append">
                             <button type="submit" class="btn btn-info">Apply Coupon</button>
                         </div>
@@ -202,10 +226,7 @@ const applyCoupon = () => {
                             <h6>Subtotal</h6>
                             <h6>{{ cartSummary.subtotal }}</h6>
                         </div>
-                        <div class="d-flex justify-content-between mb-3">
-                            <h6 class="font-weight-medium">Shipping</h6>
-                            <h6 class="font-weight-medium">{{ cartSummary.shipping }}</h6>
-                        </div>
+                        
                         <div class="d-flex justify-content-between">
                             <h6 class="font-weight-medium">Coupon Discount</h6>
                             <h6 class="font-weight-medium">0</h6>
@@ -217,9 +238,10 @@ const applyCoupon = () => {
                             <h5>{{ cartSummary.total }}</h5>
                         </div>
                         <button class="btn btn-block btn-info font-weight-bold mt-3 w-100"
-                            :disabled="cartSummary.total === 0">
+                            :disabled="cartSummary.total === 0" @click="proceedToCheckout">
                             Proceed To Checkout
                         </button>
+
                     </div>
                 </div>
             </div>

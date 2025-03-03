@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\CustomerProfile;
 use App\Models\ShippingAddress;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 
 class ProfileController extends Controller
 {
@@ -19,10 +20,14 @@ class ProfileController extends Controller
             return response()->json(['error', 'user not found'], 401);
         }
 
-        $user = CustomerProfile::where('user_id', $user_id)->with('user')->first();
+        $user_email = User::where('id', $user_id)->first();
+
+        $user = CustomerProfile::where('user_id', $user_id)->first();
+        // dd($user);
 
         return Inertia::render('User/Profile/ProfilePage', [
             'user' => $user,
+            'user_email' => $user_email
         ]);
     }
 
@@ -67,9 +72,11 @@ class ProfileController extends Controller
     public function showShippingAddress(Request $request)
     {
         $user_id = $request->header('id');
+        $user_email = User::where('id', $user_id)->first();
         $shipping_addresses = ShippingAddress::where('user_id', $user_id)->get();
         return Inertia::render('User/Profile/ShippingAddressPage', [
             'shipping_addresses' => $shipping_addresses,
+            'user_email' => $user_email
         ]);
     }
 
