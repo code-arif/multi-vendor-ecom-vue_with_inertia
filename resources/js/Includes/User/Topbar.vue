@@ -29,7 +29,7 @@ const authUser = page.props.authUser.authenticatedUser;
                         <template v-if="authUser">
                             <Link :href="route('show.profile')" class="dropdown-item"> <i class="fa fa-user me-2"></i> Profile</Link>
                             <Link href="#" class="dropdown-item"> <i class="fa fa-heart me-2"></i> Wishlist</Link>
-                            <Link href="#" class="dropdown-item"> <i class="fa fa-box me-2"></i> All Orders</Link>
+                            <Link :href="route('get.all.order')" class="dropdown-item"> <i class="fa fa-box me-2"></i> All Orders</Link>
                             <Link href="#" class="dropdown-item"> <i class="fa fa-shopping-bag me-2"></i> Cart</Link>
                             <Link href="#" class="dropdown-item"> <i class="fa fa-star me-2"></i> Reviews</Link>
                             <Link :href="route('user.logout')" class="dropdown-item"> <i class="fa fa-arrow-left me-2"></i> Logout</Link>

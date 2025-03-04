@@ -10,7 +10,7 @@ import { Link } from '@inertiajs/vue3';
             <div class="check-icon">✔</div>
             <h2 class="text-success">Order Placed Successfully!</h2>
             <p class="text-muted">Thank you for your purchase. Your order ID is <strong>#12345</strong>.</p>
-            <Link href="/" class="btn btn-primary">Continue Shopping</Link>
+            <Link :href="route('get.all.order')" class="btn btn-primary">Continue Shopping</Link>
         </div>
     </div>
 </template>

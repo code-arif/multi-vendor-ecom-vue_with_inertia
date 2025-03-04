@@ -36,4 +36,10 @@ class Invoice extends Model
         'customer_details' => 'array',
         'shipping_details' => 'array',
     ];
+
+
+    //relation with invoice_product table
+    public function invoice_products(){
+        return $this->hasMany(InvoiceProduct::class,'invoice_id','id');
+    }
 }

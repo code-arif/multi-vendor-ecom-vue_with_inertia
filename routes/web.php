@@ -27,6 +27,7 @@ use App\Http\Controllers\Admin\ProductDetailsController;
 use App\Http\Controllers\Admin\VendorProfileManageController;
 use App\Http\Controllers\Admin\ProductSpecificationController;
 use App\Http\Controllers\User\InvoiceController;
+use App\Http\Controllers\User\OrderController;
 
 //=================================ADMIN ROUTES=================================//
 //admin login
@@ -179,6 +180,11 @@ Route::group(['middleware' => TokenVerificationMiddleware::class], function () {
 
     //place order
     Route::post('/place-order', [InvoiceController::class, 'placeOrder'])->name('place.order');
+
+    //get order
+    Route::get('/get-order', [OrderController::class, 'getAllOrder'])->name('get.all.order');
+    Route::get('/get-order/{id}', [OrderController::class, 'getOrderById'])->name('get.order.by.id');
+    Route::delete('/delete-order/{id}', [OrderController::class, 'deleteOrder'])->name('delete.order');
 
     //order success
     Route::get('/order-success', function(){

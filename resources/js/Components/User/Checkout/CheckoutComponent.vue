@@ -120,7 +120,7 @@ const placeOrder = async () => {
         successToast(response.data.message || "Order placed successfully!");
         window.location.href = "/order-success";
     } catch (error) {
-        console.error("Order failed:", error);
+        // console.error("Order failed:", error);
         errorToast("Something went wrong! Please try again.");
     } finally {
         isProcessing.value = false;

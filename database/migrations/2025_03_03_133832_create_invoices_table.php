@@ -21,8 +21,8 @@ return new class extends Migration
             $table->string('coupon_code')->nullable();
             $table->string('coupon_discount')->nullable();
             $table->string('grand_total')->nullable();
-            $table->string('customer_details')->nullable();
-            $table->string('shipping_details')->nullable();
+            $table->text('customer_details')->nullable();
+            $table->text('shipping_details')->nullable();
             $table->string('transection_id')->nullable();
             $table->string('validation_id')->nullable();
             $table->enum('delivary_status',['pending', 'processing', 'delivered','cancelled'])->default('pending');
