@@ -30,7 +30,7 @@ const updateSubtotal = (cartItem) => {
 
 // **Calculate cart summary only for selected items**
 const cartSummary = computed(() => {
-    let selectedItems = cartProducts.value.filter(item => item.selected); // Filter selected items
+    let selectedItems = cartProducts.value.filter(item => item.selected);
     let subtotal = selectedItems.reduce((sum, item) => sum + (item.price * item.qty), 0);
     let total = subtotal;
     return { subtotal, total };

@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\ProductSliderController;
 use App\Http\Controllers\Admin\ProductDetailsController;
 use App\Http\Controllers\Admin\VendorProfileManageController;
 use App\Http\Controllers\Admin\ProductSpecificationController;
+use App\Http\Controllers\User\InvoiceController;
 
 //=================================ADMIN ROUTES=================================//
 //admin login
@@ -175,6 +176,14 @@ Route::group(['middleware' => TokenVerificationMiddleware::class], function () {
     Route::post('create-ship-address', [ProfileController::class, 'createShipAddress'])->name('create.ship.address');
     Route::post('update-ship-address/{id}', [ProfileController::class, 'updateShipAddress'])->name('update.ship.address');
     Route::delete('delete-ship-address/{id}', [ProfileController::class, 'deleteShipAddress'])->name('delete.ship.address');
+
+    //place order
+    Route::post('/place-order', [InvoiceController::class, 'placeOrder'])->name('place.order');
+
+    //order success
+    Route::get('/order-success', function(){
+        return Inertia::render('User/Checkout/OrderSuccessPage');
+    });
 });
 
 // ======================Product page=======================//

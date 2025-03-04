@@ -7,10 +7,16 @@ const page = usePage();
 const allShippingAddresses = ref(page.props.shipping_addresses || []);
 const shipping_addresses = computed(() => allShippingAddresses.value);
 const showShippingForm = ref(false);
+const delivaryCharge = '50';
 
 //checkout products sesstion data
 const selected_cart_items = page.props.selected_cart_items || [];
 const total = page.props.total || 0;
+const payable = parseFloat(total) + parseFloat(delivaryCharge)
+
+const selectedShipping = ref(null);
+const paymentMethod = ref(null);
+const isProcessing = ref(false);
 
 
 //=================create shipping address===============//
@@ -49,13 +55,11 @@ function saveAddress() {
             successToast(page.props.flash.message);
 
             if (form.id) {
-                // Update korle existing address replace korbo
                 const index = allShippingAddresses.value.findIndex(item => item.id === form.id);
                 if (index !== -1) {
                     allShippingAddresses.value[index] = { ...form };
                 }
             } else {
-                // New address add korbo
                 allShippingAddresses.value.push({ ...form });
             }
 
@@ -77,7 +81,6 @@ function saveAddress() {
 }
 
 
-
 //====================delete shipping address=======================//
 function deleteShippingAddress(shipping_address) {
     if (confirm('Are you sure you want to delete this shipping address?')) {
@@ -87,6 +90,40 @@ function deleteShippingAddress(shipping_address) {
                 allShippingAddresses.value = allShippingAddresses.value.filter(addr => addr.id !== shipping_address.id);
             }
         });
+    }
+}
+
+
+//=====================place order ==========================//
+const placeOrder = async () => {
+    if (!selectedShipping.value) {
+        errorToast("Please select a shipping address.");
+        return;
+    }
+    if (!paymentMethod.value) {
+        errorToast("Please select a payment method.");
+        return;
+    }
+
+    isProcessing.value = true;
+
+    try {
+        const response = await axios.post('/place-order', {
+            shipping_details: selectedShipping.value,
+            cart_items: selected_cart_items,
+            total,
+            delivery_charge: delivaryCharge,
+            payable,
+            payment_method: paymentMethod.value
+        });
+
+        successToast(response.data.message || "Order placed successfully!");
+        window.location.href = "/order-success";
+    } catch (error) {
+        console.error("Order failed:", error);
+        errorToast("Something went wrong! Please try again.");
+    } finally {
+        isProcessing.value = false;
     }
 }
 
@@ -122,25 +159,18 @@ function deleteShippingAddress(shipping_address) {
                                 <div class="d-flex align-items-center">
                                     <!-- Radio Button -->
                                     <input type="radio" class="custom-control-input radio-btn" :id="'shipping' + index"
-                                        name="shipping_option" 
-                                        :value="shipping_address.ship_name">
+                                        name="shipping_option" :value="shipping_address" v-model="selectedShipping">
 
                                     <!-- Label -->
-                                    <label class="custom-control-label d-flex align-items-center radio-label"
-                                        :for="'shipping' + index">
-                                        {{ shipping_address?.ship_name }} |
-                                        {{ shipping_address?.ship_add }} |
-                                        {{ shipping_address?.ship_city }} |
-                                        {{ shipping_address?.ship_state || "N/A" }} |
-                                        {{ shipping_address.zip }} |
-                                        {{ shipping_address?.ship_country || "N/A" }} |
-                                        {{ shipping_address?.ship_phone }}
+                                    <label class="custom-control-label" :for="'shipping' + index">
+                                        {{ shipping_address.ship_name }} | {{ shipping_address.ship_add }}
                                     </label>
                                 </div>
 
                                 <!-- Buttons -->
                                 <div class="d-flex align-items-center">
-                                    <button class="btn btn-sm btn-warning mx-2" @click="editShippingAddress(shipping_address)">
+                                    <button class="btn btn-sm btn-warning mx-2"
+                                        @click="editShippingAddress(shipping_address)">
                                         <i class="fa fa-edit"></i>
                                     </button>
                                     <button class="btn btn-sm btn-danger"
@@ -154,9 +184,11 @@ function deleteShippingAddress(shipping_address) {
                         </div>
                         <div class="col-md-12" style="margin-top: 5px;">
                             <div class="custom-control custom-checkbox">
-                                <input type="checkbox" class="custom-control-input" id="shipto" v-model="showShippingForm">
+                                <input type="checkbox" class="custom-control-input" id="shipto"
+                                    v-model="showShippingForm">
                                 <label class="custom-control-label" for="shipto" data-bs-toggle="collapse"
-                                    :data-bs-target="showShippingForm ? '#shipping-address' : ''">Ship to different address</label>
+                                    :data-bs-target="showShippingForm ? '#shipping-address' : ''">Ship to different
+                                    address</label>
                             </div>
                         </div>
                     </div>
@@ -218,49 +250,58 @@ function deleteShippingAddress(shipping_address) {
             </div>
 
             <div class="col-lg-4">
-                <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-light"
-                        style="padding:3px 10px">Order
-                        Total</span></h5>
+                <h5 class="section-title position-relative text-uppercase mb-3">
+                    <span class="bg-light" style="padding:3px 10px">Order Total</span>
+                </h5>
                 <div class="bg-light p-30 mb-5">
-                    <div class="border-bottom">
-                        <h6 class="mb-3">Products</h6>
-                        <div class="d-flex justify-content-between" v-for="(item, index) in selected_cart_items" :key="index">
-                            <p>{{ item?.products?.product_name }} - {{ item?.products?.price }} * ({{ item.qty }})</p>
-                            <p>{{ item?.subtotal }}/-</p>
+                    <div v-for="(item, index) in selected_cart_items" :key="index"
+                        class="d-flex justify-content-between">
+                        <p>{{ item.products.product_name }} - {{ item.products.price }} * ({{ item.qty }})</p>
+                        <p>{{ item.subtotal }}/-</p>
+                    </div>
+                    <div class="border-bottom pt-3 pb-2">
+                        <div class="d-flex justify-content-between">
+                            <h6>Subtotal</h6>
+                            <h6>{{ total }} /-</h6>
                         </div>
                     </div>
                     <div class="border-bottom pt-3 pb-2">
-                        <div class="d-flex justify-content-between mb-3">
-                            <h6>Subtotal</h6>
-                            <h6>{{ total }}</h6>
+                        <div class="d-flex justify-content-between">
+                            <h6>Delivery Charge</h6>
+                            <h6>{{ delivaryCharge }} /-</h6>
                         </div>
                     </div>
                     <div class="pt-2">
-                        <div class="d-flex justify-content-between mt-2">
+                        <div class="d-flex justify-content-between">
                             <h5>Payable</h5>
-                            <h5>{{ total }}</h5>
+                            <h5>{{ payable }} /-</h5>
                         </div>
                     </div>
                 </div>
-                <div class="mb-5">
-                    <h5 class="section-title position-relative text-uppercase mb-3"><span class="bg-light"
-                            style="padding:3px 10px">Payment</span></h5>
-                    <div class="bg-light p-30">
-                        <div class="form-group" style="margin-bottom: 10px;">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input" name="payment" id="paypal">
-                                <label class="custom-control-label" for="paypal">Cash On Delivery</label>
-                            </div>
-                        </div>
 
-                        <div class="form-group" style="margin-bottom: 20px;">
-                            <div class="custom-control custom-radio">
-                                <input type="radio" class="custom-control-input" name="payment" id="banktransfer">
-                                <label class="custom-control-label" for="banktransfer">Bank Transfer</label>
-                            </div>
+                <h5 class="section-title position-relative text-uppercase mb-3">
+                    <span class="bg-light" style="padding:3px 10px">Payment</span>
+                </h5>
+                <div class="bg-light p-30">
+                    <div class="form-group mb-3">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="cod" value="Cash On Delivery"
+                                v-model="paymentMethod">
+                            <label class="custom-control-label" for="cod">Cash On Delivery</label>
                         </div>
-                        <button class="btn btn-block btn-info font-weight-bold w-100">Place Order</button>
                     </div>
+
+                    <div class="form-group mb-3">
+                        <div class="custom-control custom-radio">
+                            <input type="radio" class="custom-control-input" id="bank" value="Bank Transfer"
+                                v-model="paymentMethod">
+                            <label class="custom-control-label" for="bank">Bank Transfer</label>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-block btn-info w-100" @click="placeOrder" :disabled="isProcessing">
+                        {{ isProcessing ? "Processing..." : "Place Order" }}
+                    </button>
                 </div>
             </div>
         </div>

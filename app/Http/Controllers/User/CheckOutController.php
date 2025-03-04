@@ -15,9 +15,6 @@ class CheckOutController extends Controller
     {
         $user_id = $request->header('id');
         $checkoutSession = CheckoutSession::where('user_id', $user_id)->first();
-        // return response()->json([
-        //     'checkoutSession' => $checkoutSession,
-        // ]);exit();
 
         if (!$checkoutSession) {
             return response()->json(['message' => 'No checkout session found'], 404);
@@ -39,7 +36,7 @@ class CheckOutController extends Controller
             'total' => 'required|numeric',
         ]);
     
-        $checkoutSession = CheckoutSession::updateOrCreate(
+       CheckoutSession::updateOrCreate(
             ['user_id' => $user_id],
             [
                 'selected_cart_items' => json_encode($validated_data['selectedProducts']),
